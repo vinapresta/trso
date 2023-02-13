@@ -1,5 +1,5 @@
 <template>
-    <div>okok
+    <div>ok generate
         <div v-for="item in data.data" :key="item.id">{{ item.id }}</div>
     </div>
 </template>
