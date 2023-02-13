@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="bg-trso-blue">
         HEADER
     </div>
 </template>

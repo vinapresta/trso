@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div v-for="item in data.data" :key="item.id">{{ item.id }}</div>
+        <div v-for="item in items.data" :key="item.id">{{ item.id }}</div>
     </div>
 </template>
 
@@ -8,8 +8,6 @@
 
     const runtimeConfig = useRuntimeConfig()
 
-    const { data } = await useAsyncData('movies', () => $fetch('http://localhost:1337/api/movies'))
-
-    console.log('ok')
+    const { data: items } = await useFetch('http://localhost:1337/api/movies')
 
 </script>
