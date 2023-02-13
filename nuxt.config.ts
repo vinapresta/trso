@@ -2,7 +2,7 @@
 export default defineNuxtConfig({
     runtimeConfig: {
         public: {
-            apiBase: 'http://localhost:1337/api/',
+            API_BASE_URL: 'http://localhost:1337/api/',
             limitByPage: 24,
             featuredItemsCount: 12
         }
