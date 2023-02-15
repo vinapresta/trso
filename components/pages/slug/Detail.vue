@@ -10,18 +10,18 @@
                     :bookAuthor="movie.authorName"
                     :url="url"
                     :movieType="movie.type" />-->
-            <p class="text-left pb-2" v-if="!readMoreActivated" itemprop="description">
-                <span class="block font-bold mb-2">
-                    {{ $t('pages.movieDetail.hidDescription1') }} {{ type }} {{ itemLangAttr.title }} {{ $t('pages.movieDetail.hidDescription2') }} {{ bookAttr.title }}?
-                </span>
-            </p>
+            <span class="block font-bold mb-2">
+                {{ $t('pages.movieDetail.hidDescription1') }} {{ itemAttr.type }} {{ itemLangAttr.title }} {{ $t('pages.movieDetail.hidDescription2') }} {{ bookAttr.title }}?
+            </span>
             <HelpersReadMore :content="itemLangAttr.plot" :type="itemAttr.type" :truncateLimit="70" itemProp="description" />
-            <!--<button class="btn block mx-auto py-1 px-3 text-white font-bold rounded-b border-none" :class="movie.type != 'series' ? 'bg-blue-300' : 'bg-yellow-300'" @click.prevent="changeReadMoreState()" v-if="showReadMore()"><span v-if="!readMoreActivated">{{ $t('pages.movieDetail.more') }}</span><span v-else>{{ $t('pages.movieDetail.less') }}</span></button>
             <ul class="py-8">
-                <li v-for="rating of movie.ratings" :key="rating.key">
-                    <span class="italic pb-2">{{ rating.Source }}:</span> <span :class="movie.type != 'series' ? 'text-blue-400' : 'text-yellow-400'">{{ rating.Value }}</span>
+                <li v-for="rating of itemAttr.ratings" :key="rating.key">
+                    <span class="italic pb-2">{{ rating.Source }}:</span>&nbsp;
+                    <span :class="itemAttr.type != 'series' ? 'text-blue-400' : 'text-yellow-400'">
+                        {{ rating.Value }}
+                    </span>
                 </li>
-            </ul>-->
+            </ul>
         </div>
     </div>  
 </template>

@@ -2,7 +2,7 @@
     <div>
         <LayoutHeader />
         <!--<LayoutSearch />-->
-        <div class="container">
+        <div class="container max-w-6xl">
             <slot />
         </div>
         <LayoutFooter />
