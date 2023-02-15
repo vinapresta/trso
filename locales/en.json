@@ -1,0 +1,147 @@
+{
+  "header": {
+    "movies": "Movies based on a book",
+    "series": "TV series based on a book"
+  },
+  "vote": {
+    "titleMovie": "Was the movie well adapted?",
+    "titleSeries": "Was the series well adapted?"
+  },
+  "footer": {
+    "contact": "Contact us",
+    "privacy": "Privacy Policy",
+    "contactModal": {
+      "close": "Close",
+      "email": "Your email",
+      "message": "Your message",
+      "send": "Send",
+      "noEmail": "An email is required.",
+      "noMessage": "A message is required.",
+      "errorEmail": "The email is not valid.",
+      "errorMessage": "The message is not valid.",
+      "success": "Your message has been sent. We will reply shortly."
+    }
+  },
+  "list": {
+    "written": "written by",
+    "cover": "Cover of the book"
+  },
+  "pages": {
+    "home": {
+      "title": "homepage - find what books your favorite movies and TV series are based on!",
+      "rated": "Best rated movies",
+      "topMovies": "Popular movies based on a book",
+      "topMovies2": "See the list of all the movies based on a book",
+      "topSeries": "Popular TV series based on a book",
+      "topSeries2": "See the list of all the TV series based on a book",
+      "hidDescription": "List all the movies and series based on a book. Search for a movie or a series and find what book it is based on.",
+      "hidKeywords": "movie, movies, based on, series, book, books, novel, novels, read, reader, reading, script, movie script, series script, scenario, movie material, movie writer, series material, series writer, original story",
+      "hidOgDescription": "List all the movies and series based on a book. Search for a movie or a series and find what book it is based on.",
+      "hidTwitterTitle": "find what books your favorite movies and series are based on!",
+      "hidTwitterDescription": "List all the movies and series based on a book. Search for a movie or a series and find what book it is based on.",
+      "disclaimer1": "Behind many of the greatest movies or series, there is great writers.",
+      "disclaimer2": "Did you like the movie? what about going deeper into the story, knowing better the characters or getting more general details by reading the book it was based on?"
+    },
+    "search": {
+      "title": "Results of the search",
+      "result": "There is 1 result for",
+      "resultsP1": "There are",
+      "resultsP2": "results for",
+      "noResults": "There are no results for",
+      "goTo": "See the information about",
+      "more": "See more results",
+      "placeholder": ""
+    },
+    "movies": {
+      "title": "List of movies based on a book",
+      "empty": "There are no movies for the moment.",
+      "hidDescription": "List of movies based on a book - page",
+      "hidKeywords": "movie, movies, based on, series, book, books, novel, novels, read, reader, reading, script, movie script, scenario, movie material, movie writer, original story",
+      "hidOgDescription": "List of movies based on a book - page",
+      "hidTwitterTitle": "find what books your favorite movies are based on!",
+      "hidTwitterDescription": "List of movies based on a book - page "
+    },
+    "series": {
+      "title": "List of TV series based on a book",
+      "empty": "There are no TV series for the moment.",
+      "hidDescription": "List of TV series based on a book - page",
+      "hidKeywords": "TV series, based on, series, book, books, novel, novels, read, reader, reading script, series script, scenario, series material, series writer, original story",
+      "hidOgDescription": "List of TV series based on a book - page",
+      "hidTwitterTitle": "find what books your favorite TV series are based on!",
+      "hidTwitterDescription": "List of TV series based on a book - page "
+    },
+    "movieDetail": {
+      "what": "What book is",
+      "on": "based on?",
+      "directedMovie": "directed by",
+      "directedSeries": "directed by",
+      "by": "written by",
+      "buy": "Find this book on Amazon.",
+      "theMovie": "The movie",
+      "theSeries": "The TV series",
+      "and": "and",
+      "released": "released in",
+      "from": "is based on the book",
+      "more": "Read more",
+      "less": "Show less",
+      "find": "find",
+      "written": "written by",
+      "findBooks": "Find all the books written by",
+      "onAmazon": "on Amazon.",
+      "onAmazonPrime": "on Amazon Prime.",
+      "hidDescription1": "Did you know that the",
+      "hidDescription2": "is based on the book",
+      "hidKeywords": "movie, movies, based on, series, book, books, novel, novels, read, reader, reading, movie material, movie writer, series material, series writer, script, scenario, original story",
+      "hidOgDescription": "is based on the book",
+      "hidTwitterDescription": "is based on the book",
+      "socialTitle1": "the movie",
+      "socialTitle2": "is based on the book",
+      "socialDescription1": "Did you know that",
+      "socialDescription2": "is based on the book",
+      "socialDescription3": "written by",
+      "socialDescription4": "Easily find which books are the source material of the movies and tv series you love! Check our website!",
+      "bookImgAlt": "Cover of the book",
+      "bookRating": "This book was rated",
+      "googleBooks": "on Google books.",
+      "published": "Published by",
+      "relatedBooks": "Related books / From the author(s)",
+      "comments": "Do you want to have more information about",
+      "comments2": "or tell what you think about the book adaptation? Leave a comment."
+    },
+    "privacy": {
+      "title": "Privacy policy",
+      "content": "This website doesn't collect personal data."
+    }
+  },
+  "movie": {
+    "director": "directed by"
+  },
+  "components": {
+    "item": {
+      "linkTitle": "See details about the {type} {name} based on the book {book}"
+    },
+    "pagination": {
+      "first": "first",
+      "last": "last",
+      "previous": "previous",
+      "next": "next"
+    },
+    "search": {
+      "title": "What book is your favorite movie or Tv series based on?",
+      "placeholder": "Type a movie or a TV series title"
+    },
+    "formsContact": {
+      "title": "Contact us",
+      "success": "Your message has been sent. We will reply as soon as possible.",
+      "error": "An error occured while sending your message.",
+      "email": "Your email.",
+      "message": "Your message.",
+      "emailPlaceholder": "your email",
+      "messagePlaceholder": "Any questions or observations?",
+      "emailError": "A valid email address is required.",
+      "messageError": "A valid message is required.",
+      "required": "Required fields",
+      "send": "Send"
+    }
+  }
+}

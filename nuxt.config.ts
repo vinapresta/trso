@@ -1,9 +1,9 @@
 export default defineNuxtConfig({
-    alias: {
+    /*alias: {
         "@": "/<rootDir>",
         "assets": "/<rootDir>/assets",
         "public": "/<rootDir>/public"
-    },
+    },*/
     app: {
         head: {
             link: [
@@ -18,10 +18,43 @@ export default defineNuxtConfig({
             ]
         }
     },
-    modules: ['@nuxtjs/tailwindcss'],
+    modules: [
+        ['@nuxtjs/algolia', { 
+            apiKey: 'c3f0378c8bb37aebc40b0affeb477cd6',
+            applicationId: '3HUPT4Q25O' 
+        }],
+        '@nuxtjs/i18n',
+        '@nuxtjs/tailwindcss'
+    ],
+    i18n: {
+        locales: [
+            { code: 'en', iso: 'en-US', file: 'en.js' },
+        ],
+        defaultLocale: 'en',
+        pages: {
+            'index': {
+                en: '/'
+            },
+            '[type]/[id]-[slug]': {
+                en: '/[type]/[id]-[slug]'
+            },
+            '[type]/pages/[page]': {
+                en: '/[type]/pages/[page]'
+            },
+            'search/[search]': {
+                en: '/search-results/[search]'
+            },
+            'privacy': {
+                en: '/privacy-policy'
+            }
+        },
+        vueI18n: {
+            fallbackLocale: 'en',
+        }
+    },
     runtimeConfig: {
         public: {
-            API_BASE_URL: 'http://localhost:1337/api/',
+            API_BASE_URL: 'http://127.0.0.1:1337/api/',
             limitByPage: 24,
             featuredItemsCount: 12
         }
