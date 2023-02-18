@@ -1,6 +1,6 @@
 <template>
     <div>
-        <h1>INDEX</h1>
+        <PagesIndexDisclaimer />
         <PagesIndexFeatured type="tv-series"/>
         <PagesIndexFeatured type="movies"/>
     </div>

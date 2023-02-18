@@ -1,5 +1,6 @@
 <template>
     <div>      
+        <LayoutBreadcrumbs :levels="[ { name: type, route: { name: 'type-pages-page', params: { type: type, page: 1 } } }, { name: `page ${String(page)}` }]"/>
         <PagesListItemsByPage :type="type" :page="page" routeName="type-pages-page" />
     </div>
 </template>

@@ -1,11 +1,31 @@
 <template>
-    <div class="container flex flex-wrap">
-        <PagesItem v-for="item in items.data"
-                   :key="item.id" 
-                   :itemData="item" 
-                   :type="type" 
-                   :lang="locale" 
-                   :color="type === 'tv-series' ? 'yellow' : 'blue'"/>
+    <div class="mb-8">
+        <h2 class="text-4xl text-center font-serif mb-2" :class="`text-trso-${color}`">
+            <span v-if="type === 'tv-series'">{{ $t('components.featured.topSeries') }}</span>
+            <span v-else>{{ $t('components.featured.topMovies') }}</span>
+        </h2>
+        <p class="mb-4">
+            <NuxtLink :to="localePath({ name: 'type-pages-page', params: { type: type, page: 1 }})"
+                      :class="`text-trso-${color}`"
+                      class="flex justify-center items-center gap-x-2 text-xl">
+                <span><IconsArrowRight class="h-5 w-5"/></span>
+                <span v-if="type === 'tv-series'">{{ $t('components.featured.topSeries2') }}</span>
+                <span v-else>{{ $t('components.featured.topMovies2') }}</span>
+            </NuxtLink>
+        </p>
+        <div class="grid grid-cols-2 gap-x-4 gap-y-4">
+            <PagesItem v-for="item in items.data"
+                    :key="item.id" 
+                    :itemData="item" 
+                    :type="type" 
+                    :lang="locale" 
+                    :color="color"/>
+        </div>
+        <NuxtLink :to="localePath({ name: 'type-pages-page', params: { type: type, page: 1 }})"
+        :title="type === 'tv-series' ? $t('components.featured.topSeries2') : $t('components.featured.topMovies2')"
+                  class="flex w-full py-2 justify-center">
+            <i><IconsPlus class="h-14 w-14" :class="`text-trso-${color}`"/></i>
+        </NuxtLink>
     </div>
 </template>
 
@@ -13,8 +33,19 @@
 
     const { locale } = useI18n()
 
+    const localePath = useLocalePath()
+
     const props = defineProps({
         type: String
+    })
+
+    const color = ref('blue')
+
+    onMounted( () => {
+
+        if (props.type === 'tv-series')
+            color.value = 'yellow'
+
     })
 
     const runtimeConfig = useRuntimeConfig()
@@ -31,13 +62,5 @@
     const url = `${runtimeConfig.public.API_BASE_URL}items?${params}`
 
     const { data: items } = await useFetch(url)
-
-    /*const itemsData = computed(() => {
-
-        if (!items.value.data)
-            return null
-
-        return items.value.data
-    })*/
 
 </script>

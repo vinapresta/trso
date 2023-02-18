@@ -1,5 +1,5 @@
 <template>
-    <div class="mb-2 p-4" :class="type === 'series' ? 'bg-trso-yellow' : 'bg-trso-blue'">
+    <div class="mb-2 p-4 border" :class="type === 'series' ? 'border-trso-yellow' : 'border-trso-blue'">
         <div class="flex flex-wrap items-center" :class="contentClass" @click.prevent="collapseContent">
             <img v-if="book.thumbnail" 
                  :src="book.thumbnail" 

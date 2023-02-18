@@ -1,6 +1,6 @@
 <template>
-    <div class="px-2 w-full lg:w-1/2 mb-8">
-        <div class="relative h-full flex  border px-2 pt-2 pb-10" :class="`border-trso-${color}`">
+    <div>
+        <div class="relative h-full flex border px-2 pt-2 pb-10" :class="`border-trso-${color}`">
             <NuxtLink :to="localePath({ name: 'type-id-slug', params: { type: type, id: `${itemData.id}`, slug: `${langAttr.slug}`} })" 
                       :title="`${$t('components.item.linkTitle', {type: type, name: langAttr.title, book: firstBook.attributes.title})}`"
                       class="relative block self-center">

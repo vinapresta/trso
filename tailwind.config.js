@@ -16,5 +16,8 @@ export default {
                 'title': 'Playfair Display, sans-serif'
             },
         }
-    }
+    },
+    plugins: [
+        require('tailwind-scrollbar'),
+    ],
 }

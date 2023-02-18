@@ -4,7 +4,7 @@
                              :pagesCount="pagesCount" 
                              :routeName="routeName" 
                              :color="type === 'tv-series' ? 'yellow' : 'blue'"/>
-        <div class="container flex flex-wrap">
+        <div class="container grid grid-cols-2 gap-x-4 gap-y-4">
             <PagesItem v-for="item in items.data" 
                        :key="item.id" 
                        :itemData="item" 

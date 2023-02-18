@@ -1,6 +1,6 @@
 <template>
     <div>
-        <span class="block px-6 mb-4 text-trso-blue font-serif text-xl">{{  $t('components.formsContact.title') }}</span>  
+        <span class="block px-6 mb-4 text-center text-trso-blue font-serif text-2xl uppercase">{{  $t('components.formsContact.title') }}</span>  
         <span class="text-green-400" :class="states.success ? 'block px-6' : 'hidden'">{{ $t('components.formsContact.success') }}</span>
         <span class="text-red-400" :class="states.error ? 'block px-6' : 'hidden'">{{ $t('components.formsContact.error') }}</span>
         <form name="contact" method="post" netlify data-netlify="true" data-netlify-honeypot="bot-field">
@@ -17,7 +17,8 @@
                                 mt-1 p-2
                                 border border-trso-blue2 focus:border-trso-blue
                                 shadow-sm
-                                focus:outline-none focus:ring focus:ring-trso-blue focus:ring-opacity-50"
+                                focus:outline-none focus:ring focus:ring-trso-blue focus:ring-opacity-50
+                                placeholder:text-trso-blue placeholder:italic"
                         :placeholder="$t('components.formsContact.emailPlaceholder')"
                         required />
                 </label>
@@ -31,7 +32,8 @@
                                     mt-1 p-2
                                     border border-trso-blue2 focus:border-trso-blue
                                     shadow-sm
-                                    focus:outline-none focus:ring focus:ring-trso-blue focus:ring-opacity-50"
+                                    focus:outline-none focus:ring focus:ring-trso-blue focus:ring-opacity-50
+                                    placeholder:text-trso-blue placeholder:italic"
                             rows="4"
                             :placeholder="$t('components.formsContact.messagePlaceholder')"></textarea>
                 </label>
