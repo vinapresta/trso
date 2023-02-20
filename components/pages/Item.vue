@@ -16,15 +16,15 @@
                     </NuxtLink>
                     <span> ({{ itemData.attributes.year }})</span>
                     <span v-if="itemData.attributes.director != 'N/A'">
-                        <span v-if="type === 'series'">{{ $t('pages.movieDetail.directedSeries') }}</span>
-                        <span v-else>{{ $t('pages.movieDetail.directedMovie') }}</span>
+                        <span v-if="type === 'series'">{{ $t('pages.slug.directedSeries') }}</span>
+                        <span v-else>{{ $t('pages.slug.directedMovie') }}</span>
                         <span> {{ itemData.attributes.director }}</span>
                     </span>
                 </h2>
                 <p>
-                    <span v-if="type === 'tv-series'">{{ $t('pages.movieDetail.theSeries') }}</span>
-                    <span v-else>{{ $t('pages.movieDetail.theMovie') }}</span>
-                    <span>{{ $t('pages.movieDetail.from') }}</span>
+                    <span v-if="type === 'tv-series'">{{ $t('pages.slug.theSeries') }}</span>
+                    <span v-else>{{ $t('pages.slug.theMovie') }}</span>
+                    <span>{{ $t('pages.slug.from') }}</span>
                     <span v-if="firstBook">
                         <span>{{ firstBook.attributes.title }}</span>
                         <span v-if="firstBook.attributes.authors.length" class="block py-2 text-xs italic">
@@ -40,7 +40,7 @@
                         :class="`bg-trso-${color} hover:bg-trso-${color}2`" 
                         :to="localePath({ name: 'type-id-slug', params: { type: type, id: `${itemData.id}`, slug: `${langAttr.slug}`} })" 
                         :title="`${$t('components.item.linkTitle', {type: type, name: langAttr.title, book: firstBook.attributes.title})}`">
-                <span class="font-bold">{{ $t('pages.movieDetail.more') }}</span>
+                <span class="font-bold">{{ $t('pages.slug.more') }}</span>
             </NuxtLink>
         </div>
     </div>

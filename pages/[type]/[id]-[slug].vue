@@ -98,7 +98,7 @@
         
     })
 
-    useServerSeoMeta({
+    useHead({
         title: () => `${t('pages.slug.metaTitle', { type: data.value?.data.attributes.type, title: data.value?.data.attributes.item_lang.data.attributes.title })}`,
         /*ogTitle: () => `${data.value?.title} - My Site`,
         description: () => data.value?.description,
