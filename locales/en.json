@@ -66,7 +66,8 @@
       "hidTwitterTitle": "find what books your favorite TV series are based on!",
       "hidTwitterDescription": "List of TV series based on a book - page "
     },
-    "movieDetail": {
+    "slug": {
+      "metaTitle": "What book is the {type} {title} is based on?",
       "what": "What book is",
       "on": "based on?",
       "directedMovie": "directed by",

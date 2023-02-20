@@ -54,6 +54,8 @@ export default defineNuxtConfig({
     },
     runtimeConfig: {
         public: {
+            websiteName: 'Tarseroo',
+            BASE_URL: 'https://tarseroo.com',
             API_BASE_URL: 'http://127.0.0.1:1337/api/',
             limitByPage: 24,
             featuredItemsCount: 12

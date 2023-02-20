@@ -11,7 +11,7 @@
                     :url="url"
                     :movieType="movie.type" />-->
             <span class="block font-bold mb-2">
-                {{ $t('pages.movieDetail.hidDescription1') }} {{ itemAttr.type }} {{ itemLangAttr.title }} {{ $t('pages.movieDetail.hidDescription2') }} {{ bookAttr.title }}?
+                {{ $t('pages.slug.hidDescription1') }} {{ itemAttr.type }} {{ itemLangAttr.title }} {{ $t('pages.slug.hidDescription2') }} {{ bookAttr.title }}?
             </span>
             <HelpersReadMore :content="itemLangAttr.plot" :type="itemAttr.type" :truncateLimit="70" itemProp="description" />
             <ul class="py-8">

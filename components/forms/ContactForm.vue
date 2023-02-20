@@ -18,7 +18,7 @@
                                 border border-trso-blue2 focus:border-trso-blue
                                 shadow-sm
                                 focus:outline-none focus:ring focus:ring-trso-blue focus:ring-opacity-50
-                                placeholder:text-trso-blue placeholder:italic"
+                                placeholder:text-trso-blue placeholder:italic placeholder:text-sm"
                         :placeholder="$t('components.formsContact.emailPlaceholder')"
                         required />
                 </label>
