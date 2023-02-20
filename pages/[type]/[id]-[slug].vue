@@ -1,5 +1,9 @@
 <template>
     <div>
+        <Head>
+            <title>{{ $t('pages.slug.what') }} {{ item.attr.type }} {{ item.langAttr.title }} {{ $t('pages.slug.on') }}</title>
+            <Meta name="description" :content="`${$t('pages.slug.hidDescription1')} ${item.attr.type } ${item.langAttr.title } ${$t('pages.slug.hidDescription2')} ${item.firstBook.attributes.title}`" />
+        </Head>
         <LayoutBreadcrumbs :levels="[ { name: item.attr.type === 'series' ? 'tv-series' : 'movies', route: { name: 'type-pages-page', params: { type: item.attr.type === 'series' ? 'tv-series' : 'movies', page: 1 } } }, { name: item.langAttr.title }]"/>
         <div itemscope itemtype="http://schema.org/Movie">
             <h1 class="block py-2 px-2 text-white text-center font-semibold" :class="`bg-trso-${item.color}`">{{ $t('pages.slug.what') }} <span itemprop="name">{{ item.attr.type === 'series' ? $t('pages.slug.theSeries') : $t('pages.slug.theMovie') }} {{ item.langAttr.title }}</span> {{ $t('pages.slug.on') }}</h1>
@@ -98,12 +102,15 @@
         
     })
 
-    useHead({
+    /*useHead({
         title: () => `${t('pages.slug.metaTitle', { type: data.value?.data.attributes.type, title: data.value?.data.attributes.item_lang.data.attributes.title })}`,
-        /*ogTitle: () => `${data.value?.title} - My Site`,
+        meta: [
+            { name: 'description', content: () => `${t('pages.movieDetail.hidDescription1')} ${data.value?.data.attributes.type} ${data.value?.data.attributes.item_lang.data.attributes.title} ${t('pages.movieDetail.hidDescription2')} ${this.firstBook.title}? ${this.plotForMeta}` }
+        ]
+        ogTitle: () => `${data.value?.title} - My Site`,
         description: () => data.value?.description,
-        ogDescription: () => data.value?.description,*/
-    })
+        ogDescription: () => data.value?.description,
+    })*/
 
     
 
