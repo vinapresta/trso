@@ -13,7 +13,20 @@
                after:ease-out 
                after:duration-300
                hover:after:scale-x-100
-               hover:after:origin-bottom-left">
+               hover:after:origin-bottom-left
+               mb-2 lg:mb-0">
         <slot />
     </li>
 </template>
+
+<style scoped>
+/*.pulse:hover, 
+.pulse:focus {
+  animation: pulse 1s;
+  box-shadow: 0 0 0 2em transparent;
+}
+
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 var(--hover); }
+}*/
+</style>

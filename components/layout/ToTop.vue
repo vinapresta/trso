@@ -1,7 +1,7 @@
 <template>
     <transition name="totop" mode="out-in">
-        <a :href="`${route.path}#mainMenu`" v-show="toTopVisible" class="block fixed z-40 right-0 bottom-0 mb-24 mr-[24px] cursor-pointer">
-            <IconsArrowTop class="w-14 h-14 text-trso-blue"/>
+        <a :href="`${route.path}#mainMenu`" v-show="toTopVisible" class="block fixed z-70 right-0 bottom-0 mb-24 mr-[12px] lg:mr-[24px] cursor-pointer">
+            <IconsArrowTop class="w-10 h-10 lg:w-14 lg:h-14 text-trso-blue"/>
         </a>
     </transition>
 </template>

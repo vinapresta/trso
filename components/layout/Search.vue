@@ -1,5 +1,5 @@
 <template>
-    <div id="search" class="px-4 lg:px-0 relative py-8 shadow-sub lg:z-10 bg-trso-blue-ligth mb-14">
+    <div id="search" class="px-4 lg:px-0 relative py-8 shadow-sub lg:z-10 bg-trso-blue-ligth mb-4 md:mb-8 lg:mb-14">
         <div class="flex flex-row items-center relative max-w-lg mx-auto gap-x-2">
             <span class="absolute inset-y-0 left-0 pl-3 flex items-center">
                 <IconsSearch class="text-trso-blue h-4 w-4"/>

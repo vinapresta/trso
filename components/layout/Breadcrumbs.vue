@@ -1,5 +1,5 @@
 <template>
-    <nav class="lg:py-4">
+    <nav class="lg:py-4 hidden lg:block">
         <ol class="text-trso-blue flex items-center">
             <li class="flex items-center">
                 <NuxtLink :to="localePath({ name: 'index' })">Home</NuxtLink>

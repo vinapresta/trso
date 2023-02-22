@@ -1,35 +1,42 @@
 <template>
     <div>
         <Head>
-            <title>{{ $t('pages.slug.what') }} {{ item.attr.type }} {{ item.langAttr.title }} {{ $t('pages.slug.on') }}</title>
+            <title>{{ $t('pages.slug.what') }} {{ $t('pages.slug.the') }} {{ item.attr.type }} {{ item.langAttr.title }} {{ $t('pages.slug.on') }}</title>
             <Meta name="description" :content="`${$t('pages.slug.hidDescription1')} ${item.attr.type } ${item.langAttr.title } ${$t('pages.slug.hidDescription2')} ${item.firstBook.attributes.title}`" />
+            <Meta name="keywords" :content="$t('pages.slug.hidKeywords')" />
+            <Meta property="og:site_name" :content="runtimeConfig.public.websiteName" />
+            <Meta property="og:description" :content="`${$t('pages.slug.the')} ${item.attr.type} ${item.langAttr.title} ${$t('pages.slug.hidOgDescription')} ${item.firstBook.attributes.title}. ${item.plotForMeta}`" /> 
+            <Meta property="og:image" :content="item.attr.poster" />
+            <Meta property="twitter:title" :content="runtimeConfig.public.websiteName" />
+            <Meta property="twitter:description" :content="`${$t('pages.slug.the')} ${item.attr.type} ${item.langAttr.title} ${$t('pages.slug.hidTwitterDescription')} ${item.firstBook.attributes.title}. ${item.plotForMeta}`" />
+            <Meta property="twitter:image:src" :content="item.attr.poster" />
         </Head>
         <LayoutBreadcrumbs :levels="[ { name: item.attr.type === 'series' ? 'tv-series' : 'movies', route: { name: 'type-pages-page', params: { type: item.attr.type === 'series' ? 'tv-series' : 'movies', page: 1 } } }, { name: item.langAttr.title }]"/>
         <div itemscope itemtype="http://schema.org/Movie">
             <h1 class="block py-2 px-2 text-white text-center font-semibold" :class="`bg-trso-${item.color}`">{{ $t('pages.slug.what') }} <span itemprop="name">{{ item.attr.type === 'series' ? $t('pages.slug.theSeries') : $t('pages.slug.theMovie') }} {{ item.langAttr.title }}</span> {{ $t('pages.slug.on') }}</h1>
             <section class="border" :class="`border-trso-${item.color}`">
-                <p class="text-xl text-center font-serif px-4 pt-4">
-                    <span class="block mb-2 text-center">
+                <p class="text-lg lg:text-xl text-center font-serif px-4 pt-4">
+                    <span class="block pb-1 lg:pb-2 text-center">
                         <i class="fas fa-film"></i>
                         <span v-if="item.attr.type === 'series'">{{ $t('pages.slug.theSeries') }}</span>
                         <span v-else>{{ $t('pages.slug.theMovie') }}</span>
                     </span>   
-                    <span class="block mb-1" :class="`text-trso-${item.color}`">
-                        <span class="text-2xl sm:text-3xl md:text-4xl">{{ item.langAttr.title }}</span>
+                    <span class="block pb-0 lg:pb-1" :class="`text-trso-${item.color}`">
+                        <span class="text-xl sm:text-2xl md:text-3xl lg:text-4xl">{{ item.langAttr.title }}</span>
                     </span>
-                    <span class="block text-center italic text-lg" v-if="item.attr.director || item.attr.year">
+                    <span class="block text-center italic text-base lg:text-lg" v-if="item.attr.director || item.attr.year">
                         <span v-if="item.attr.director != 'N/A'" itemprop="director">{{ $t('movie.director') }} {{ item.attr.director }}</span>
                         <span v-if="item.attr.director && item.attr.year">{{ $t('pages.slug.and') }}</span>
                         <span v-if="item.attr.year != ''">{{ $t('pages.slug.released') }} {{ item.attr.year }}</span>
                     </span>
-                    <span class="block pt-2 pb-2 font-bold">
+                    <span class="block pt-2 pb-1 lg:pb-2 font-bold">
                         <i class="fas fa-book"></i>
                         {{ $t('pages.slug.from') }}
                     </span>
-                    <span class="block mb-1 md:mb-2" :class="`text-trso-${item.color}`" itemprop="name">
-                        <span class="text-2xl sm:text-3xl md:text-4xl">{{ item.firstBook.attributes.title }}</span>
+                    <span class="block pb-1 lg:pb-2" :class="`text-trso-${item.color}`" itemprop="name">
+                        <span class="text-xl sm:text-2xl md:text-3xl lg:text-4xl">{{ item.firstBook.attributes.title }}</span>
                     </span>
-                    <span class="block mb-2 md:mb-4 italic text-lg" itemprop="author" v-if="item.firstBook.attributes.authors">
+                    <span class="block pb-2 md:pb-4 italic text-base lg:text-lg" itemprop="author" v-if="item.firstBook.attributes.authors">
                         <span>{{ $t('pages.slug.by') }}&nbsp;</span>
                         <span v-for="(author, index) of item.firstBook.attributes.authors" :key="author.id">
                             <span v-if="index === Object.keys(item.firstBook.attributes.authors).length - 1 && item.firstBook.attributes.authors.length > 1">
@@ -45,8 +52,8 @@
                              quote=""
                              hashtags="" />
             </section>
-            <section class="my-12">
-                <PagesSlugBookDetail :book="item.firstBook.attributes" :type="item.attr.type" />
+            <section class="py-8 lg:py-12">
+                <PagesSlugBookDetail :book="item.firstBook.attributes" :type="item.attr.type" :color="item.color" />
             </section>
             <section v-if="item.books != false && item.books.length">
                 <h2 class="text-white font-bold py-2 px-4 text-base sm:text-lg md:text-xl text-center font-serif px-4 mb-2" 
@@ -96,9 +103,13 @@
 
         const firstBook = books.find((book) => book.attributes.firstBook === true)
 
+        const plotSplit = langAttr.plot.split('.')
+
+        const plotForMeta = `${plotSplit[0]}.`;
+            
         const color = attr.type === 'series' ? 'yellow' : 'blue'
 
-        return { attr, langAttr, books, firstBook, color}
+        return { attr, langAttr, books, firstBook, plotForMeta, color}
         
     })
 
@@ -110,22 +121,6 @@
         ogTitle: () => `${data.value?.title} - My Site`,
         description: () => data.value?.description,
         ogDescription: () => data.value?.description,
-    })*/
-
-    
-
-    /*useHead({
-        title: `${('pages.movieDetail.what')} ${this.getMovieTypeData().type} ${item.langAttr.title} ${t('pages.movieDetail.on')}`,
-        meta: [
-            { hid: 'description', name: 'description', content: `${this.$t('pages.movieDetail.hidDescription1')} ${this.type} ${this.title} ${this.$t('pages.movieDetail.hidDescription2')} ${this.firstBook.title}? ${this.plotForMeta}` },
-            { hid: 'keywords', name: 'keywords', content: `${this.$t('pages.movieDetail.hidKeywords')}` },
-            { hid: 'og:site_name', property: 'og:site_name', content: process.env.websiteName },
-            { hid: 'og:description', property: 'og:description', content: `${this.type} ${this.title} ${this.$t('pages.movieDetail.hidOgDescription')} ${this.firstBook.title}. ${this.plotForMeta}`},
-            { hid: 'og:image', property: 'og:image', content: this.movie.poster },
-            { hid: 'twitter:title', property: 'twitter:title', content: process.env.websiteName },
-            { hid: 'twitter:description', property: 'twitter:description', content: `${this.type} ${this.title} ${this.$t('pages.movieDetail.hidTwitterDescription')} ${this.firstBook.title}. ${this.plotForMeta}`},
-            { hid: 'twitter:image:src', property: 'twitter:image:src', content: this.movie.poster },
-        ]
     })*/
 
 </script>

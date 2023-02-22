@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-wrap py-12">
+    <div class="flex flex-wrap">
         <div class="sm:w-1/6 py-2 mx-auto pr-4">
             <img v-if="itemAttr.poster != 'N/A'" :src="itemAttr.poster" :alt="`Poster ${itemLangAttr.title}`" class="inline-block" />
             <img v-else src="~/assets/img/image-not-available.jpg" alt="image not available" class="inline-block" />
@@ -10,14 +10,14 @@
                     :bookAuthor="movie.authorName"
                     :url="url"
                     :movieType="movie.type" />-->
-            <span class="block font-bold mb-2">
+            <span class="block font-bold mb-2 text-center lg:text-justify">
                 {{ $t('pages.slug.hidDescription1') }} {{ itemAttr.type }} {{ itemLangAttr.title }} {{ $t('pages.slug.hidDescription2') }} {{ bookAttr.title }}?
             </span>
-            <HelpersReadMore :content="itemLangAttr.plot" :type="itemAttr.type" :truncateLimit="70" itemProp="description" />
-            <ul class="py-8">
+            <HelpersReadMore :content="itemLangAttr.plot" :truncateLimit="70" itemProp="description" :color="color" />
+            <ul class="py-8 text-sm lg:text-base">
                 <li v-for="rating of itemAttr.ratings" :key="rating.key">
                     <span class="italic pb-2">{{ rating.Source }}:</span>&nbsp;
-                    <span :class="itemAttr.type != 'series' ? 'text-blue-400' : 'text-yellow-400'">
+                    <span class="font-semibold" :class="`text-trso-${color}`">
                         {{ rating.Value }}
                     </span>
                 </li>
@@ -28,10 +28,12 @@
 
 <script setup>
 
-defineProps({
+const props = defineProps({
     itemAttr: Object,
     itemLangAttr: Object,
     bookAttr: Object
 })
+
+const color = props.itemAttr.type === 'series' ? 'yellow' : 'blue'
 
 </script>

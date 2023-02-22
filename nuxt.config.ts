@@ -6,26 +6,28 @@ export default defineNuxtConfig({
     },*/
     app: {
         head: {
+            htmlAttrs: {
+                lang: 'en'
+            },
+            bodyAttrs: {
+                class: 'bg-white text-grey-700 main leading-normal text-base tracking-normal'
+            },
+            titleTemplate: 'Tarseroo - %s',
             link: [
+                { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
                 { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
                 { rel: 'preconnect', href: 'https://fonts.gstatic.com' },
                 { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css?family=Playfair+Display|Source+Sans+Pro:400,600&display=swap' },
                 { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css?family=Fredoka+One&display=swap' },
             ],
             meta: [
-                {  name: 'robots', content: 'noindex, nofollow' },
-                {  name: 'robots', content: 'noimageindex' }
+                { charset: 'utf-8' },
+                { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+                { name: 'robots', content: 'noindex, nofollow' },
+                { name: 'robots', content: 'noimageindex' }
             ]
         }
     },
-    modules: [
-        ['@nuxtjs/algolia', { 
-            apiKey: 'c3f0378c8bb37aebc40b0affeb477cd6',
-            applicationId: '3HUPT4Q25O' 
-        }],
-        '@nuxtjs/i18n',
-        '@nuxtjs/tailwindcss'
-    ],
     i18n: {
         locales: [
             { code: 'en', iso: 'en-US', file: 'en.js' },
@@ -52,6 +54,14 @@ export default defineNuxtConfig({
             fallbackLocale: 'en',
         }
     },
+    modules: [
+        ['@nuxtjs/algolia', { 
+            apiKey: 'c3f0378c8bb37aebc40b0affeb477cd6',
+            applicationId: '3HUPT4Q25O' 
+        }],
+        '@nuxtjs/i18n',
+        '@nuxtjs/tailwindcss'
+    ],
     runtimeConfig: {
         public: {
             websiteName: 'Tarseroo',

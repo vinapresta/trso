@@ -4,7 +4,7 @@
             <img v-if="book.thumbnail" 
                  :src="book.thumbnail" 
                  :alt="`${$t('pages.slug.bookImgAlt')} ${book.title}`" 
-                 class="book-thumbnail w-1/4 md:w-auto w-auto md:h-24" />
+                 class="w-1/4 w-auto w-auto h-24" />
             <div class="pl-2 sm:pl-4 md:pl-8 pr-0 sm:pr-4 md:pr-8 w-3/4 md:w-auto">
                 <h3 class="text-white text-base md:text-lg"><span>{{ book.title }}</span></h3>
                 <p v-if="book.authors" class="text-sm md:text-base">
@@ -17,9 +17,9 @@
             </div>
         </div>
         <div v-if="book.description" class="collapsible-content overflow-hidden" :class="active ? 'max-h-screen' : 'max-h-0'">
-            <p class="py-4">{{ book.description }}</p>
+            <p class="py-4 text-sm lg:text-base">{{ book.description }}</p>
         </div>
-        <button class="btn block mx-auto py-1 px-3 text-white font-bold rounded-b border-none" 
+        <button class="btn block mx-auto mt-2 py-1 px-3 text-white text-sm lg:text-base font-semibold border-none" 
                 :class="type === 'series' ? 'bg-trso-yellow' : 'bg-trso-blue'" 
                 v-if="book.description" 
                 @click.prevent="collapseContent">

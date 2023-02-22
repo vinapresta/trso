@@ -55,7 +55,7 @@
       "hidKeywords": "movie, movies, based on, series, book, books, novel, novels, read, reader, reading, script, movie script, scenario, movie material, movie writer, original story",
       "hidOgDescription": "List of movies based on a book - page",
       "hidTwitterTitle": "find what books your favorite movies are based on!",
-      "hidTwitterDescription": "List of movies based on a book - page "
+      "hidTwitterDescription": "List of movies based on a book - page"
     },
     "series": {
       "title": "List of TV series based on a book",
@@ -68,6 +68,7 @@
     },
     "slug": {
       "metaTitle": "What book is the {type} {title} is based on?",
+      "the": "the",
       "what": "What book is",
       "on": "based on?",
       "directedMovie": "directed by",

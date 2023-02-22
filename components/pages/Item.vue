@@ -9,26 +9,27 @@
                 <img v-else src="~/assets/img/image-not-available.jpg" class="list-item__img self-center" alt="image not available" />
             </NuxtLink>
             <div class="pl-2">
-                <h2 class="w-full py-2 font-bold">
+                <HelpersHeading :tag="route.path != '/' ? 'h2' : 'h3'" tagStyle="item">
                     <NuxtLink :to="localePath({ name: 'type-id-slug', params: { type: type, id: `${itemData.id}`, slug: `${langAttr.slug}`} })" 
-                                :title="`${$t('components.item.linkTitle', {type: type, name: langAttr.title, book: firstBook.attributes.title})}`">
-                        <span>{{ langAttr.title }}</span>
+                              :title="`${$t('components.item.linkTitle', {type: type, name: langAttr.title, book: firstBook.attributes.title})}`"
+                              class="block">
+                        <span>{{ langAttr.title }}&nbsp;</span>
+                        <span class="text-sm">({{ itemData.attributes.year }})</span>
                     </NuxtLink>
-                    <span> ({{ itemData.attributes.year }})</span>
-                    <span v-if="itemData.attributes.director != 'N/A'">
+                    <span v-if="itemData.attributes.director != 'N/A'" class="text-sm font-semibold">
                         <span v-if="type === 'series'">{{ $t('pages.slug.directedSeries') }}</span>
-                        <span v-else>{{ $t('pages.slug.directedMovie') }}</span>
+                        <span v-else>{{ $t('pages.slug.directedMovie') }}&nbsp;</span>
                         <span> {{ itemData.attributes.director }}</span>
                     </span>
-                </h2>
-                <p>
+                </HelpersHeading>
+                <p class="text-sm">
                     <span v-if="type === 'tv-series'">{{ $t('pages.slug.theSeries') }}</span>
                     <span v-else>{{ $t('pages.slug.theMovie') }}</span>
                     <span>{{ $t('pages.slug.from') }}</span>
                     <span v-if="firstBook">
                         <span>{{ firstBook.attributes.title }}</span>
                         <span v-if="firstBook.attributes.authors.length" class="block py-2 text-xs italic">
-                            <span>{{ $t('list.written') }}</span>
+                            <span>{{ $t('list.written') }}&nbsp;</span>
                             <span v-for="(author, index) of firstBook.attributes.authors" :key="author.id" class="font-bold">
                                 <span v-if="index === Object.keys(firstBook.attributes.authors).length - 1 && firstBook.attributes.authors.length > 1"> and  </span>{{ author }}<span v-if="index < Object.keys(firstBook.attributes.authors).length - 2">, </span>
                             </span>
@@ -54,6 +55,8 @@ const props = defineProps ({
     lang: String, 
     color: String
 })
+
+const route = useRoute()
 
 const localePath = useLocalePath()
 
