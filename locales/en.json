@@ -39,14 +39,17 @@
       "disclaimer2": "Did you like the movie? what about going deeper into the story, knowing better the characters or getting more general details by reading the book it was based on?"
     },
     "search": {
-      "title": "Results of the search",
+      "title": "Results for the search",
       "result": "There is 1 result for",
       "resultsP1": "There are",
       "resultsP2": "results for",
       "noResults": "There are no results for",
       "goTo": "See the information about",
       "placeholder": "",
-      "loadMore": "Load more results"
+      "loadMore": "Load more results",
+      "noMore" : "There are no more results.",
+      "moviesList": "See the list of all movies based on a book",
+      "seriesList": "See the list of all TV series based on a book"
     },
     "movies": {
       "title": "List of movies based on a book",
@@ -117,9 +120,9 @@
   "components": {
     "featured": {
       "topMovies": "Popular movies based on a book",
-      "topMovies2": "See the list of all the movies based on a book",
+      "topMovies2": "See the list of all movies based on a book",
       "topSeries": "Popular TV series based on a book",
-      "topSeries2": "See the list of all the TV series based on a book"
+      "topSeries2": "See the list of all TV series based on a book"
     },
     "item": {
       "linkTitle": "See details about the {type} {name} based on the book {book}"
@@ -133,7 +136,9 @@
     "search": {
       "title": "What book is your favorite movie or Tv series based on?",
       "placeholder": "Type a movie or a TV series title",
-      "more": "See more results"
+      "more": "See more results",
+      "empty": "No Results for this search term.",
+      "madeWith": "This search is made with"
     },
     "formsContact": {
       "title": "Contact us",
@@ -148,5 +153,10 @@
       "required": "Required fields",
       "send": "Send"
     }
+  },
+  "error": {
+    "message": "Sorry, this page doesn't exist!",
+    "series": "See the list of all movies based on a book",
+    "movies": "See the list of all movies based on a book"
   }
 }

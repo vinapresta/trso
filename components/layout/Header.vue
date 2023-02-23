@@ -11,7 +11,7 @@
                          alt="Tarseroo logo">
                 </h1>        
             </Nuxtlink>
-           <ul class="lg:flex items-center gap-x-4 text-center font-semibold text-sm lg:text-xl uppercase text-white">
+           <ul class="lg:flex items-center gap-x-4 text-center font-semibold text-sm lg:text-base uppercase text-white">
                 <LayoutMenuButton>
                     <NuxtLink :to="localePath({ name: 'type-pages-page', params: { type: 'movies', page: 1 } })">
                         {{ $t('header.movies') }}

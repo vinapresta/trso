@@ -44,7 +44,7 @@ export default defineNuxtConfig({
                 en: '/[type]/pages/[page]'
             },
             'search/[search]': {
-                en: '/search-results/[search]'
+                en: '/search/[search]'
             },
             'privacy-policy': {
                 en: '/privacy-policy'

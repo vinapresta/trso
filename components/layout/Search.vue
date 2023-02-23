@@ -5,7 +5,7 @@
                 <IconsSearch class="text-trso-blue h-4 w-4"/>
             </span>
             <input v-model="customSearch" 
-                class="pl-8 py-2 block w-full border shadow-sm focus:border-trso-blue focus:ring focus:ring-trso-blue2 focus:ring-opacity-50" 
+                class="pl-8 py-2 block w-full border shadow-sm focus:border-trso-blue outline-0 ring-0" 
                 type="text" 
                 :placeholder="`${$t('components.search.placeholder')}`"
                 @blur="blur()" 
@@ -31,31 +31,40 @@
                         id="searchResults"
                         @mouseover="isOnResults = true" 
                         @mouseleave="isOnResults = false"
-                        class="absolute left-1/2 -translate-x-1/2 z-20 
+                        class="absolute left-1/2 -translate-x-1/2 z-50 
                                w-full lg:max-w-4xl max-h-[70vh] 
                                overflow-y-auto 
-                               bg-white lg:shadow-lg
-                               scrollbar scrollbar-thumb-trso-blue scrollbar-track-trso-blue-light">
+                               bg-white
+                               drop-shadow-lg
+                               scrollbar scrollbar-thumb-trso-blue scrollbar-track-trso-blue2">
                         <li v-for="result in searchResults.hits" :key="result.id">
                             <NuxtLink :to="localePath({ name: 'type-id-slug', params: { type: 'movies', id: 2756, slug: `${result['slug_' + locale]}`} })"
-                                      class="block px-8 py-4 w-full text-trso-blue hover:text-white transition-colors duration-500 bg-white hover:bg-trso-blue2">
+                                      class="block w-full
+                                      px-4 lg:px-8 py-2 lg:py-4 
+                                      text-trso-blue hover:text-white
+                                      text-sm lg:text-base 
+                                      transition-colors duration-500 bg-white hover:bg-trso-blue2">
                                 {{ result['title_' + locale] }} <span v-if="result.director.length">({{ result.director }})</span>
                             </NuxtLink>
                         </li>
 
-                        <li class="p-2 italic bg-trso-blue-light">
-                            <button @click.prevent = "gotToSearchPage" v-if="customSearch.length >= 3">
-                                {{ $t('components.search.more') }}
+                        <li>
+                            <button @click.prevent = "gotToSearchPage" v-if="customSearch.length >= 3"
+                                    class="flex items-center justify-center lg:justify-start gap-x-2 w-full
+                                           px-4 lg:px-8 py-2 lg:py-4 
+                                           bg-trso-blue2 text-white uppercase">
+                                <i class="text-white h-4 w-4"><IconsPlus /></i>
+                                <span>{{ $t('components.search.more') }}</span>
                             </button>
                         </li>
                         <li class="algolia-logo px-2 py-4 flex flex-row justify-center items-center gap-x-2">
-                            <NuxtLink to="https://www.algolia.com/">
-                                <IconsAlgolia />
+                            <NuxtLink to="https://www.algolia.com/" class="flex items-center gap-x-2">
+                                <span>{{ $t('components.search.madeWith') }}</span><IconsAlgolia />
                             </NuxtLink> 
                         </li>
                     </ul>
                     <div v-else class="absolute z-20 bg-white w-full left-0 mt-8">
-                        <span class="block p-2">Il n'y a pas de résultat pour votre recherche.</span>
+                        <span class="block px-4 lg:px-8 py-2">{{ $t('components.search.placeholder') }}</span>
                     </div>
                 </div>
                 </Transition>
@@ -105,7 +114,7 @@
 
         if (customSearch.value.length >= 3) {
 
-            const { data } = await useAsyncAlgoliaSearch({ indexName: 'movies', query: String(customSearch.value) })
+            const { data } = await useAsyncAlgoliaSearch({ indexName: 'movies', query: String(customSearch.value), requestOptions: { hitsPerPage: 10, page: 0 } })
 
             searchResults.hits = data.value.hits
 
