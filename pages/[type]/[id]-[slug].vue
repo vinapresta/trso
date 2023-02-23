@@ -1,7 +1,7 @@
 <template>
     <div>
         <Head>
-            <title>{{ $t('pages.slug.what') }} {{ $t('pages.slug.the') }} {{ item.attr.type }} {{ item.langAttr.title }} {{ $t('pages.slug.on') }}</title>
+            <title>{{ runtimeConfig.public.websiteName }} - {{ $t('pages.slug.what') }} {{ $t('pages.slug.the') }} {{ item.attr.type }} {{ item.langAttr.title }} {{ $t('pages.slug.on') }}</title>
             <Meta name="description" :content="`${$t('pages.slug.hidDescription1')} ${item.attr.type } ${item.langAttr.title } ${$t('pages.slug.hidDescription2')} ${item.firstBook.attributes.title}`" />
             <Meta name="keywords" :content="$t('pages.slug.hidKeywords')" />
             <Meta property="og:site_name" :content="runtimeConfig.public.websiteName" />

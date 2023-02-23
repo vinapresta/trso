@@ -13,7 +13,7 @@
     const runtimeConfig = useRuntimeConfig()
 
     useHead({
-        title: t('pages.home.title'),
+        title: `${runtimeConfig.public.websiteName} - ${t('pages.home.title')}`,
         meta: [
             { hid: 'description', name: 'description', content: t('pages.home.hidDescription') },
             { hid: 'keywords', name: 'keywords', content: t('pages.home.hidKeywords') },

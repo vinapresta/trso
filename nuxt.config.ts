@@ -12,7 +12,6 @@ export default defineNuxtConfig({
             bodyAttrs: {
                 class: 'bg-white text-grey-700 main leading-normal text-base tracking-normal'
             },
-            titleTemplate: 'Tarseroo - %s',
             link: [
                 { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
                 { rel: 'preconnect', href: 'https://fonts.googleapis.com' },

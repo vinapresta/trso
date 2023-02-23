@@ -5,7 +5,11 @@
                 <IconsSearch class="text-trso-blue h-4 w-4"/>
             </span>
             <input v-model="customSearch" 
-                class="pl-8 py-2 block w-full border shadow-sm focus:border-trso-blue outline-0 ring-0" 
+                class="pl-8 py-2 
+                       block w-full 
+                       border shadow-sm focus:border-trso-blue 
+                       outline-0 ring-0
+                       :placeholder:text-trso-blue :placeholder:italic" 
                 type="text" 
                 :placeholder="`${$t('components.search.placeholder')}`"
                 @blur="blur()" 
@@ -127,6 +131,8 @@
     }
 
     function closeSearch () {
+
+        customSearch.value = ''
 
         searchResults.hits = []
 

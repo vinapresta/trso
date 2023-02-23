@@ -1,6 +1,7 @@
 <template>
     <div>     
         <LayoutBreadcrumbs :levels="[ { name: type, route: { name: 'type-pages-page', params: { type: type, page: 1 } } }, { name: `page ${String(page)}` }]"/>
+        <HelpersHeading tag="h1" tagStyle="h1" :color="type === 'tv-series' ? 'yellow': 'blue'"><span v-if="type === 'tv-series'">{{ $t('pages.series.title') }}</span><span v-else>{{ $t('pages.series.title') }}</span></HelpersHeading>
         <PagesListItemsByPage :type="type" :page="page" routeName="type-pages-page" />
     </div>
 </template>
@@ -17,7 +18,7 @@ const page = route.params.page
 
 const type = route.params.type
 
-const typeLang = type === 'tv-series' ? 'series' : 'movie'
+/*const typeLang = type === 'tv-series' ? 'series' : 'movie'*/
 
 const title = type === 'tv-series' ? t('pages.series.title') : t('pages.movies.title')
 const hidDescription = type === 'tv-series' ? t('pages.series.hidDescription') : t('pages.movies.hidDescription')

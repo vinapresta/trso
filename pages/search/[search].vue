@@ -1,8 +1,13 @@
 <template>
     <div>
-        <h1><span v-if="result.nbHits">{{ $t('pages.search.title') }}</span><span v-else>{{ $t('pages.search.noResults') }}</span> <span class="italic font-semibold">{{ customSearch }}</span></h1>
-        <div v-if="result.nbHits">
-            <div>{{ results.count }} / {{ result.nbHits }}
+        <HelpersHeading tag="h1" tagStyle="h1" color="blue">
+            <span v-if="results.total">{{ $t('pages.search.title') }}</span>
+            <span v-else>{{ $t('pages.search.noResults') }}</span>
+            &nbsp;
+            <span class="italic font-semibold">{{ customSearch }}</span>
+        </HelpersHeading>
+        <div v-if="results.total">
+            <div>
                 <div v-for="item in results.hits" :key="item.id">
                     <NuxtLink to="/" 
                             :title="item['title_' + locale]"
@@ -14,7 +19,7 @@
                     </NuxtLink>
                 </div>
             </div>
-            <HelpersButton v-if="results.hits.length < results.max" 
+            <HelpersButton v-if="results.count < results.max" 
                         color="blue" 
                         @click="loadMore()" 
                         :disabled="loadMoreState">
@@ -25,7 +30,7 @@
                 {{ $t('pages.search.noMore') }}
             </span>
         </div>
-        <div>
+        <div v-else>
             <p class="text-lg text-center font-sans text-trso-yellow mb-8">
                 <NuxtLink :to="localePath({ name: 'type-pages-page', params: { type: 'tv-series', page: 1 } })" 
                             :title="$t('header.series')"
@@ -62,20 +67,26 @@ const page = ref(0)
 
 const loadMoreState = ref(false)
 
-const hitsPerPage = 3
+const hitsPerPage = 8
 
-const max = 24
+const max = 50
 
 const results = reactive({
     hits: [],
     count: 0,
+    total: 0,
     max: 0
 })
 
-
 onMounted(async () => {
 
-    await loadResult()
+    try {
+
+        await loadResult()
+
+    } catch (error) {
+
+    }
 
 })
 
@@ -100,21 +111,15 @@ async function loadMore () {
 
 async function loadResult () {
 
-    try {
+    const res = await search({ query: `${String(customSearch)}`, requestOptions: { hitsPerPage: hitsPerPage, page: page.value } })
 
-        const res = await search({ query: `${String(customSearch)}`, requestOptions: { hitsPerPage: hitsPerPage, page: page.value } })
+    results.hits = [...results.hits, ...res.hits]
 
-        results.hits = [...results.hits, ...res.hits]
+    results.count = results.hits.length
 
-        results.count = results.hits.length
+    results.total = res.nbHits
 
-        results.max = results.count < max ? results.count : max
-        
-    } catch (error) {
-
-        
-        
-    }  
+    results.max = res.nbHits < max ? res.nbHits : max
 
 }
 
