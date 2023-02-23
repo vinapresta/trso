@@ -7,11 +7,6 @@
                 <li><button @click="contactModalState = true">{{ $t('components.formsContact.title') }}</button></li>
             </ul>
         </nav>
-        <Transition name="fade">
-        <HelpersModal v-show="contactModalState" @close-modal="contactModalState = false">
-            <FormsContactForm />
-        </HelpersModal>
-        </Transition>
     </footer>
 </template>
 
@@ -19,18 +14,6 @@
 
     const localePath = useLocalePath()
 
-    const contactModalState = ref(false)
+    const contactModalState = useState('contactModalState', () => false)
 
 </script>
-
-<style scoped>
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.5s ease;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-}
-</style>

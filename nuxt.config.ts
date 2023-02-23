@@ -59,7 +59,10 @@ export default defineNuxtConfig({
             applicationId: '3HUPT4Q25O' 
         }],
         '@nuxtjs/i18n',
-        '@nuxtjs/tailwindcss'
+        '@nuxtjs/tailwindcss',
+        ['@funken-studio/sitemap-nuxt-3', {
+            hostname: 'https://tarseroo.com', 
+        }]
     ],
     runtimeConfig: {
         public: {
@@ -69,5 +72,5 @@ export default defineNuxtConfig({
             limitByPage: 24,
             featuredItemsCount: 12
         }
-    }
+    },
 })

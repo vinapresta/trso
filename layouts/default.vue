@@ -7,5 +7,6 @@
         </div>
         <LayoutFooter />
         <LayoutToTop />
+        <LayoutContactModal />
     </div>
 </template>

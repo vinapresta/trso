@@ -134,8 +134,14 @@
                 <p>We will let you know via email and/or a prominent notice on our Service, prior to the change becoming effective and update “effective date” at the top of this Privacy Policy.</p>
                 <p>You are advised to review this Privacy Policy periodically for any changes. Changes to this Privacy Policy are effective when they are posted on this page.</p>
                 <p>21. <span class="font-semibold">Contact Us</span></p>
-                <p>If you have any questions about this Privacy Policy, please contact us by email: <span class="font-semibold">vinapresta@gmail.com</span>.</p>
+                <p>If you have any questions about this Privacy Policy, please contact us by our contact form: <button @click="contactModalState = true" class="text-white uppercase px-2 py-1 bg-trso-blue hover:bg-trso-blue2">Contact</button>.</p>
             </div>
         </article>
     </div>
 </template>
+
+<script setup>
+
+const contactModalState = useState('contactModalState')
+
+</script>
