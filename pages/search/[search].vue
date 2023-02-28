@@ -9,12 +9,12 @@
         <div v-if="results.total">
             <div>
                 <div v-for="item in results.hits" :key="item.id">
-                    <NuxtLink to="/" 
-                            :title="item['title_' + locale]"
-                            class="block 
-                                    transition-colors duration-500 bg-white hover:bg-trso-blue2
-                                    text-trso-blue hover:text-white text-base lg:text-lg text-center lg:text-left
-                                    py-2">
+                    <NuxtLink :to="localePath({ name: 'type-id-slug', params: { type: 'movies', id: 2756, slug: `${item['slug_' + locale]}`} })"
+                              :title="item['title_' + locale]"
+                              class="block 
+                                     transition-colors duration-500 bg-white hover:bg-trso-blue2
+                                     text-trso-blue hover:text-white text-base lg:text-lg text-center lg:text-left
+                                     py-2">
                         {{ item['title_' + locale] }} <span v-if="item.director.length" class="text-base">({{ item.director }})</span>
                     </NuxtLink>
                 </div>

@@ -6,10 +6,10 @@ export default {
         },
         extend: {
             colors: {
-                'trso-blue': '#3876dc',
-                'trso-blue2': '#92B4EC',
-                'trso-yellow': '#FFD24C',
-                'trso-yellow2': '#FFE69A'
+                'trso-blue': '#2599fb',
+                'trso-blue2': '#aad9f9',
+                'trso-yellow': '#fec606',
+                'trso-yellow2': '#fedf71'
             },
             fontFamily: {
                 'main': 'Fredoka One, sans-serif',

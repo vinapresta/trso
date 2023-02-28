@@ -26,6 +26,9 @@
     "written": "written by",
     "cover": "Cover of the book"
   },
+  "image": {
+    "na": "Image not available"
+  },
   "pages": {
     "home": {
       "title": "homepage - find what books your favorite movies and TV series are based on!",

@@ -1,9 +1,14 @@
 <template>
-<div class="mb-4 flex">
-    <span class="block pr-4 w-1/6">
-        <img class="w-full h-auto" v-if="book.thumbnail" :src="book.thumbnail" :alt="`${$t('pages.slug.bookImgAlt')} ${book.title}`" />
+<div class="mb-4 lg:flex items-center">
+    <span class="block pb-4 lg:pb-0 pr-4 w-full lg:w-1/6">
+        <nuxt-img v-if="book.thumbnail"
+                  class="mx-auto lg:mx-0 lg:w-full h-auto"
+                  loading="lazy"
+                  format="webp"
+                  :src="book.thumbnail" 
+                  :alt="`${$t('pages.slug.bookImgAlt')} ${book.title}`" />
     </span>
-    <div class="w-5/6">
+    <div class="w-full lg:w-5/6">
         <h2 class="mb-4">
             <span class="block text-xl font-bold pb-1">{{ book.title }}</span>
             <span v-if="book.subtitle" class="block text-sm pb-2">({{ book.subtitle }})</span>

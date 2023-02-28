@@ -27,10 +27,9 @@ const route = useRoute()
 
 const contactModalState = useState('contactModalState')
 
-watch(route, () => {
+/*watch(route, () => {
     
-    contactModalState = false
 
-})
+})*/
 
 </script>

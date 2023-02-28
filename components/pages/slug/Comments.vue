@@ -1,6 +1,8 @@
 <template>
     <div>
-        <h2 class="mb-4 font-bold text-lg">{{ $t('pages.slug.comments')}} {{ bookTitle }}, {{ $t('pages.slug.comments2')}}</h2>
+        <h2 class="mb-4 font-bold text-base lg:text-lg text-center lg:text-justify">
+            <span>{{ $t('pages.slug.comments')}} {{ bookTitle }}, {{ $t('pages.slug.comments2')}}</span>
+        </h2>
         <div id="disqus_thread"></div>
         <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
    </div>

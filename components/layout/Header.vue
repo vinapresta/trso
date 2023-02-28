@@ -1,5 +1,5 @@
 <template>
-    <header class="bg-trso-blue">
+    <header class="bg-trso-blue" :class="headerClass" ref="header">
         <nav class="max-w-6xl mx-auto lg:flex items-center py-4" id="mainMenu">
             <NuxtLink :to="localePath({ name: 'index'})" :title="$t('pages.home.title')"
                       class="lg:pr-8">
@@ -30,6 +30,35 @@
 <script setup>
 
 const localePath = useLocalePath()
+
+const header = ref()
+
+const headerClass = ref('')
+
+onMounted(() => {
+    window.addEventListener('scroll', stickMenu)
+})
+   
+onUnmounted(() => {
+    window.removeEventListener('scroll', stickMenu)
+}) 
+
+const stickMenu = (event) => {
+
+    if (window.scrollY > header.value.clientHeight) { 
+
+        headerClass.value = 'lg:fixed lg:top-0 lg:z-50 lg:w-full';
+        /*this.headerClass = 'lg:mb-[140px]'
+        this.menuMode = 'mini';*/
+
+    } else {
+
+        headerClass.value = '';
+        /*this.headerClass = '';
+        this.menuMode = 'full';*/
+    }
+}
+
 
 </script>
 

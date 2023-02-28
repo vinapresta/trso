@@ -10,3 +10,17 @@
         <LayoutContactModal />
     </div>
 </template>
+
+<script setup>
+
+</script>
+
+
+<style>
+html {
+  scroll-behavior: smooth;
+}
+</style>
+
+
+

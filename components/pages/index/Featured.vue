@@ -1,13 +1,13 @@
 <template>
     <div class="mb-8">
-        <h2 class="text-4xl text-center font-serif mb-2" :class="`text-trso-${color}`">
+        <HelpersHeading tag="h2" tagStyle="featured" :color="color">
             <span v-if="type === 'tv-series'">{{ $t('components.featured.topSeries') }}</span>
             <span v-else>{{ $t('components.featured.topMovies') }}</span>
-        </h2>
+        </HelpersHeading>
         <p class="mb-4">
             <NuxtLink :to="localePath({ name: 'type-pages-page', params: { type: type, page: 1 }})"
                       :class="`text-trso-${color}`"
-                      class="flex justify-center items-center gap-x-2 text-xl">
+                      class="flex justify-center items-center gap-x-2 text-sm lg:text-lg">
                 <span><IconsArrowRight class="h-5 w-5"/></span>
                 <span v-if="type === 'tv-series'">{{ $t('components.featured.topSeries2') }}</span>
                 <span v-else>{{ $t('components.featured.topMovies2') }}</span>

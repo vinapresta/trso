@@ -3,10 +3,26 @@
         <div class="relative h-full flex border px-2 pt-2 pb-10" :class="`border-trso-${color}`">
             <NuxtLink :to="localePath({ name: 'type-id-slug', params: { type: type, id: `${itemData.id}`, slug: `${langAttr.slug}`} })" 
                       :title="`${$t('components.item.linkTitle', {type: type, name: langAttr.title, book: firstBook.attributes.title})}`"
-                      class="relative block self-center">
-                <img v-if="firstBook.attributes.thumbnail" class="list-item__img self-center" :src="firstBook.attributes.thumbnail" :alt="`${$t('list.cover')} ${firstBook.attributes.title}`" />
-                <img v-else-if="itemData.attributes.poster != 'N/A'" class="list-item__img self-center" :src="itemData.attributes.poster" :alt="`Poster ${langAttr.title}`" />
-                <img v-else src="~/assets/img/image-not-available.jpg" class="list-item__img self-center" alt="image not available" />
+                      class="relative block self-center w-1/4 md:w-1/5 lg:w-1/6">
+                <!--<ImagesTarsier v-if="loading" class="mx-auto"/>-->
+                <!-- v-if="firstBook.attributes.thumbnail" -->
+                <nuxt-img loading="lazy"
+                          placeholder="/img/tarsier.png"
+                          class="list-item__img self-center placeholder:animate-bounce" 
+                          :src="image.src" 
+                          :alt="image.alt" />
+                <!--<nuxt-img v-else-if="itemData.attributes.poster != 'N/A'"
+                          loading="lazy"
+                          format="webp"
+                          @load="loaded"
+                          class="list-item__img self-center" 
+                          :src="itemData.attributes.poster" 
+                          :alt="`Poster ${langAttr.title}`" />
+                <nuxt-img v-else 
+                          src="~/assets/img/image-not-available.jpg" 
+                          @load="loaded"
+                          class="list-item__img self-center" 
+                          alt="image not available" />-->
             </NuxtLink>
             <div class="pl-2">
                 <HelpersHeading :tag="route.path != '/' ? 'h2' : 'h3'" tagStyle="item">
@@ -60,9 +76,40 @@ const route = useRoute()
 
 const localePath = useLocalePath()
 
+const { t } = useI18n()
+
 const firstBook = props.itemData.attributes.books.data[0]
 
 const langAttr = props.itemData.attributes.item_lang.data.attributes
+
+
+const image = reactive({
+    src: '',
+    alt: ''
+})
+
+if (firstBook && firstBook.attributes.thumbnail) {
+
+    image.src = firstBook.attributes.thumbnail
+    image.alt = `${t('list.cover')} ${firstBook.attributes.title}`
+
+} else if (props.itemData.attributes.poster.length){
+
+    image.src = props.itemData.attributes.poster
+    image.alt = `Poster ${langAttr.title}`
+
+} else {
+
+    image.src = '/img/tarsiere.png'
+    image.alt = t('image.na')
+}
+
+
+const loading = ref(true)
+
+function loaded() {
+    console.log("loaded")
+}
 
 </script>
 

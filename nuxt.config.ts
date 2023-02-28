@@ -58,11 +58,13 @@ export default defineNuxtConfig({
             apiKey: 'c3f0378c8bb37aebc40b0affeb477cd6',
             applicationId: '3HUPT4Q25O' 
         }],
+        '@nuxt/image-edge',
         '@nuxtjs/i18n',
         '@nuxtjs/tailwindcss',
         ['@funken-studio/sitemap-nuxt-3', {
             hostname: 'https://tarseroo.com', 
-        }]
+        }],
+        function() {}
     ],
     runtimeConfig: {
         public: {
@@ -70,7 +72,8 @@ export default defineNuxtConfig({
             BASE_URL: 'https://tarseroo.com',
             API_BASE_URL: 'http://127.0.0.1:1337/api/',
             limitByPage: 24,
-            featuredItemsCount: 12
+            featuredItemsCount: 12,
+            google_analytics_id: process.env.GOOGLE_ANALYTICS_ID,
         }
     },
 })
