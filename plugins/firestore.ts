@@ -1,5 +1,5 @@
-import { initializeApp } from "firebase/app";
-import { getFirestore } from "firebase/firestore"
+/*import { initializeApp } from "firebase/app";
+import { getFirestore } from "firebase/firestore"*/
 
 export default defineNuxtPlugin(nuxtApp => {
     
@@ -24,8 +24,10 @@ export default defineNuxtPlugin(nuxtApp => {
         measurementId: "G-LCCVY585SQ"
     };
       
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+    /*const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);*/
+
+    const db = ''
 
     return {
 
