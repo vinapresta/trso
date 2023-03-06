@@ -15,6 +15,9 @@ export default {
                 'main': 'Fredoka One, sans-serif',
                 'title': 'Playfair Display, sans-serif'
             },
+            /*transitionProperty: {
+                'spacing': 'margin, padding',
+            }*/
         }
     },
     plugins: [

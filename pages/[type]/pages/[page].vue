@@ -6,7 +6,7 @@
                         :color="color">
             {{  titleInner }}
         </HelpersHeading>
-       <PagesListItemsByPage :items="items.data"
+        <PagesListItemsByPage :items="items.data"
                               :type="type" 
                               :page="page" 
                               routeName="type-pages-page"
@@ -78,15 +78,17 @@ const headLinks = computed(() => {
     return links
 })
 
-const title = type === 'tv-series' ? t('pages.series.title') : t('pages.movies.title')
-const hidDescription = type === 'tv-series' ? t('pages.series.hidDescription') : t('pages.movies.hidDescription')
-const hidKeywords = type === 'tv-series' ? t('pages.series.hidKeywords') : t('pages.movies.hidKeywords')
-const hidOgDescription = type === 'tv-series' ? t('pages.series.hidOgDescription') : t('pages.movies.hidOgDescription')
-const hidTwitterTitle = type === 'tv-series' ? t('pages.series.hidTwitterTitle') : t('pages.movies.hidTwitterTitle')
-const hidTwitterDescription = type === 'tv-series' ? t('pages.series.hidTwitterDescription') : t('pages.movies.hidTwitterDescription')
+let metaType = type === 'tv-series' ? 'series' : 'movies'
+
+const titleType = t(`pages['${metaType}']['title']`)
+const title = `${titleType} - page ${page}`
+const hidDescription = t(`pages['${metaType}']['hidDescription']`)
+const hidKeywords = t(`pages['${metaType}']['hidKeywords']`)
+const hidOgDescription = t(`pages['${metaType}']['hidOgDescription']`)
+const hidTwitterTitle = t(`pages['${metaType}']['hidTwitterTitle']`)
+const hidTwitterDescription = t(`pages['${metaType}']['hidTwitterDescription']`)
 
 useHead({
-
     title: `${runtimeConfig.public.websiteName} - ${title}`,
     link: headLinks.value,
     meta: [

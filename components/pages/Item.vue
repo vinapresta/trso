@@ -11,18 +11,6 @@
                           class="list-item__img self-center placeholder:animate-bounce" 
                           :src="image.src" 
                           :alt="image.alt" />
-                <!--<nuxt-img v-else-if="itemData.attributes.poster != 'N/A'"
-                          loading="lazy"
-                          format="webp"
-                          @load="loaded"
-                          class="list-item__img self-center" 
-                          :src="itemData.attributes.poster" 
-                          :alt="`Poster ${langAttr.title}`" />
-                <nuxt-img v-else 
-                          src="~/assets/img/image-not-available.jpg" 
-                          @load="loaded"
-                          class="list-item__img self-center" 
-                          alt="image not available" />-->
             </NuxtLink>
             <div class="pl-2">
                 <HelpersHeading :tag="route.path != '/' ? 'h2' : 'h3'" tagStyle="item">
@@ -39,9 +27,9 @@
                     </span>
                 </HelpersHeading>
                 <p class="text-sm">
-                    <span v-if="type === 'tv-series'">{{ $t('pages.slug.theSeries') }}</span>
-                    <span v-else>{{ $t('pages.slug.theMovie') }}</span>
-                    <span>{{ $t('pages.slug.from') }}</span>
+                    <span v-if="type === 'tv-series'">{{ $t('pages.slug.theSeries') }}&nbsp;</span>
+                    <span v-else>{{ $t('pages.slug.theMovie') }}&nbsp;</span>
+                    <span>{{ $t('pages.slug.from') }}&nbsp;</span>
                     <span v-if="firstBook">
                         <span>{{ firstBook.attributes.title }}</span>
                         <span v-if="firstBook.attributes.authors.length" class="block py-2 text-xs italic">
@@ -100,15 +88,8 @@ if (firstBook && firstBook.attributes.thumbnail) {
 
 } else {
 
-    image.src = '/img/tarsiere.png'
+    image.src = '/img/tarsier.png'
     image.alt = t('image.na')
-}
-
-
-const loading = ref(true)
-
-function loaded() {
-    console.log("loaded")
 }
 
 </script>

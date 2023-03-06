@@ -6,9 +6,8 @@
                      :url="`${runtimeConfig.public.BASE_URL}${route.fullPath}`"
                      :title="title"
                      :description="description"
-                     :quote="quote"
+                     quote="whesh la zone"
                      :hashtags="tags"
-                     twitterUser="halOp54205196"
                      class="p-1 bg-trso-blue"
           >
             <component :is="network.icon" class="h-6 w-6" />
@@ -34,32 +33,12 @@
         { network: 'twitter', name: 'Twitter', icon: resolveComponent('IconsTwitter') },
     ]
 
-    const tags = ref(null)
+    const tags = ref('')
 
     onMounted(() => {
 
-        tags.value = ['tag1', 'tag2']
+        tags.value = props.hashtags?.replace(', ', ',')
 
     })
-
-    /*const getTags = (tags) => {
-
-        let tagsArr = []
-
-        for (let tag of tags) {
-
-            tagsArr.push(tag.attributes.tag);
-        }
-
-        const tagsStr = tagsArr.join(',');
-
-        return tagsStr;
-
-    }*/
-
-     /* SOCIAL */
-
-    
-
 
 </script>

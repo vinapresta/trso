@@ -1,7 +1,9 @@
 {
   "header": {
     "movies": "Movies based on a book",
-    "series": "TV series based on a book"
+    "series": "TV series based on a book",
+    "search": "search",
+    "closeSearch": "close search"
   },
   "vote": {
     "titleMovie": "Was the movie well adapted?",

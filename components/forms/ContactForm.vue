@@ -67,10 +67,10 @@ const errors = reactive({
 const states = reactive({
     success: false,
     error: false,
-    button: true
+    button: false
 })
 
-const checkData = function () {
+const checkData = () => {
 
     let dataValidation = true
 
@@ -86,7 +86,7 @@ const checkData = function () {
 
     }
 
-    if (!this.$validateEmail(fields.email)) {
+    if (!$validateEmail(fields.email)) {
 
         errors.email = true;
 
@@ -112,7 +112,9 @@ async function sendEmail () {
     states.success = false
     states.error = false
 
-    if (checkData) {
+    const dataValid = checkData()
+
+    if (dataValid) {
 
         states.button = false
 
@@ -138,10 +140,7 @@ async function sendEmail () {
                 states.error = true
                 states.button = true
         })
-
-
     }
-
 }
 
 </script>

@@ -1,5 +1,7 @@
 <template>
-    <div id="search" class="bg-trso-blue border-b border-trso-blue px-4 lg:px-0 relative py-8 shadow-sub lg:z-10 bg-trso-blue-ligth mb-4 md:mb-8 lg:mb-14">
+    <div id="search" 
+         class="bg-trso-blue border-b-2 border-trso-blue
+                px-4 lg:px-0 relative py-8 shadow-sub lg:z-10">
         <div class="flex flex-row items-center relative max-w-lg mx-auto gap-x-2">
             <span class="absolute inset-y-0 left-0 pl-3 flex items-center">
                 <IconsSearch class="text-trso-blue h-4 w-4"/>
@@ -18,7 +20,10 @@
                 @keyup.enter="keyEnter()"
                 @keydown.tab="keyEnter()">
             <button @click.prevent = "gotToSearchPage()" :disabled="customSearch.length < 3"
-                    class="transition-colors duration-500 bg-trso-yellow hover:bg-trso-yellow2 disabled:bg-trso-yellow2 hover:disabled:bg-trso-yellow-trso2 py-2 px-2">
+                    class="transition-colors duration-500 
+                           bg-trso-yellow hover:bg-trso-yellow2 disabled:bg-trso-yellow2 hover:disabled:bg-trso-yellow-trso2 
+                           border border-trso-yellow
+                           py-2 px-2 ">
                 <IconsSearch class="text-white h-5 w-5"/>
             </button>
             <button @click="closeSearch" class="block absolute cursor-pointer top-[10px] right-[60px] rounded bg-trso-blue text-white">
@@ -85,9 +90,9 @@
 
     const localePath = useLocalePath()
 
-    const { locale, t } = useI18n()
+   /* const { locale, t } = useI18n()
 
-    const { result, search } = useAlgoliaSearch('movies')
+    const { result, search } = useAlgoliaSearch('movies') */
 
     const customSearch = ref('')
 

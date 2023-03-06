@@ -19,16 +19,10 @@
                     {{ $formatDate(book.published, locale) }}
                 </span>
             </span>    
-        </h2> 
-        <p class="text-left pb-2 text-sm lg:text-base" v-if="readMoreState" itemprop="description">{{ book.description }}</p>
-        <p class="text-left pb-2 text-sm lg:text-base" v-else itemprop="description">{{ book.description.split(' ').slice(0, truncateLimit).join(' ') }}</p>
-        <button class="btn block mx-auto mt-4 py-1 px-3 text-white text-sm lg:text-base font-bold border-none" 
-                :class="`text-trso-${color}`" 
-                @click.prevent="readMoreState = !readMoreState" 
-                v-if="book.description.split(' ').length > truncateLimit">
-            <span v-if="!readMoreState">{{ $t('pages.slug.more') }}</span>
-            <span v-else>{{ $t('pages.slug.less') }}</span>
-        </button>
+        </h2>
+        <HelpersReadMore v-if="book.description" :color="color">
+                <p itemProp="description">{{ book.description }}</p>
+        </HelpersReadMore>
     </div>
 </div>
 </template>
@@ -44,10 +38,6 @@ const props = defineProps({
 const { locale } = useI18n()
 
 const { $formatDate } = useNuxtApp()
-
-const readMoreState = ref(false)
-
-const truncateLimit = 90
 
 </script>
 

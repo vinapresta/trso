@@ -13,7 +13,9 @@
             <span class="block font-bold mb-2 text-center lg:text-justify">
                 {{ $t('pages.slug.hidDescription1') }} {{ itemAttr.type }} {{ itemLangAttr.title }} {{ $t('pages.slug.hidDescription2') }} {{ bookAttr.title }}?
             </span>
-            <HelpersReadMore :content="itemLangAttr.plot" :truncateLimit="70" itemProp="description" :color="color" />
+            <HelpersReadMore :color="color">
+                <p itemProp="description">{{ itemLangAttr.plot }}</p>
+            </HelpersReadMore>
             <ul class="py-8 text-sm lg:text-base">
                 <li v-for="rating of itemAttr.ratings" :key="rating.key">
                     <span class="italic pb-2">{{ rating.Source }}:</span>&nbsp;

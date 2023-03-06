@@ -1,16 +1,5 @@
 <template>
     <div>
-        <Head>
-            <title>{{ runtimeConfig.public.websiteName }} - {{ $t('pages.slug.what') }} {{ $t('pages.slug.the') }} {{ item.attr.type }} {{ item.langAttr.title }} {{ $t('pages.slug.on') }}</title>
-            <Meta name="description" :content="`${$t('pages.slug.hidDescription1')} ${item.attr.type } ${item.langAttr.title } ${$t('pages.slug.hidDescription2')} ${item.firstBook.attributes.title}`" />
-            <Meta name="keywords" :content="$t('pages.slug.hidKeywords')" />
-            <Meta property="og:site_name" :content="runtimeConfig.public.websiteName" />
-            <Meta property="og:description" :content="`${$t('pages.slug.the')} ${item.attr.type} ${item.langAttr.title} ${$t('pages.slug.hidOgDescription')} ${item.firstBook.attributes.title}. ${item.plotForMeta}`" /> 
-            <Meta property="og:image" :content="item.attr.poster" />
-            <Meta property="twitter:title" :content="runtimeConfig.public.websiteName" />
-            <Meta property="twitter:description" :content="`${$t('pages.slug.the')} ${item.attr.type} ${item.langAttr.title} ${$t('pages.slug.hidTwitterDescription')} ${item.firstBook.attributes.title}. ${item.plotForMeta}`" />
-            <Meta property="twitter:image:src" :content="item.attr.poster" />
-        </Head>
         <LayoutBreadcrumbs :levels="[ { name: item.attr.type === 'series' ? 'tv-series' : 'movies', route: { name: 'type-pages-page', params: { type: item.attr.type === 'series' ? 'tv-series' : 'movies', page: 1 } } }, { name: item.langAttr.title }]"/>
         <div itemscope itemtype="http://schema.org/Movie">
             <h1 class="block py-2 px-2 text-white text-center font-semibold" :class="`bg-trso-${item.color}`">{{ $t('pages.slug.what') }} <span itemprop="name">{{ item.attr.type === 'series' ? $t('pages.slug.theSeries') : $t('pages.slug.theMovie') }} {{ item.langAttr.title }}</span> {{ $t('pages.slug.on') }}</h1>
@@ -47,10 +36,11 @@
                         </span>
                     </span>
                 </p>
+                <PagesSlugVote :imdbId="item.attr.imdbId"/>
                 <PagesSlugSocial :title="item.langAttr.title" 
                              :description="item.langAttr.plot"
                              quote=""
-                             hashtags="" />
+                             :hashtags="$t('pages.slug.hidKeywords')" />
             </section>
             <section class="py-8 lg:py-12">
                 <PagesSlugBookDetail :book="item.firstBook.attributes" :type="item.attr.type" :color="item.color" />
@@ -62,7 +52,7 @@
                 </h2>
                 <div class="flex flex-wrap">
                     <div v-for="book in item.books" :key="book.id" class="my-2 w-full" :id="`bookThumb${book.id}`">
-                        <PagesSlugBooksAccordion v-if="book" :book="book.attributes" :type="item.attr.type" />
+                        <PagesSlugBooksAccordion v-if="book" :book="book.attributes" :color="item.color" />
                     </div>
                 </div>
             </section>
@@ -113,14 +103,18 @@
         
     })
 
-    /*useHead({
-        title: () => `${t('pages.slug.metaTitle', { type: data.value?.data.attributes.type, title: data.value?.data.attributes.item_lang.data.attributes.title })}`,
+    useHead({
+        title: `${runtimeConfig.public.websiteName} - ${t('pages.slug.what')} ${t('pages.slug.the')} ${item.value.attr.type} ${item.value.langAttr.title} ${t('pages.slug.on')}`,
         meta: [
-            { name: 'description', content: () => `${t('pages.movieDetail.hidDescription1')} ${data.value?.data.attributes.type} ${data.value?.data.attributes.item_lang.data.attributes.title} ${t('pages.movieDetail.hidDescription2')} ${this.firstBook.title}? ${this.plotForMeta}` }
+            { name: 'description', content: `${t('pages.slug.hidDescription1')} ${item.value.attr.type } ${t('pages.slug.hidDescription2')} ${item.value.firstBook.attributes.title}`},
+            { name: 'keywords', content: `${t('pages.slug.hidKeywords')}`},
+            { property: 'og:site_name', content: runtimeConfig.public.websiteName },
+            { property: 'og:description', content: `${t('pages.slug.the')} ${item.value.attr.type} ${item.value.langAttr.title} ${t('pages.slug.hidOgDescription')} ${item.value.firstBook.attributes.title}. ${item.plotForMeta}` },
+            { property: "og:image", content: item.value.attr.poster },
+            { property: 'twitter:title', content: runtimeConfig.public.websiteName },
+            { property: 'twitter:description', content: `${t('pages.slug.the')} ${item.value.attr.type} ${item.value.langAttr.title} ${t('pages.slug.hidOgDescription')} ${item.value.firstBook.attributes.title}. ${item.plotForMeta}` },
+            { property: "twitter:image:src", content: item.value.attr.poster },
         ]
-        ogTitle: () => `${data.value?.title} - My Site`,
-        description: () => data.value?.description,
-        ogDescription: () => data.value?.description,
-    })*/
-
+    })
+    
 </script>

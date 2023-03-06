@@ -24,7 +24,7 @@
         <NuxtLink :to="localePath({ name: 'type-pages-page', params: { type: type, page: 1 }})"
         :title="type === 'tv-series' ? $t('components.featured.topSeries2') : $t('components.featured.topMovies2')"
                   class="flex w-full py-2 justify-center">
-            <i><IconsPlus class="h-14 w-14" :class="`text-trso-${color}`"/></i>
+            <i><IconsPlus class="h-14 w-14" :class="`text-trso-${color} hover:text-trso-${color}2`"/></i>
         </NuxtLink>
     </div>
 </template>
