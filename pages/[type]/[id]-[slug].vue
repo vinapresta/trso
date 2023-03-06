@@ -36,7 +36,7 @@
                         </span>
                     </span>
                 </p>
-                <PagesSlugVote :imdbId="item.attr.imdbId"/>
+                <!--<PagesSlugVote :imdbId="item.attr.imdbId"/>-->
                 <PagesSlugSocial :title="item.langAttr.title" 
                              :description="item.langAttr.plot"
                              quote=""
