@@ -15,7 +15,7 @@
                         alt="Tarseroo logo">
                 </h1>        
             </Nuxtlink>
-            <transition name="toggle-fade">
+            <transition name="toggle-fade" mode="out-in">
                 <ul v-if="menuMobileState || isLargeScreen" class="max-h-[200px] lg:max-h-auto lg:flex items-center gap-x-4 text-center font-semibold text-sm lg:text-base uppercase text-white">
                     <LayoutMenuButton>
                         <NuxtLink :to="localePath({ name: 'type-pages-page', params: { type: 'movies', page: 1 } })">
