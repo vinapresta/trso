@@ -145,6 +145,7 @@ async function sendEmail () {
                 states.button = true
         })
             .catch((error) => {
+                console.log(error)
                 states.error = true
                 states.button = true
         })
