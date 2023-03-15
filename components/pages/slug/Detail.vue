@@ -1,6 +1,6 @@
 <template>
     <div class="flex flex-wrap">
-        <div class="sm:w-1/6 py-2 mx-auto pr-4">
+        <div class="sm:w-1/6 py-2 mx-auto lg:pr-4">
             <img v-if="itemAttr.poster != 'N/A'" :src="itemAttr.poster" :alt="`Poster ${itemLangAttr.title}`" class="inline-block" />
             <img v-else src="~/assets/img/image-not-available.jpg" alt="image not available" class="inline-block" />
         </div>

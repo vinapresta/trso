@@ -3,7 +3,7 @@
         <header class="mb-4 md:mb-8 lg:mb-14" 
                 :class="miniHeader === true ? `${headerTopRules} lg:fixed lg:z-50 lg:w-full transform transition duration-500 ease-in-out delay-200` : 'top-0'"
                 ref="header">
-            <LayoutHeaderNav :class="miniHeader === true ? 'py-1' : 'py-4'"
+            <LayoutHeaderNav :class="miniHeader === true ? 'py-1' : 'py-1 lg:py-4'"
                              :searchButtonState="searchButtonState"
                              :searchButtonVisible="searchButtonVisible"
                              @change-search-state="changeSearchSate()" />

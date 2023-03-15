@@ -61,6 +61,7 @@ export default defineNuxtConfig({
         '@nuxt/image-edge',
         '@nuxtjs/i18n',
         '@nuxtjs/tailwindcss',
+        '@vueuse/nuxt',
         ['@funken-studio/sitemap-nuxt-3', {
             hostname: 'https://tarseroo.com', 
         }],

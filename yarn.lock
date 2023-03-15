@@ -531,7 +531,7 @@
     "@firebase/util" "1.9.2"
     "tslib" "^2.1.0"
 
-"@firebase/app-types@>=0.8.1", "@firebase/app-types@0.9.0", "@firebase/app-types@0.x":
+"@firebase/app-types@0.9.0", "@firebase/app-types@0.x":
   "integrity" "sha512-AeweANOIo0Mb8GiYm3xhTEBVCmPwTYAu9Hcd2qSkLuga/6+j9b1Jskl5bpiSQWy9eJ/j5pavxj6eYogmnuzm+Q=="
   "resolved" "https://registry.npmjs.org/@firebase/app-types/-/app-types-0.9.0.tgz"
   "version" "0.9.0"
@@ -1616,6 +1616,11 @@
   dependencies:
     "@types/node" "*"
 
+"@types/web-bluetooth@^0.0.16":
+  "integrity" "sha512-oh8q2Zc32S6gd/j50GowEjKLoOVOwHP/bWVjKJInBwQqdOYMdPrf1oVlelTlyfFK3CKxL1uahMDAr+vy8T7yMQ=="
+  "resolved" "https://registry.npmjs.org/@types/web-bluetooth/-/web-bluetooth-0.0.16.tgz"
+  "version" "0.0.16"
+
 "@unhead/dom@^1.0.21", "@unhead/dom@1.0.21":
   "integrity" "sha512-rwVz7NWMdQ8kSTXv/WOhB0eTWYFD2SQwQ/J109IEqNUN9X3pIwcvdvlXMCG+qhJGFyiIgOl2X+W0cE+u/IiLVA=="
   "resolved" "https://registry.npmjs.org/@unhead/dom/-/dom-1.0.21.tgz"
@@ -1792,6 +1797,16 @@
   "resolved" "https://registry.npmjs.org/@vue/shared/-/shared-3.2.47.tgz"
   "version" "3.2.47"
 
+"@vueuse/core@^9.13.0", "@vueuse/core@9.13.0":
+  "integrity" "sha512-pujnclbeHWxxPRqXWmdkKV5OX4Wk4YeK7wusHqRwU0Q7EFusHoqNA/aPhB6KCh9hEqJkLAJo7bb0Lh9b+OIVzw=="
+  "resolved" "https://registry.npmjs.org/@vueuse/core/-/core-9.13.0.tgz"
+  "version" "9.13.0"
+  dependencies:
+    "@types/web-bluetooth" "^0.0.16"
+    "@vueuse/metadata" "9.13.0"
+    "@vueuse/shared" "9.13.0"
+    "vue-demi" "*"
+
 "@vueuse/head@^1.0.25":
   "integrity" "sha512-ACfRqD3bbh92cIzDDR1CmqShXCXhQv/EUUcaDMYaexA4ulorYHd+2Yo5/ljoS4jDoMgsqBSP0XJZT3nySMB5gw=="
   "resolved" "https://registry.npmjs.org/@vueuse/head/-/head-1.0.25.tgz"
@@ -1801,6 +1816,29 @@
     "@unhead/schema" "^1.0.21"
     "@unhead/ssr" "^1.0.21"
     "@unhead/vue" "^1.0.21"
+
+"@vueuse/metadata@9.13.0":
+  "integrity" "sha512-gdU7TKNAUVlXXLbaF+ZCfte8BjRJQWPCa2J55+7/h+yDtzw3vOoGQDRXzI6pyKyo6bXFT5/QoPE4hAknExjRLQ=="
+  "resolved" "https://registry.npmjs.org/@vueuse/metadata/-/metadata-9.13.0.tgz"
+  "version" "9.13.0"
+
+"@vueuse/nuxt@^9.13.0":
+  "integrity" "sha512-JunH/w6nFIwCyaZ0s+pfrYFMfBzGfhkwmFPz7ogHFmb71Ty/5HINrYOAOZCXpN44X6QH6FiJq/wuLLdvYzqFUw=="
+  "resolved" "https://registry.npmjs.org/@vueuse/nuxt/-/nuxt-9.13.0.tgz"
+  "version" "9.13.0"
+  dependencies:
+    "@nuxt/kit" "^3.2.0"
+    "@vueuse/core" "9.13.0"
+    "@vueuse/metadata" "9.13.0"
+    "local-pkg" "^0.4.3"
+    "vue-demi" "*"
+
+"@vueuse/shared@9.13.0":
+  "integrity" "sha512-UrnhU+Cnufu4S6JLCPZnkWh0WwZGUp72ktOF2DFptMlOs3TOdVv8xJN53zhHGARmVOsz5KqOls09+J1NR6sBKw=="
+  "resolved" "https://registry.npmjs.org/@vueuse/shared/-/shared-9.13.0.tgz"
+  "version" "9.13.0"
+  dependencies:
+    "vue-demi" "*"
 
 "@webassemblyjs/ast@1.11.1":
   "integrity" "sha512-ukBh14qFLjxTQNTXocdyksN5QdM28S1CxHt2rdskFyL+xFV7VremuBLVbmCePj+URalXBENx/9Lm7lnhihtCSw=="
@@ -4553,11 +4591,6 @@
   "resolved" "https://registry.npmjs.org/lru-cache/-/lru-cache-7.14.1.tgz"
   "version" "7.14.1"
 
-"lru-cache@^7.17.0":
-  "integrity" "sha512-8/HcIENyQnfUTCDizRu9rrDyG6XG/21M4X7/YEGZeD76ZJilFPAUVb/2zysFf7VVO1LEjCDFyHp8pMMvozIrvg=="
-  "resolved" "https://registry.npmjs.org/lru-cache/-/lru-cache-7.18.1.tgz"
-  "version" "7.18.1"
-
 "magic-string@^0.25.3":
   "integrity" "sha512-RmF0AsMzgt25qzqqLc1+MbHmhdx0ojF2Fvs4XnOqz2ZOBXzzkEwc/dJQZCYHAn7v1jbVOjAZfK8msRn4BxO4VQ=="
   "resolved" "https://registry.npmjs.org/magic-string/-/magic-string-0.25.9.tgz"
@@ -5021,15 +5054,7 @@
   optionalDependencies:
     "fsevents" "~2.3.2"
 
-"nuxt-vuefire@^0.1.6":
-  "integrity" "sha512-jK/ci0iCEHJ46aK9tm84CwNskmp1AgR0MD8XyjNb9ICZgTQnoTPPy+yJ3hSt2bw99bklWKMbFJ2pP30aIMC8sQ=="
-  "resolved" "https://registry.npmjs.org/nuxt-vuefire/-/nuxt-vuefire-0.1.6.tgz"
-  "version" "0.1.6"
-  dependencies:
-    "@nuxt/kit" "^3.0.0"
-    "lru-cache" "^7.17.0"
-
-"nuxt@^3.2.0":
+"nuxt@^3.0.0", "nuxt@^3.2.0":
   "integrity" "sha512-8jAYyjU1Ht+MXPLLDIdIUmV56KiI0g7KusKwzvqn+vlzyCNtSHg2W/VBCGw5QWplb/MXruogcMl2sDenlQRZFg=="
   "resolved" "https://registry.npmjs.org/nuxt/-/nuxt-3.2.0.tgz"
   "version" "3.2.0"
@@ -6818,7 +6843,7 @@
   dependencies:
     "ufo" "^1.0.1"
 
-"vue-demi@^0.13.11", "vue-demi@^0.13.5", "vue-demi@latest":
+"vue-demi@*", "vue-demi@^0.13.11", "vue-demi@^0.13.5", "vue-demi@latest":
   "integrity" "sha512-IR8HoEEGM65YY3ZJYAjMlKygDQn25D5ajNFNoKh9RSDMQtlzCxtfQjdQgv9jjK+m3377SsJXY8ysq8kLCZL25A=="
   "resolved" "https://registry.npmjs.org/vue-demi/-/vue-demi-0.13.11.tgz"
   "version" "0.13.11"
@@ -6885,7 +6910,7 @@
     "@vue/server-renderer" "3.2.47"
     "@vue/shared" "3.2.47"
 
-"vuefire@^3.1.0", "vuefire@>=3.1.0":
+"vuefire@^3.1.0":
   "integrity" "sha512-iLY6GARr5la75tfxBZUm2zfbL6kQ11FWBUHClyfM602xgWskkBAIareGs3R4K2DC4QSWXslrYnteCyLlqouD8w=="
   "resolved" "https://registry.npmjs.org/vuefire/-/vuefire-3.1.0.tgz"
   "version" "3.1.0"

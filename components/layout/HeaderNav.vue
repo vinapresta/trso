@@ -1,5 +1,6 @@
 <template>
-    <div class="w-full bg-trso-blue border-b-2 border-trso-yellow">
+    <div class="relative w-full bg-trso-blue border-b-2 border-trso-yellow">
+        <IconsHamburger @click="menuMobileState = !menuMobileState"/>
         <nav class="lg:flex items-center 
                     max-w-6xl mx-auto
                     transition-[padding] ease-in-out delay-200" 
@@ -14,18 +15,20 @@
                         alt="Tarseroo logo">
                 </h1>        
             </Nuxtlink>
-            <ul class="lg:flex items-center gap-x-4 text-center font-semibold text-sm lg:text-base uppercase text-white">
-                <LayoutMenuButton>
-                    <NuxtLink :to="localePath({ name: 'type-pages-page', params: { type: 'movies', page: 1 } })">
-                        {{ $t('header.movies') }}
-                    </NuxtLink>
-                </LayoutMenuButton>
-                <LayoutMenuButton>
-                    <NuxtLink :to="localePath({ name: 'type-pages-page', params: { type: 'tv-series', page: 1 } })">
-                        {{ $t('header.series') }}
-                    </NuxtLink>
-                </LayoutMenuButton>
-            </ul>
+            <transition name="toggle-fade">
+                <ul v-if="menuMobileState || isLargeScreen" class="max-h-[200px] lg:max-h-auto lg:flex items-center gap-x-4 text-center font-semibold text-sm lg:text-base uppercase text-white">
+                    <LayoutMenuButton>
+                        <NuxtLink :to="localePath({ name: 'type-pages-page', params: { type: 'movies', page: 1 } })">
+                            {{ $t('header.movies') }}
+                        </NuxtLink>
+                    </LayoutMenuButton>
+                    <LayoutMenuButton>
+                        <NuxtLink :to="localePath({ name: 'type-pages-page', params: { type: 'tv-series', page: 1 } })">
+                            {{ $t('header.series') }}
+                        </NuxtLink>
+                    </LayoutMenuButton>
+                </ul>
+            </transition>
             <button v-if="searchButtonVisible"
                     class="flex items-center gap-x-2 ml-auto" 
                     @click="$emit('changeSearchState')">
@@ -42,6 +45,9 @@
 </template>
 
 <script setup>
+    import { useMediaQuery } from '@vueuse/core'
+
+    const isLargeScreen = useMediaQuery('(min-width: 1024px)')
 
     const localePath = useLocalePath()
 
@@ -50,5 +56,24 @@
         searchButtonState: Boolean
     })
 
+    const menuMobileState = ref(false)
+
 </script>
+
+<style scoped>
+.toggle-fade-enter-active {
+    transition: all 0.3s ease-out;
+}
+
+.toggle-fade-leave-active {
+    transition: all 0.8s cubic-bezier(1, 0.5, 0.8, 1);
+}
+
+.toggle-fade-enter-from,
+.toggle-fade-leave-to {
+    max-height: 0;
+    opacity: 0;
+}
+
+</style>
 

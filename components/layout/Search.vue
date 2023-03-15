@@ -19,13 +19,15 @@
                 @input="autoCompleteSearch()"
                 @keyup.enter="keyEnter()"
                 @keydown.tab="keyEnter()">
-            <button @click.prevent = "gotToSearchPage()" :disabled="customSearch.length < 3"
-                    class="transition-colors duration-500 
-                           bg-trso-yellow hover:bg-trso-yellow2 disabled:bg-trso-yellow2 hover:disabled:bg-trso-yellow-trso2 
-                           border border-trso-yellow
-                           py-2 px-2 ">
+            <NuxtLink :to="localePath({ name: 'search-search', params: { search: customSearch }})"
+                      :disabled="customSearch.length < 3"
+                      class="transition-colors duration-500 
+                             bg-trso-yellow hover:bg-trso-yellow2 disabled:bg-trso-yellow2 hover:disabled:bg-trso-yellow-trso2 
+                             border border-trso-yellow
+                             py-2 px-2
+                             cursor-pointer">
                 <IconsSearch class="text-white h-5 w-5"/>
-            </button>
+            </NuxtLink>
             <button @click="closeSearch" class="block absolute cursor-pointer top-[10px] right-[60px] rounded bg-trso-blue text-white">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                     <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
@@ -50,21 +52,22 @@
                             <NuxtLink :to="localePath({ name: 'type-id-slug', params: { type: 'movies', id: 2756, slug: `${result['slug_' + locale]}`} })"
                                       class="block w-full
                                       px-4 lg:px-8 py-2 lg:py-4 
+                                      text-center lg:text-left
                                       text-trso-blue hover:text-white
                                       text-sm lg:text-base 
-                                      transition-colors duration-500 bg-white hover:bg-trso-blue2">
+                                      transition-colors duration-500 bg-white hover:bg-trso-blue">
                                 {{ result['title_' + locale] }} <span v-if="result.director.length">({{ result.director }})</span>
                             </NuxtLink>
                         </li>
-
                         <li>
-                            <button @click.prevent = "gotToSearchPage" v-if="customSearch.length >= 3"
-                                    class="flex items-center justify-center lg:justify-start gap-x-2 w-full
+                            <NuxtLink v-if="customSearch.length >= 3"
+                                      :to="localePath({ name: 'search-search', params: { search: customSearch }})"
+                                      class="flex items-center justify-center lg:justify-start gap-x-2 w-full
                                            px-4 lg:px-8 py-2 lg:py-4 
-                                           bg-trso-blue2 text-white uppercase">
+                                           bg-trso-blue text-white uppercase">
                                 <i class="text-white h-4 w-4"><IconsPlus /></i>
                                 <span>{{ $t('components.search.more') }}</span>
-                            </button>
+                            </NuxtLink>
                         </li>
                         <li class="algolia-logo px-2 py-4 flex flex-row justify-center items-center gap-x-2">
                             <NuxtLink to="https://www.algolia.com/" class="flex items-center gap-x-2">
@@ -89,10 +92,6 @@
     const router = useRouter()
 
     const localePath = useLocalePath()
-
-   /* const { locale, t } = useI18n()
-
-    const { result, search } = useAlgoliaSearch('movies') */
 
     const customSearch = ref('')
 
@@ -123,7 +122,7 @@
 
         if (customSearch.value.length >= 3) {
 
-            const { data } = await useAsyncAlgoliaSearch({ indexName: 'movies', query: String(customSearch.value), requestOptions: { hitsPerPage: 10, page: 0 } })
+            const { data } = await useAsyncAlgoliaSearch({ indexName: 'movies', query: String(customSearch.value), requestOptions: { hitsPerPage: 3, page: 0 } })
 
             searchResults.hits = data.value.hits
 
@@ -143,11 +142,6 @@
 
     }
 
-    function gotToSearchPage () {
-
-        router.push(localePath({ name: 'search-search', params: { search: customSearch.value }}));
-
-    }
  
 </script>
 

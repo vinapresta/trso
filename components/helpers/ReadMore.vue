@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div class="text-justify pb-2 text-sm lg:text-base relative transition-all duration-500 ease"
+        <div class="text-justify pb-2 text-sm lg:text-base relative transition-all duration-500 ease before:transition-all before:duration-500 before:ease"
              :class="style"
              :ref="(e) => { contentRef = e }">
             <slot></slot>
@@ -21,7 +21,7 @@ const props = defineProps({
     color: String
 })
 
-const cssRules = `max-h-12 overflow-hidden text-ellipsis before:bg-gradient-to-b before:from-transparent before:to-white before:content-[''] before:absolute before:w-full before:h-full before:top-0 before:left-0`
+const cssRules = `max-h-12 overflow-hidden text-ellipsis before:opacity-1 before:bg-gradient-to-b before:from-transparent before:to-white before:content-[''] before:absolute before:w-full before:h-full before:top-0 before:left-0`
 
 const contentRef = ref(null)
 
@@ -49,7 +49,7 @@ function changeState() {
 
     readMoreState.value = !readMoreState.value
 
-    style.value = readMoreState.value ? cssRules : ``
+    style.value = readMoreState.value ? cssRules : `max-h-[2000px] before:opacity-0`
 
 }
 
