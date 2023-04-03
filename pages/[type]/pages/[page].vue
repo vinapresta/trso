@@ -11,7 +11,7 @@
                               :page="page" 
                               routeName="type-pages-page"
                               :color="color"
-                              :pagesCount="pagesCount"/>
+                              :pagesCount="pagesCount" />
     </div>
 </template>
 

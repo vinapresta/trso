@@ -42,9 +42,31 @@
 
     const searchButtonVisible = ref(false)
 
+    const fadeInElements = ref([])
+
+    const isElemVisible = (el) => {
+
+        const rect = el.getBoundingClientRect()
+
+        const elemTop = rect.top + 50 // 200 = buffer
+
+        const elemBottom = rect.bottom
+
+        return elemTop < window.innerHeight && elemBottom >= 0
+
+    }
+
     onMounted( () => {
 
+         /* ANIMATION LISTING ITEMS */
+
+        fadeInElements.value = Array.from(document.getElementsByClassName('fade-in'))
+
+        /****************************/
+
         window.addEventListener('scroll', scrollListener, {passive: true})
+
+        scrollListener()
 
     })
 
@@ -78,6 +100,23 @@
 
         }
 
+        /* ANIMATION LISTING ITEMS */
+
+        fadeInElements.value.forEach((elem, index) => {
+
+            if (isElemVisible(elem)) {
+
+                elem.style.opacity = '1'
+
+                elem.style.transform = 'scale(1)'
+
+                fadeInElements.value.splice(index, 1)
+
+            }
+
+        })
+
+
     }
 
     const headerTopRules = computed(() => {
@@ -91,12 +130,6 @@
         searchButtonState.value = !searchButtonState.value
 
     }
-
-    /*function displaySearchButton() {
-
-        searchButtonState.value = !searchButtonState.value
-
-    }*/
 
 </script>
 

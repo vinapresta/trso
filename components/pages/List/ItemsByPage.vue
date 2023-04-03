@@ -12,6 +12,10 @@
                        :lang="locale" 
                        :color="color" />
         </div>
+        <PagesListPagination :page="page" 
+                             :pagesCount="pagesCount" 
+                             :routeName="routeName" 
+                             :color="color"/>
     </div>
     
 </template>
