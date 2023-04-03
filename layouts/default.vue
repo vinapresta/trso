@@ -15,7 +15,7 @@
             <LayoutSearch ref="search" 
                           :class="miniHeader === true ? `lg:fixed lg:top-[86px] lg:z-40 lg:w-full` : ''" />
         </transition>-->
-        <div class="container px-2 md:px-4 max-w-6xl mb-16 min-h-[90vh]">
+        <div class="container px-2 md:px-4 max-w-6xl mb-16"><!-- min-h-[90vh] -->
             <slot />
         </div>
         <LayoutFooter />
@@ -42,7 +42,7 @@
 
     const searchButtonVisible = ref(false)
 
-    const fadeInElements = ref([])
+    /*const fadeInElements = ref([])
 
     const isElemVisible = (el) => {
 
@@ -54,13 +54,13 @@
 
         return elemTop < window.innerHeight && elemBottom >= 0
 
-    }
+    }*/
 
     onMounted( () => {
 
          /* ANIMATION LISTING ITEMS */
 
-        fadeInElements.value = Array.from(document.getElementsByClassName('fade-in'))
+        //fadeInElements.value = Array.from(document.getElementsByClassName('fade-in'))
 
         /****************************/
 
@@ -102,7 +102,7 @@
 
         /* ANIMATION LISTING ITEMS */
 
-        fadeInElements.value.forEach((elem, index) => {
+        /*fadeInElements.value.forEach((elem, index) => {
 
             if (isElemVisible(elem)) {
 
@@ -114,7 +114,7 @@
 
             }
 
-        })
+        })*/
 
 
     }
