@@ -1,5 +1,5 @@
 <template>
-    <div class="fade-in opacity-0 scale-50 transition-all origin-center">
+    <div><!-- class="fade-in opacity-0 scale-50 transition-all origin-center" -->
         <div class="relative h-full flex border px-2 pt-2 pb-10" :class="`border-trso-${color}`">
             <NuxtLink :to="localePath({ name: 'type-id-slug', params: { type: type, id: `${itemData.id}`, slug: `${langAttr.slug}`} })" 
                       :title="`${$t('components.item.linkTitle', {type: type, name: langAttr.title, book: firstBook.attributes.title})}`"
