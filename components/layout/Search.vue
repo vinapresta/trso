@@ -124,7 +124,7 @@
 
         if (customSearch.value.length >= 3) {
 
-            const { data } = await useAsyncAlgoliaSearch({ indexName: 'movies', query: String(customSearch.value), requestOptions: { hitsPerPage: 2, page: 0 } })
+            const { data } = await useAsyncAlgoliaSearch({ indexName: 'movies', query: String(customSearch.value), requestOptions: { hitsPerPage: 8, page: 0 } })
 
             searchResults.hits = data.value.hits
 
