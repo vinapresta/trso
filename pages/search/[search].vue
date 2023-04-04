@@ -7,18 +7,20 @@
             <span class="italic font-semibold">{{ customSearch }}</span>
         </HelpersHeading>
         <div v-if="results.total">
-            <div>
-                <div v-for="item in results.hits" :key="item.id">
-                    <NuxtLink :to="localePath({ name: 'type-id-slug', params: { type: 'movies', id: 2756, slug: `${item['slug_' + locale]}`} })"
-                              :title="item['title_' + locale]"
-                              class="block 
+            <ul class="mb-4 lg:mb-8">
+                <li v-for="result in results.hits" :key="result.id">
+                    <NuxtLink :to="localePath({ name: 'type-id-slug', params: { type: result.type === 'series' ? 'tv-series' : 'movies', id: result.objectID, slug: `${result['slug_' + locale]}`} })"
+                              :title="result['title_' + locale]"
+                              class="flex items-center gap-x-4 lg:gap-x-8
                                      transition-colors duration-500 bg-white hover:bg-trso-blue2
-                                     text-trso-blue hover:text-white text-base lg:text-lg text-center lg:text-left
-                                     py-2">
-                        {{ item['title_' + locale] }} <span v-if="item.director.length" class="text-base">({{ item.director }})</span>
+                                     text-trso-blue hover:text-white text-base lg:text-lg text-left
+                                     p-2 lg:p-4">
+                        <img :src="result.poster" :alt="`poster ${result['title_' + locale]}`"
+                              class="w-12 h-auto">
+                        <span>{{ result['title_' + locale] }} <span v-if="result.director.length" class="text-base">({{ result.director }})</span></span>
                     </NuxtLink>
-                </div>
-            </div>
+                </li>
+            </ul>
             <HelpersButton v-if="results.count < results.max" 
                         color="blue" 
                         @click="loadMore()" 

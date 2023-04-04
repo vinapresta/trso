@@ -2,7 +2,7 @@
     <div class="relative w-full bg-trso-blue border-b-2 border-trso-yellow">
         <IconsHamburger @click="menuMobileState = !menuMobileState"/>
         <nav class="lg:flex items-center 
-                    max-w-6xl mx-auto
+                    max-w-7xl mx-auto
                     transition-[padding] ease-in-out delay-200" 
             id="mainMenu">
             <NuxtLink :to="localePath({ name: 'index'})" :title="$t('pages.home.title')"
@@ -17,7 +17,11 @@
             </Nuxtlink>
             <transition name="toggle-fade" mode="out-in">
                 <ul v-if="menuMobileState || isLargeScreen" class="max-h-[200px] lg:max-h-auto lg:flex items-center gap-x-4 text-center font-semibold text-sm lg:text-base uppercase text-white">
-                    <LayoutMenuButton>
+                    <li v-for="menuItem in menu" :key="menuItem.id">
+                        <LayoutMenuButton :to="menuItem.to" 
+                                          :name="menuItem.name" />
+                    </li>
+                    <!--<LayoutMenuButton>
                         <NuxtLink :to="localePath({ name: 'type-pages-page', params: { type: 'movies', page: 1 } })">
                             {{ $t('header.movies') }}
                         </NuxtLink>
@@ -26,7 +30,7 @@
                         <NuxtLink :to="localePath({ name: 'type-pages-page', params: { type: 'tv-series', page: 1 } })">
                             {{ $t('header.series') }}
                         </NuxtLink>
-                    </LayoutMenuButton>
+                    </LayoutMenuButton>-->
                 </ul>
             </transition>
             <button v-if="searchButtonVisible"
@@ -47,6 +51,10 @@
 <script setup>
     import { useMediaQuery } from '@vueuse/core'
 
+    const route = useRouteBaseName()
+
+    const { t } = useI18n()
+
     const isLargeScreen = useMediaQuery('(min-width: 1024px)')
 
     const localePath = useLocalePath()
@@ -57,6 +65,16 @@
     })
 
     const menuMobileState = ref(false)
+
+    const menu = [{ 
+            to: localePath({ name: 'type-pages-page', params: { type: 'movies', page: 1 } }),
+            name: t('header.movies') 
+        },
+        { 
+            to: localePath({ name: 'type-pages-page', params: { type: 'tv-series', page: 1 } }),
+            name: t('header.series')   
+        }
+    ]
 
 </script>
 

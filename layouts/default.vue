@@ -15,7 +15,7 @@
             <LayoutSearch ref="search" 
                           :class="miniHeader === true ? `lg:fixed lg:top-[86px] lg:z-40 lg:w-full` : ''" />
         </transition>-->
-        <div class="container px-2 md:px-4 max-w-6xl mb-16"><!-- min-h-[90vh] -->
+        <div class="container px-2 md:px-4 max-w-7xl mb-16"><!-- min-h-[90vh] -->
             <slot />
         </div>
         <LayoutFooter />

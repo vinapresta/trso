@@ -1,5 +1,6 @@
 <template>
-    <li class="relative 
+    <NuxtLink :to="to"
+              class="inline-block relative 
                after:content-['']
                after:absolute
                after:w-full
@@ -14,19 +15,18 @@
                after:duration-300
                hover:after:scale-x-100
                hover:after:origin-bottom-left
-               mb-2 lg:mb-0">
-        <slot />
-    </li>
+               mb-2 lg:mb-0"
+               activeClass="after:scale-x-100 after:origin-bottom-left">
+      {{ name }}
+        
+</NuxtLink>
 </template>
 
-<style scoped>
-/*.pulse:hover, 
-.pulse:focus {
-  animation: pulse 1s;
-  box-shadow: 0 0 0 2em transparent;
-}
+<script setup>
 
-@keyframes pulse {
-  0% { box-shadow: 0 0 0 0 var(--hover); }
-}*/
-</style>
+defineProps({
+  to: String,
+  name: String
+})
+
+</script>

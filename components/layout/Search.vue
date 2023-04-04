@@ -49,7 +49,7 @@
                                drop-shadow-lg
                                scrollbar scrollbar-thumb-trso-blue scrollbar-track-trso-blue2">
                         <li v-for="result in searchResults.hits" :key="result.id">
-                            <NuxtLink :to="localePath({ name: 'type-id-slug', params: { type: 'movies', id: 2756, slug: `${result['slug_' + locale]}`} })"
+                            <NuxtLink :to="localePath({ name: 'type-id-slug', params: { type: result.type === 'series' ? 'tv-series' : 'movies', id: result.objectID, slug: `${result['slug_' + locale]}`} })"
                                       class="block w-full
                                       px-4 lg:px-8 py-2 lg:py-4 
                                       text-center lg:text-left
@@ -124,7 +124,7 @@
 
         if (customSearch.value.length >= 3) {
 
-            const { data } = await useAsyncAlgoliaSearch({ indexName: 'movies', query: String(customSearch.value), requestOptions: { hitsPerPage: 10, page: 0 } })
+            const { data } = await useAsyncAlgoliaSearch({ indexName: 'movies', query: String(customSearch.value), requestOptions: { hitsPerPage: 2, page: 0 } })
 
             searchResults.hits = data.value.hits
 

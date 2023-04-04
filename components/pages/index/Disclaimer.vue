@@ -6,6 +6,11 @@
                     top-20 lg:top-8 -right-[36px] lg:-right-[48px]" 
              alt="tarsier" 
              id="imgTarsier" />
-        <div class=" text-base px-8 py-4 rounded-lg bg-trso-blue text-white z-20"><p class="mb-2">{{ $t('pages.home.disclaimer1') }}</p><p>{{ $t('pages.home.disclaimer2') }}</p></div>
+        <div class=" text-base px-8 py-4 rounded-lg bg-trso-blue text-white z-20">
+            <p class="mb-2">{{ $t('pages.home.disclaimer1') }}</p>
+            <p class="mb-2">{{ $t('pages.home.disclaimer2') }}</p>
+            <p class="mb-2">{{ $t('pages.home.disclaimer3') }}</p>
+            <p>{{ $t('pages.home.disclaimer4') }}</p>
+        </div>
     </div>
 </template>
