@@ -1,12 +1,14 @@
 <template>
     <div class="mb-8">
-        <HelpersHeading tag="h2" tagStyle="featured" :color="color">
+        <HelpersHeading tag="h2" 
+                        tagStyle="featured" 
+                        :color="type === 'tv-series' ? 'yellow' : 'blue'">
             <span v-if="type === 'tv-series'">{{ $t('components.featured.topSeries') }}</span>
             <span v-else>{{ $t('components.featured.topMovies') }}</span>
         </HelpersHeading>
         <p class="mb-4">
             <NuxtLink :to="localePath({ name: 'type-pages-page', params: { type: type, page: 1 }})"
-                      :class="`text-trso-${color}`"
+                      :class="textColorClass"
                       class="flex justify-center items-center gap-x-2 text-sm lg:text-lg">
                 <span><IconsArrowRight class="h-5 w-5"/></span>
                 <span v-if="type === 'tv-series'">{{ $t('components.featured.topSeries2') }}</span>
@@ -19,12 +21,14 @@
                     :itemData="item" 
                     :type="type" 
                     :lang="locale" 
-                    :color="color"/>
+                    :color="type === 'tv-series' ? 'yellow' : 'blue'" />
         </div>
         <NuxtLink :to="localePath({ name: 'type-pages-page', params: { type: type, page: 1 }})"
         :title="type === 'tv-series' ? $t('components.featured.topSeries2') : $t('components.featured.topMovies2')"
                   class="flex w-full py-2 justify-center">
-            <i><IconsPlus class="h-14 w-14" :class="`text-trso-${color} hover:text-trso-${color}2`"/></i>
+            <IconsPlus class="h-14 w-14 transition-transform hover:rotate-180"
+                       :class="textHoverColorClass" />
+          
         </NuxtLink>
     </div>
 </template>
@@ -39,12 +43,15 @@
         type: String
     })
 
-    const color = ref('blue')
+    const textColorClass = computed(() => {
 
-    onMounted( () => {
+        return props.type === 'tv-series' ? 'text-trso-yellow' : 'text-trso-blue'
 
-        if (props.type === 'tv-series')
-            color.value = 'yellow'
+    })
+
+    const textHoverColorClass = computed(() => {
+
+        return props.type === 'tv-series' ? 'text-trso-yellow hover:text-trso-yellow2' : 'text-trso-blue hover:text-trso-blue2'
 
     })
 

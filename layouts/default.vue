@@ -11,11 +11,7 @@
                 <LayoutSearch ref="search" v-show="miniHeader === true ? searchButtonState : true" />
             </transition>
         </header>
-        <!--<transition name="search" mode="out-in">
-            <LayoutSearch ref="search" 
-                          :class="miniHeader === true ? `lg:fixed lg:top-[86px] lg:z-40 lg:w-full` : ''" />
-        </transition>-->
-        <div class="container px-2 md:px-4 max-w-7xl mb-16"><!-- min-h-[90vh] -->
+        <div class="container px-2 md:px-4  min-h-[90vh] max-w-7xl mb-16">
             <slot />
         </div>
         <LayoutFooter />
@@ -27,6 +23,10 @@
 </template>
 
 <script setup>
+
+    import { useWindowScroll } from '@vueuse/core'
+
+    const { x, y } = useWindowScroll()
 
     const header = ref(null)
 
@@ -78,21 +78,17 @@
 
     function scrollListener() {
 
-        toTopState.value = window.scrollY > 150
+        toTopState.value = y.value > 150
 
-        if (window.scrollY > header.value.clientHeight) { 
+        if (y.value > header.value.clientHeight) { 
 
             miniHeader.value = true
-
-            //searchState.value = searchButtonState.value
 
             searchButtonVisible.value = true
 
         } else {
 
             miniHeader.value = false
-
-            //searchState.value = true
 
             searchButtonState.value = false
 

@@ -42,7 +42,11 @@
                             type="submit" 
                             :disabled="states.button"
                             :value="$t('components.formsContact.send')"
-                            class="w-full flex flex-wrap items-center justify-center px-4 py-2 text-xl uppercase text-white shadow transition-colors bg-trso-blue hover:bg-trso-blue2">
+                            class="w-full flex flex-wrap items-center justify-center 
+                                   px-4 py-2 
+                                   text-xl uppercase text-white 
+                                   shadow cursor-pointer
+                                   transition-colors duration-500 bg-trso-blue hover:bg-trso-blue2">
                 </div>
                 <p class="text-trso-blue"><span class="text-sm">*</span>{{ $t('components.formsContact.required') }}</p>
             </div>
