@@ -14,8 +14,7 @@
         </Transition>
         <Transition name="fade">
         <div v-if="resultsLoaded">
-            <div v-if="results.total" 
-                 class="min-h-[1500px]">
+            <div v-if="results.total"><!--class="min-h-[1500px]"-->
                 <ul class="mb-4 lg:mb-8">
                     <li v-for="result in results.hits" :key="result.id">
                         <NuxtLink :to="localePath({ name: 'type-id-slug', params: { type: result.type === 'series' ? 'tv-series' : 'movies', id: result.objectID, slug: `${result['slug_' + locale]}`} })"

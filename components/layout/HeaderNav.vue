@@ -1,5 +1,5 @@
 <template>
-    <div class="relative w-full bg-trso-blue border-b-2 border-trso-yellow">
+    <div class="relative w-full bg-trso-blue">
         <IconsHamburger @click="menuMobileState = !menuMobileState"/>
         <nav class="lg:flex items-center 
                     max-w-7xl mx-auto
@@ -34,9 +34,9 @@
                 </ul>
             </transition>
             <button v-if="searchButtonVisible"
-                    class="flex items-center gap-x-2 ml-auto" 
+                    class="absolute lg:relative top-1/2 lg:top-0 -translate-y-1/2 lg:translate-y-0 left-4 lg:left-0 lg:flex items-center gap-x-2 lg:ml-auto" 
                     @click="$emit('changeSearchState')">
-                <IconsSearch class="text-white h-5 w-5"/>
+                <IconsSearch class="text-white h-5 w-5 mx-auto lg:mx-0"/>
                 <span v-if="!searchButtonState" class="text-white">
                     {{ $t('header.search') }}
                 </span>
@@ -49,19 +49,20 @@
 </template>
 
 <script setup>
-    import { useMediaQuery } from '@vueuse/core'
+    //import { useMediaQuery } from '@vueuse/core'
+
+    //const isLargeScreen = useMediaQuery('(min-width: 1024px)')
 
     const route = useRouteBaseName()
 
     const { t } = useI18n()
 
-    const isLargeScreen = useMediaQuery('(min-width: 1024px)')
-
     const localePath = useLocalePath()
 
     defineProps({
         searchButtonVisible: Boolean,
-        searchButtonState: Boolean
+        searchButtonState: Boolean,
+        isLargeScreen: Boolean
     })
 
     const menuMobileState = ref(false)

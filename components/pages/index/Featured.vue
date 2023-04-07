@@ -70,4 +70,33 @@
 
     const { data: items } = await useFetch(url)
 
+    onMounted( () => {
+
+        const itemElements = Array.from(document.getElementsByClassName('fade-in'))
+
+        const observer = new IntersectionObserver(entries => {
+
+            entries.forEach(entry => {
+
+                const intersecting = entry.isIntersecting
+
+                if (intersecting) {
+
+                    entry.target.style.opacity = '1'
+                    entry.target.style.transform = 'scale(1)'
+                    
+                    observer.unobserve(entry.target);
+                }
+
+            })
+        }, 
+        { threshold: 0.5 })
+
+        itemElements.forEach(item => {
+
+            observer.observe(item)
+        })
+
+    })
+
 </script>

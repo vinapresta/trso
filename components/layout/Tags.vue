@@ -1,8 +1,9 @@
 <template>
-    <ul class="flex justify-center items-center gap-x-4">
+    <ul class="flex flex-wrap justify-center items-center gap-4">
         <li v-for="tag in tags.data" 
             :key="tag.id"
-            class="relative px-4 py-2 text-white rounded
+            class="grow-1
+                   relative px-2 lg:px-4 py-1 lg:py-2 text-white
                    after:content-[''] 
                    after:absolute after:top-0 after:left-0 after:-z-10
                    after:w-full after:h-full after:rounded
@@ -11,7 +12,7 @@
             :class="tag.attributes.type === 'series' ? 'bg-trso-yellow after:bg-trso-yellow' : 'bg-trso-blue after:bg-trso-blue'">
             <NuxtLink :to="localePath({ name: 'type-id-slug', params: { type: tag.attributes.type === 'series' ? 'tv-series' : 'movies', id: tag.id, slug: tag.attributes.item_lang.data.attributes.slug } })" 
                       :title="tag.attributes.item_lang.data.attributes.title"
-                      class="font-medium">
+                      class="font-medium text-sm lg:text-base">
                 {{ tag.attributes.item_lang.data.attributes.title }}
             </NuxtLink>
         </li>

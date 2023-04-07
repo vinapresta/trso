@@ -1,6 +1,6 @@
 <template>
     <NuxtLink :to="to"
-              class="inline-block relative 
+              class="inline-block relative py-1
                after:content-['']
                after:absolute
                after:w-full

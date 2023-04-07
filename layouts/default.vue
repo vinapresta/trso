@@ -1,17 +1,21 @@
 <template>
     <div>
-        <header class="mb-4 md:mb-8 lg:mb-14" 
-                :class="miniHeader === true ? `${headerTopRules} lg:fixed lg:z-50 lg:w-full transform transition duration-500 ease-in-out delay-200` : 'top-0'"
+        <header class="mb-16" 
+                :class="miniHeader || !isLargeScreen ? 'fixed z-50 w-full transform transition duration-500 ease-in-out delay-200' : ''"
                 ref="header">
-            <LayoutHeaderNav :class="miniHeader === true ? 'py-1' : 'py-1 lg:py-4'"
+            <LayoutHeaderNav :class="miniHeader || isLargeScreen ? 'py-1' : 'py-1 lg:py-4'"
                              :searchButtonState="searchButtonState"
-                             :searchButtonVisible="searchButtonVisible"
+                             :searchButtonVisible="isLargeScreen ? searchButtonVisible : true"
+                             :isLargeScreen="isLargeScreen"
                              @change-search-state="changeSearchSate()" />
             <transition name="search" mode="out-in">
-                <LayoutSearch ref="search" v-show="miniHeader === true ? searchButtonState : true" />
+                <LayoutSearch ref="search" v-show="searchVisible" />
             </transition>
         </header>
-        <div class="container px-2 md:px-4  min-h-[90vh] max-w-7xl mb-16">
+        <div class="h-[0px] w-full"
+             id="menuObserver"></div>
+        <div class="container px-2 md:px-4  min-h-[90vh] max-w-7xl mb-16"
+             :style="`padding-top: calc(${height}px + 2rem)`">
             <slot />
         </div>
         <LayoutFooter />
@@ -19,16 +23,19 @@
             <LayoutToTop v-show="toTopState" />
         </transition>
         <LayoutContactModal />
+        <!--<div class="fixed z-90 top-0 left-0 bg-red-500">DEBUG {{ width }} {{ miniHeader || width < 1024 }}</div>-->
     </div>
 </template>
 
 <script setup>
+    import { useMediaQuery } from '@vueuse/core'
+    import { useElementSize } from '@vueuse/core'
 
-    import { useWindowScroll } from '@vueuse/core'
-
-    const { x, y } = useWindowScroll()
+    const isLargeScreen = useMediaQuery('(min-width: 1024px)')
 
     const header = ref(null)
+
+    const { height } = useElementSize(header)
 
     const search = ref(null)
 
@@ -36,88 +43,60 @@
 
     const miniHeader = ref(false)
 
-    /*const searchState = ref(true)*/
-
     const searchButtonState = ref(false)
 
     const searchButtonVisible = ref(false)
 
-    /*const fadeInElements = ref([])
-
-    const isElemVisible = (el) => {
-
-        const rect = el.getBoundingClientRect()
-
-        const elemTop = rect.top + 50 // 200 = buffer
-
-        const elemBottom = rect.bottom
-
-        return elemTop < window.innerHeight && elemBottom >= 0
-
-    }*/
-
     onMounted( () => {
 
-         /* ANIMATION LISTING ITEMS */
+       /* if (!isLargeScreen.value)
+            searchButtonState.value = false*/
 
-        //fadeInElements.value = Array.from(document.getElementsByClassName('fade-in'))
+        /* Inersection Observer on menu */
 
-        /****************************/
+        const menuObserver = document.getElementById('menuObserver')
 
-        window.addEventListener('scroll', scrollListener, {passive: true})
+        const observer = new IntersectionObserver(entries => {
 
-        scrollListener()
+        entries.forEach(entry => {
 
-    })
+            const intersecting = entry.isIntersecting
 
-    onBeforeUnmount ( () => {
+            if (intersecting) {
 
-        window.removeEventListener('scroll', scrollListener)
+                miniHeader.value = false
 
-    })
+                searchButtonState.value = false
 
-    function scrollListener() {
+                searchButtonVisible.value = false
+ 
+            } else {
 
-        toTopState.value = y.value > 150
+                miniHeader.value = true
 
-        if (y.value > header.value.clientHeight) { 
-
-            miniHeader.value = true
-
-            searchButtonVisible.value = true
-
-        } else {
-
-            miniHeader.value = false
-
-            searchButtonState.value = false
-
-            searchButtonVisible.value = false
-
-        }
-
-        /* ANIMATION LISTING ITEMS */
-
-        /*fadeInElements.value.forEach((elem, index) => {
-
-            if (isElemVisible(elem)) {
-
-                elem.style.opacity = '1'
-
-                elem.style.transform = 'scale(1)'
-
-                fadeInElements.value.splice(index, 1)
+                searchButtonVisible.value = true
 
             }
 
-        })*/
+        })
+        }, 
+        { threshold: 0.5 })
 
+        observer.observe(menuObserver)
 
-    }
+    })
 
-    const headerTopRules = computed(() => {
+    const searchVisible = computed(() => {
 
-        return `lg:-top-[${header.value.clientHeight}px] lg:translate-y-[${header.value.clientHeight}px]`
+        if (isLargeScreen.value) { 
+
+            return miniHeader.value ? searchButtonState.value : true
+
+        } else {
+
+            return searchButtonState.value
+
+        }
 
     })
 
