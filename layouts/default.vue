@@ -3,7 +3,7 @@
         <header class="mb-16" 
                 :class="miniHeader || !isLargeScreen ? 'fixed z-50 w-full transform transition duration-500 ease-in-out delay-200' : ''"
                 ref="header">
-            <LayoutHeaderNav :class="miniHeader || isLargeScreen ? 'py-1' : 'py-1 lg:py-4'"
+            <LayoutHeaderNav :class="miniHeader || !isLargeScreen ? 'py-1' : 'py-1 lg:py-4'"
                              :searchButtonState="searchButtonState"
                              :searchButtonVisible="isLargeScreen ? searchButtonVisible : true"
                              :isLargeScreen="isLargeScreen"
@@ -15,7 +15,7 @@
         <div class="h-[0px] w-full"
              id="menuObserver"></div>
         <div class="container px-2 md:px-4  min-h-[90vh] max-w-7xl mb-16"
-             :style="`padding-top: calc(${height}px + 2rem)`">
+             :style="miniHeader || !isLargeScreen ? `padding-top: calc(${height}px + 2rem)` : ''">
             <slot />
         </div>
         <LayoutFooter />
