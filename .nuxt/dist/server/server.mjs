@@ -1,13 +1,13 @@
-import { getCurrentInstance, reactive, version, toRef, isRef, inject, nextTick, shallowRef, computed, isReadonly, defineComponent, ref, h, resolveComponent, onUnmounted, watch, Fragment as Fragment$1, effectScope, createVNode, Text, unref, Transition, Suspense, provide, useSSRContext, withCtx, defineAsyncComponent, onErrorCaptured, onServerPrefetch, createApp } from "vue";
+import { reactive, getCurrentInstance, version, inject, ref, watchEffect, watch, unref, toRef, isRef, nextTick, shallowRef, computed, isReadonly, defineComponent, h, onUnmounted, Fragment as Fragment$1, effectScope, createVNode, Text, Transition, Suspense, provide, withCtx, useSSRContext, onErrorCaptured, onServerPrefetch, defineAsyncComponent, createApp } from "vue";
 import { $fetch } from "ofetch";
 import { useRuntimeConfig as useRuntimeConfig$1 } from "#internal/nitro";
 import { createHooks } from "hookable";
 import { getContext, executeAsync } from "unctx";
-import { createHead as createHead$1, useHead } from "@unhead/vue";
-import { renderDOMHead, debouncedRenderDOMHead } from "@unhead/dom";
 import { renderSSRHead } from "@unhead/ssr";
+import { getActiveHead, createServerHead as createServerHead$1 } from "unhead";
+import { defineHeadPlugin } from "@unhead/shared";
 import { createMemoryHistory, createRouter, useRouter as useRouter$1, useRoute as useRoute$1, RouterView } from "vue-router";
-import { createError as createError$1, sendRedirect } from "h3";
+import { setResponseStatus as setResponseStatus$1, sendRedirect, createError as createError$1 } from "h3";
 import { hasProtocol, parseURL, joinURL, isEqual, withLeadingSlash, encodeParam, encodePath } from "ufo";
 import "destr";
 import { CoreWarnCodes, CompileErrorCodes, registerMessageResolver, resolveValue, registerLocaleFallbacker, fallbackWithLocaleChain, setDevToolsHook, createCompileError, DEFAULT_LOCALE as DEFAULT_LOCALE$1, updateFallbackLocale, NUMBER_FORMAT_OPTIONS_KEYS, DATETIME_FORMAT_OPTIONS_KEYS, setFallbackContext, createCoreContext, clearDateTimeFormat, clearNumberFormat, setAdditionalMeta, getFallbackContext, NOT_REOSLVED, isTranslateFallbackWarn, isTranslateMissingWarn, parseTranslateArgs, translate, MISSING_RESOLVE_VALUE, parseDateTimeArgs, datetime, parseNumberArgs, number } from "@intlify/core-base";
@@ -22,13 +22,21 @@ import VueSocialSharing from "vue-social-sharing";
 import { ssrRenderComponent, ssrRenderSuspense } from "vue/server-renderer";
 const appConfig = useRuntimeConfig$1().app;
 const baseURL = () => appConfig.baseURL;
-const nuxtAppCtx = getContext("nuxt-app");
+const nuxtAppCtx = /* @__PURE__ */ getContext("nuxt-app");
 const NuxtPluginIndicator = "__nuxt_plugin";
 function createNuxtApp(options) {
   let hydratingCount = 0;
   const nuxtApp = {
     provide: void 0,
     globalName: "nuxt",
+    versions: {
+      get nuxt() {
+        return "3.3.3";
+      },
+      get vue() {
+        return nuxtApp.vueApp.version;
+      }
+    },
     payload: reactive({
       data: {},
       state: {},
@@ -64,6 +72,14 @@ function createNuxtApp(options) {
   };
   nuxtApp.hooks = createHooks();
   nuxtApp.hook = nuxtApp.hooks.hook;
+  {
+    async function contextCaller(hooks, args) {
+      for (const hook of hooks) {
+        await nuxtAppCtx.call(nuxtApp, () => hook(...args));
+      }
+    }
+    nuxtApp.hooks.callHook = (name, ...args) => nuxtApp.hooks.callHookWith(contextCaller, name, ...args);
+  }
   nuxtApp.callHook = nuxtApp.hooks.callHook;
   nuxtApp.provide = (name, value) => {
     const $name = "$" + name;
@@ -160,143 +176,144 @@ function defineGetter$1(obj, key, val) {
 }
 const tailwind = "";
 const components$1 = {};
-const components_plugin_KR1HBZs4kY = defineNuxtPlugin((nuxtApp) => {
+const components_plugin_KR1HBZs4kY = /* @__PURE__ */ defineNuxtPlugin((nuxtApp) => {
   for (const name in components$1) {
     nuxtApp.vueApp.component(name, components$1[name]);
     nuxtApp.vueApp.component("Lazy" + name, components$1[name]);
   }
 });
-function createHead(initHeadObject) {
-  const unhead = createHead$1();
-  const legacyHead = {
-    unhead,
+function resolveUnref(r) {
+  return typeof r === "function" ? r() : unref(r);
+}
+function resolveUnrefHeadInput(ref2, lastKey = "") {
+  if (ref2 instanceof Promise)
+    return ref2;
+  const root = resolveUnref(ref2);
+  if (!ref2 || !root)
+    return root;
+  if (Array.isArray(root))
+    return root.map((r) => resolveUnrefHeadInput(r, lastKey));
+  if (typeof root === "object") {
+    return Object.fromEntries(
+      Object.entries(root).map(([k, v]) => {
+        if (k === "titleTemplate" || k.startsWith("on"))
+          return [k, unref(v)];
+        return [k, resolveUnrefHeadInput(v, k)];
+      })
+    );
+  }
+  return root;
+}
+const Vue3 = version.startsWith("3");
+const headSymbol = "usehead";
+function injectHead() {
+  return getCurrentInstance() && inject(headSymbol) || getActiveHead();
+}
+function vueInstall(head) {
+  const plugin = {
     install(app) {
-      if (version.startsWith("3")) {
-        app.config.globalProperties.$head = unhead;
-        app.provide("usehead", unhead);
+      if (Vue3) {
+        app.config.globalProperties.$unhead = head;
+        app.config.globalProperties.$head = head;
+        app.provide(headSymbol, head);
       }
-    },
-    use(plugin) {
-      unhead.use(plugin);
-    },
-    resolveTags() {
-      return unhead.resolveTags();
-    },
-    headEntries() {
-      return unhead.headEntries();
-    },
-    headTags() {
-      return unhead.resolveTags();
-    },
-    push(input, options) {
-      return unhead.push(input, options);
-    },
-    addEntry(input, options) {
-      return unhead.push(input, options);
-    },
-    addHeadObjs(input, options) {
-      return unhead.push(input, options);
-    },
-    addReactiveEntry(input, options) {
-      const api = useHead(input, options);
-      if (typeof api !== "undefined")
-        return api.dispose;
-      return () => {
-      };
-    },
-    removeHeadObjs() {
-    },
-    updateDOM(document2, force) {
-      if (force)
-        renderDOMHead(unhead, { document: document2 });
-      else
-        debouncedRenderDOMHead(unhead, { delayFn: (fn) => setTimeout(() => fn(), 50), document: document2 });
-    },
-    internalHooks: unhead.hooks,
-    hooks: {
-      "before:dom": [],
-      "resolved:tags": [],
-      "resolved:entries": []
     }
   };
-  unhead.addHeadObjs = legacyHead.addHeadObjs;
-  unhead.updateDOM = legacyHead.updateDOM;
-  unhead.hooks.hook("dom:beforeRender", (ctx) => {
-    for (const hook of legacyHead.hooks["before:dom"]) {
-      if (hook() === false)
-        ctx.shouldRender = false;
+  return plugin.install;
+}
+function createServerHead(options = {}) {
+  const head = createServerHead$1({
+    ...options,
+    plugins: [
+      VueReactiveUseHeadPlugin(),
+      ...(options == null ? void 0 : options.plugins) || []
+    ]
+  });
+  head.install = vueInstall(head);
+  return head;
+}
+const VueReactiveUseHeadPlugin = () => {
+  return defineHeadPlugin({
+    hooks: {
+      "entries:resolve": function(ctx) {
+        for (const entry2 of ctx.entries)
+          entry2.resolvedInput = resolveUnrefHeadInput(entry2.input);
+      }
     }
   });
-  if (initHeadObject)
-    legacyHead.addHeadObjs(initHeadObject);
-  return legacyHead;
+};
+function clientUseHead(input, options = {}) {
+  const head = injectHead();
+  const deactivated = ref(false);
+  const resolvedInput = ref({});
+  watchEffect(() => {
+    resolvedInput.value = deactivated.value ? {} : resolveUnrefHeadInput(input);
+  });
+  const entry2 = head.push(resolvedInput.value, options);
+  watch(resolvedInput, (e) => {
+    entry2.patch(e);
+  });
+  getCurrentInstance();
+  return entry2;
 }
-version.startsWith("2.");
+function serverUseHead(input, options = {}) {
+  const head = injectHead();
+  return head.push(input, options);
+}
+function useHead(input, options = {}) {
+  var _a;
+  const head = injectHead();
+  if (head) {
+    const isBrowser = !!((_a = head.resolvedOptions) == null ? void 0 : _a.document);
+    if (options.mode === "server" && isBrowser || options.mode === "client" && !isBrowser)
+      return;
+    return isBrowser ? clientUseHead(input, options) : serverUseHead(input, options);
+  }
+}
 const appHead = { "meta": [{ "charset": "utf-8" }, { "name": "viewport", "content": "width=device-width, initial-scale=1" }, { "name": "robots", "content": "noindex, nofollow" }, { "name": "robots", "content": "noimageindex" }], "link": [{ "rel": "icon", "type": "image/x-icon", "href": "/favicon.ico" }, { "rel": "preconnect", "href": "https://fonts.googleapis.com" }, { "rel": "preconnect", "href": "https://fonts.gstatic.com" }, { "rel": "stylesheet", "href": "https://fonts.googleapis.com/css?family=Playfair+Display|Source+Sans+Pro:400,600&display=swap" }, { "rel": "stylesheet", "href": "https://fonts.googleapis.com/css?family=Fredoka+One&display=swap" }], "style": [], "script": [], "noscript": [], "htmlAttrs": { "lang": "en" }, "bodyAttrs": { "class": "bg-white text-grey-700 main leading-normal text-base tracking-normal" } };
 const appLayoutTransition = false;
 const appPageTransition = false;
 const appKeepalive = false;
-const vueuse_head_plugin_D7WGfuP1A0 = defineNuxtPlugin((nuxtApp) => {
+const unhead_KgADcZ0jPj = /* @__PURE__ */ defineNuxtPlugin((nuxtApp) => {
+  const createHead = createServerHead;
   const head = createHead();
   head.push(appHead);
   nuxtApp.vueApp.use(head);
-  nuxtApp._useHead = useHead;
   {
     nuxtApp.ssrContext.renderMeta = async () => {
-      const meta = await renderSSRHead(head.unhead);
+      const meta = await renderSSRHead(head);
       return {
         ...meta,
         bodyScriptsPrepend: meta.bodyTagsOpen,
-        // resolves naming difference with NuxtMeta and @vueuse/head
+        // resolves naming difference with NuxtMeta and Unhead
         bodyScripts: meta.bodyTags
       };
     };
   }
 });
-const useError = () => toRef(useNuxtApp().payload, "error");
-const showError = (_err) => {
-  const err = createError(_err);
-  try {
-    const nuxtApp = useNuxtApp();
-    nuxtApp.callHook("app:error", err);
-    const error2 = useError();
-    error2.value = error2.value || err;
-  } catch {
-    throw err;
-  }
-  return err;
-};
-const createError = (err) => {
-  const _err = createError$1(err);
-  _err.__nuxt_error = true;
-  return _err;
-};
-function useRequestHeaders(include) {
-  var _a;
-  const headers = ((_a = useNuxtApp().ssrContext) == null ? void 0 : _a.event.node.req.headers) ?? {};
-  if (!include) {
-    return headers;
-  }
-  return Object.fromEntries(include.map((key) => key.toLowerCase()).filter((key) => headers[key]).map((key) => [key, headers[key]]));
+function polyfillAsVueUseHead(head) {
+  const polyfilled = head;
+  polyfilled.headTags = head.resolveTags;
+  polyfilled.addEntry = head.push;
+  polyfilled.addHeadObjs = head.push;
+  polyfilled.addReactiveEntry = (input, options) => {
+    const api = useHead(input, options);
+    if (typeof api !== "undefined")
+      return api.dispose;
+    return () => {
+    };
+  };
+  polyfilled.removeHeadObjs = () => {
+  };
+  polyfilled.updateDOM = () => {
+    head.hooks.callHook("entries:updated", head);
+  };
+  polyfilled.unhead = head;
+  return polyfilled;
 }
-function useRequestEvent(nuxtApp = useNuxtApp()) {
-  var _a;
-  return (_a = nuxtApp.ssrContext) == null ? void 0 : _a.event;
-}
-function useRequestFetch() {
-  var _a;
-  const event = (_a = useNuxtApp().ssrContext) == null ? void 0 : _a.event;
-  return (event == null ? void 0 : event.$fetch) || globalThis.$fetch;
-}
-function setResponseStatus(code2, message) {
-  const event = useRequestEvent();
-  if (event) {
-    event.node.res.statusCode = code2;
-    if (message) {
-      event.node.res.statusMessage = message;
-    }
-  }
-}
+const vueuse_head_polyfill_M7DKUOwKp5 = /* @__PURE__ */ defineNuxtPlugin((nuxtApp) => {
+  polyfillAsVueUseHead(nuxtApp.vueApp._context.provides.usehead);
+});
 function useState(...args) {
   const autoKey = typeof args[args.length - 1] === "string" ? args.pop() : void 0;
   if (typeof args[0] !== "string") {
@@ -322,6 +339,29 @@ function useState(...args) {
   }
   return state;
 }
+function useRequestHeaders(include) {
+  var _a;
+  const headers = ((_a = useNuxtApp().ssrContext) == null ? void 0 : _a.event.node.req.headers) ?? {};
+  if (!include) {
+    return headers;
+  }
+  return Object.fromEntries(include.map((key) => key.toLowerCase()).filter((key) => headers[key]).map((key) => [key, headers[key]]));
+}
+function useRequestEvent(nuxtApp = useNuxtApp()) {
+  var _a;
+  return (_a = nuxtApp.ssrContext) == null ? void 0 : _a.event;
+}
+function useRequestFetch() {
+  var _a;
+  const event = (_a = useNuxtApp().ssrContext) == null ? void 0 : _a.event;
+  return (event == null ? void 0 : event.$fetch) || globalThis.$fetch;
+}
+function setResponseStatus(arg1, arg2, arg3) {
+  if (arg1 && typeof arg1 !== "number") {
+    return setResponseStatus$1(arg1, arg2, arg3);
+  }
+  return setResponseStatus$1(useRequestEvent(), arg1, arg2);
+}
 const useRouter = () => {
   var _a;
   return (_a = useNuxtApp()) == null ? void 0 : _a.$router;
@@ -335,10 +375,16 @@ const useRoute = () => {
 const defineNuxtRouteMiddleware = (middleware) => middleware;
 const addRouteMiddleware = (name, middleware, options = {}) => {
   const nuxtApp = useNuxtApp();
-  if (options.global || typeof name === "function") {
-    nuxtApp._middleware.global.push(typeof name === "function" ? name : middleware);
+  const global2 = options.global || typeof name !== "string";
+  const mw = typeof name !== "string" ? name : middleware;
+  if (!mw) {
+    console.warn("[nuxt] No route middleware passed to `addRouteMiddleware`.", name);
+    return;
+  }
+  if (global2) {
+    nuxtApp._middleware.global.push(mw);
   } else {
-    nuxtApp._middleware.named[name] = middleware;
+    nuxtApp._middleware.named[name] = mw;
   }
 };
 const isProcessingMiddleware = () => {
@@ -356,9 +402,9 @@ const navigateTo = (to, options) => {
     to = "/";
   }
   const toPath = typeof to === "string" ? to : to.path || "/";
-  const isExternal = hasProtocol(toPath, true);
+  const isExternal = (options == null ? void 0 : options.external) || hasProtocol(toPath, { acceptRelative: true });
   if (isExternal && !(options == null ? void 0 : options.external)) {
-    throw new Error("Navigating to external URL is not allowed by default. Use `nagivateTo (url, { external: true })`.");
+    throw new Error("Navigating to external URL is not allowed by default. Use `navigateTo (url, { external: true })`.");
   }
   if (isExternal && parseURL(toPath).protocol === "script:") {
     throw new Error("Cannot navigate to an URL with script protocol.");
@@ -368,7 +414,7 @@ const navigateTo = (to, options) => {
     const nuxtApp = useNuxtApp();
     if (nuxtApp.ssrContext && nuxtApp.ssrContext.event) {
       if (isProcessingMiddleware() && !isExternal) {
-        setResponseStatus((options == null ? void 0 : options.redirectCode) || 302);
+        setResponseStatus(nuxtApp.ssrContext.event, (options == null ? void 0 : options.redirectCode) || 302);
         return to;
       }
       const redirectLocation = isExternal ? toPath : joinURL(useRuntimeConfig().app.baseURL, router.resolve(to).fullPath || "/");
@@ -385,58 +431,66 @@ const navigateTo = (to, options) => {
   }
   return (options == null ? void 0 : options.replace) ? router.replace(to) : router.push(to);
 };
-const __nuxt_page_meta$4 = {};
-const __nuxt_page_meta$3 = {};
-const __nuxt_page_meta$2 = {};
-const __nuxt_page_meta$1 = {};
-const __nuxt_page_meta = {};
+const useError = () => toRef(useNuxtApp().payload, "error");
+const showError = (_err) => {
+  const err = createError(_err);
+  try {
+    const nuxtApp = useNuxtApp();
+    nuxtApp.callHook("app:error", err);
+    const error2 = useError();
+    error2.value = error2.value || err;
+  } catch {
+    throw err;
+  }
+  return err;
+};
+const createError = (err) => {
+  const _err = createError$1(err);
+  _err.__nuxt_error = true;
+  return _err;
+};
 const _routes = [
   {
-    name: (__nuxt_page_meta$4 == null ? void 0 : __nuxt_page_meta$4.name) ?? "type-id-slug___en",
-    path: (__nuxt_page_meta$4 == null ? void 0 : __nuxt_page_meta$4.path) ?? "/:type/:id-:slug",
-    children: [],
-    meta: __nuxt_page_meta$4,
-    alias: (__nuxt_page_meta$4 == null ? void 0 : __nuxt_page_meta$4.alias) || [],
-    redirect: (__nuxt_page_meta$4 == null ? void 0 : __nuxt_page_meta$4.redirect) || void 0,
-    component: () => import("./_nuxt/_id_-_slug_-860b26f1.js").then((m) => m.default || m)
+    name: "type-id-slug___en",
+    path: "/:type/:id-:slug",
+    meta: {},
+    alias: [],
+    redirect: void 0,
+    component: () => import("./_nuxt/_id_-_slug_-3bd6dc5e.js").then((m) => m.default || m)
   },
   {
-    name: (__nuxt_page_meta$3 == null ? void 0 : __nuxt_page_meta$3.name) ?? "type-pages-page___en",
-    path: (__nuxt_page_meta$3 == null ? void 0 : __nuxt_page_meta$3.path) ?? "/:type/pages/:page",
-    children: [],
-    meta: __nuxt_page_meta$3,
-    alias: (__nuxt_page_meta$3 == null ? void 0 : __nuxt_page_meta$3.alias) || [],
-    redirect: (__nuxt_page_meta$3 == null ? void 0 : __nuxt_page_meta$3.redirect) || void 0,
-    component: () => import("./_nuxt/_page_-93c2018c.js").then((m) => m.default || m)
+    name: "type-pages-page___en",
+    path: "/:type/pages/:page",
+    meta: {},
+    alias: [],
+    redirect: void 0,
+    component: () => import("./_nuxt/_page_-5c136515.js").then((m) => m.default || m)
   },
   {
-    name: (__nuxt_page_meta$2 == null ? void 0 : __nuxt_page_meta$2.name) ?? "index___en",
-    path: (__nuxt_page_meta$2 == null ? void 0 : __nuxt_page_meta$2.path) ?? "/",
-    children: [],
+    name: "index___en",
+    path: "/",
     url: "/",
-    meta: __nuxt_page_meta$2,
-    alias: (__nuxt_page_meta$2 == null ? void 0 : __nuxt_page_meta$2.alias) || [],
-    redirect: (__nuxt_page_meta$2 == null ? void 0 : __nuxt_page_meta$2.redirect) || void 0,
-    component: () => import("./_nuxt/index-89cb6769.js").then((m) => m.default || m)
+    meta: {},
+    alias: [],
+    redirect: void 0,
+    component: () => import("./_nuxt/index-1030a88f.js").then((m) => m.default || m)
   },
   {
-    name: (__nuxt_page_meta$1 == null ? void 0 : __nuxt_page_meta$1.name) ?? "privacy-policy___en",
-    path: (__nuxt_page_meta$1 == null ? void 0 : __nuxt_page_meta$1.path) ?? "/privacy-policy",
-    children: [],
+    name: "privacy-policy___en",
+    path: "/privacy-policy",
     url: "/privacy-policy",
-    meta: __nuxt_page_meta$1,
-    alias: (__nuxt_page_meta$1 == null ? void 0 : __nuxt_page_meta$1.alias) || [],
-    redirect: (__nuxt_page_meta$1 == null ? void 0 : __nuxt_page_meta$1.redirect) || void 0,
-    component: () => import("./_nuxt/privacy-policy-d9f9c7a9.js").then((m) => m.default || m)
+    meta: {},
+    alias: [],
+    redirect: void 0,
+    component: () => import("./_nuxt/privacy-policy-cbd5c925.js").then((m) => m.default || m)
   },
   {
-    name: (__nuxt_page_meta == null ? void 0 : __nuxt_page_meta.name) ?? "search-search___en",
-    path: (__nuxt_page_meta == null ? void 0 : __nuxt_page_meta.path) ?? "/search/:search",
-    children: [],
-    meta: __nuxt_page_meta,
-    alias: (__nuxt_page_meta == null ? void 0 : __nuxt_page_meta.alias) || [],
-    redirect: (__nuxt_page_meta == null ? void 0 : __nuxt_page_meta.redirect) || void 0,
-    component: () => import("./_nuxt/_search_-6d478674.js").then((m) => m.default || m)
+    name: "search-search___en",
+    path: "/search/:search",
+    meta: {},
+    alias: [],
+    redirect: void 0,
+    component: () => import("./_nuxt/_search_-dd4dce9a.js").then((m) => m.default || m)
   }
 ];
 const routerOptions0 = {
@@ -492,23 +546,27 @@ const routerOptions = {
   ...configRouterOptions,
   ...routerOptions0
 };
-const validate = defineNuxtRouteMiddleware(async (to) => {
+const validate = /* @__PURE__ */ defineNuxtRouteMiddleware(async (to) => {
   var _a;
   let __temp, __restore;
   if (!((_a = to.meta) == null ? void 0 : _a.validate)) {
     return;
   }
+  useNuxtApp();
+  useRouter();
   const result = ([__temp, __restore] = executeAsync(() => Promise.resolve(to.meta.validate(to))), __temp = await __temp, __restore(), __temp);
   if (result === true) {
     return;
   }
-  return result;
+  {
+    return result;
+  }
 });
 const globalMiddleware = [
   validate
 ];
 const namedMiddleware = {};
-const router_Pg0DINazwm = defineNuxtPlugin(async (nuxtApp) => {
+const router_jmwsqit4Rs = /* @__PURE__ */ defineNuxtPlugin(async (nuxtApp) => {
   var _a, _b;
   let __temp, __restore;
   let routerBase = useRuntimeConfig().app.baseURL;
@@ -617,7 +675,7 @@ const router_Pg0DINazwm = defineNuxtPlugin(async (nuxtApp) => {
       })]);
     } else {
       const currentURL = to.fullPath || "/";
-      if (!isEqual(currentURL, initialURL)) {
+      if (!isEqual(currentURL, initialURL, { trailingSlash: true })) {
         const event = await callWithNuxt(nuxtApp, useRequestEvent);
         const options = { redirectCode: event.node.res.statusCode !== 200 ? event.node.res.statusCode || 302 : 302 };
         await callWithNuxt(nuxtApp, navigateTo, [currentURL, options]);
@@ -638,276 +696,333 @@ const router_Pg0DINazwm = defineNuxtPlugin(async (nuxtApp) => {
   });
   return { provide: { router } };
 });
-const firstNonUndefined = (...args) => args.find((arg) => arg !== void 0);
-const DEFAULT_EXTERNAL_REL_ATTRIBUTE = "noopener noreferrer";
-function defineNuxtLink(options) {
-  const componentName = options.componentName || "NuxtLink";
-  return defineComponent({
-    name: componentName,
-    props: {
-      // Routing
-      to: {
-        type: [String, Object],
-        default: void 0,
-        required: false
-      },
-      href: {
-        type: [String, Object],
-        default: void 0,
-        required: false
-      },
-      // Attributes
-      target: {
-        type: String,
-        default: void 0,
-        required: false
-      },
-      rel: {
-        type: String,
-        default: void 0,
-        required: false
-      },
-      noRel: {
-        type: Boolean,
-        default: void 0,
-        required: false
-      },
-      // Prefetching
-      prefetch: {
-        type: Boolean,
-        default: void 0,
-        required: false
-      },
-      noPrefetch: {
-        type: Boolean,
-        default: void 0,
-        required: false
-      },
-      // Styling
-      activeClass: {
-        type: String,
-        default: void 0,
-        required: false
-      },
-      exactActiveClass: {
-        type: String,
-        default: void 0,
-        required: false
-      },
-      prefetchedClass: {
-        type: String,
-        default: void 0,
-        required: false
-      },
-      // Vue Router's `<RouterLink>` additional props
-      replace: {
-        type: Boolean,
-        default: void 0,
-        required: false
-      },
-      ariaCurrentValue: {
-        type: String,
-        default: void 0,
-        required: false
-      },
-      // Edge cases handling
-      external: {
-        type: Boolean,
-        default: void 0,
-        required: false
-      },
-      // Slot API
-      custom: {
-        type: Boolean,
-        default: void 0,
-        required: false
-      }
-    },
-    setup(props, { slots }) {
-      const router = useRouter();
-      const to = computed(() => {
-        return props.to || props.href || "";
-      });
-      const isExternal = computed(() => {
-        if (props.external) {
-          return true;
-        }
-        if (props.target && props.target !== "_self") {
-          return true;
-        }
-        if (typeof to.value === "object") {
-          return false;
-        }
-        return to.value === "" || hasProtocol(to.value, true);
-      });
-      const prefetched = ref(false);
-      const el = void 0;
-      return () => {
-        var _a, _b;
-        if (!isExternal.value) {
-          return h(
-            resolveComponent("RouterLink"),
-            {
-              ref: void 0,
-              to: to.value,
-              ...prefetched.value && !props.custom ? { class: props.prefetchedClass || options.prefetchedClass } : {},
-              activeClass: props.activeClass || options.activeClass,
-              exactActiveClass: props.exactActiveClass || options.exactActiveClass,
-              replace: props.replace,
-              ariaCurrentValue: props.ariaCurrentValue,
-              custom: props.custom
-            },
-            slots.default
-          );
-        }
-        const href = typeof to.value === "object" ? ((_a = router.resolve(to.value)) == null ? void 0 : _a.href) ?? null : to.value || null;
-        const target = props.target || null;
-        const rel = props.noRel ? null : firstNonUndefined(props.rel, options.externalRelAttribute, href ? DEFAULT_EXTERNAL_REL_ATTRIBUTE : "") || null;
-        const navigate2 = () => navigateTo(href, { replace: props.replace });
-        if (props.custom) {
-          if (!slots.default) {
-            return null;
-          }
-          return slots.default({
-            href,
-            navigate: navigate2,
-            route: router.resolve(href),
-            rel,
-            target,
-            isExternal: isExternal.value,
-            isActive: false,
-            isExactActive: false
-          });
-        }
-        return h("a", { ref: el, href, rel, target }, (_b = slots.default) == null ? void 0 : _b.call(slots));
-      };
-    }
-  });
-}
-const __nuxt_component_2 = defineNuxtLink({ componentName: "NuxtLink" });
-function isObject$2(value) {
-  return value !== null && typeof value === "object";
-}
-function _defu(baseObject, defaults, namespace = ".", merger) {
-  if (!isObject$2(defaults)) {
-    return _defu(baseObject, {}, namespace, merger);
-  }
-  const object = Object.assign({}, defaults);
-  for (const key in baseObject) {
-    if (key === "__proto__" || key === "constructor") {
-      continue;
-    }
-    const value = baseObject[key];
-    if (value === null || value === void 0) {
-      continue;
-    }
-    if (merger && merger(object, key, value, namespace)) {
-      continue;
-    }
-    if (Array.isArray(value) && Array.isArray(object[key])) {
-      object[key] = [...value, ...object[key]];
-    } else if (isObject$2(value) && isObject$2(object[key])) {
-      object[key] = _defu(
-        value,
-        object[key],
-        (namespace ? `${namespace}.` : "") + key.toString(),
-        merger
-      );
-    } else {
-      object[key] = value;
-    }
-  }
-  return object;
-}
-function createDefu(merger) {
-  return (...arguments_) => (
-    // eslint-disable-next-line unicorn/no-array-reduce
-    arguments_.reduce((p, c) => _defu(p, c, "", merger), {})
-  );
-}
-const defuFn = createDefu((object, key, currentValue) => {
-  if (typeof object[key] !== "undefined" && typeof currentValue === "function") {
-    object[key] = currentValue(object[key]);
-    return true;
-  }
+const composition_sLxaNGmlSL = /* @__PURE__ */ defineNuxtPlugin(() => {
 });
-const inlineConfig = {};
-defuFn(inlineConfig);
-const composition_sLxaNGmlSL = defineNuxtPlugin(() => {
-});
+var commonjsGlobal = typeof globalThis !== "undefined" ? globalThis : typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : {};
+var sharedExports = {};
+var shared$1 = {
+  get exports() {
+    return sharedExports;
+  },
+  set exports(v) {
+    sharedExports = v;
+  }
+};
+var shared_prod = {};
 /*!
   * shared v9.3.0-beta.16
   * (c) 2023 kazuya kawaguchi
   * Released under the MIT License.
   */
-const inBrowser = false;
-if (process.env.NODE_ENV !== "production")
-  ;
-const RE_ARGS = /\{([0-9a-zA-Z]+)\}/g;
-function format(message, ...args) {
-  if (args.length === 1 && isObject$1(args[0])) {
-    args = args[0];
+var hasRequiredShared_prod;
+function requireShared_prod() {
+  if (hasRequiredShared_prod)
+    return shared_prod;
+  hasRequiredShared_prod = 1;
+  Object.defineProperty(shared_prod, "__esModule", { value: true });
+  const inBrowser = false;
+  let mark;
+  let measure;
+  const RE_ARGS = /\{([0-9a-zA-Z]+)\}/g;
+  function format(message, ...args) {
+    if (args.length === 1 && isObject2(args[0])) {
+      args = args[0];
+    }
+    if (!args || !args.hasOwnProperty) {
+      args = {};
+    }
+    return message.replace(RE_ARGS, (match, identifier) => {
+      return args.hasOwnProperty(identifier) ? args[identifier] : "";
+    });
   }
-  if (!args || !args.hasOwnProperty) {
-    args = {};
-  }
-  return message.replace(RE_ARGS, (match, identifier) => {
-    return args.hasOwnProperty(identifier) ? args[identifier] : "";
-  });
-}
-const makeSymbol$1 = (name, shareable = false) => !shareable ? Symbol(name) : Symbol.for(name);
-const isNumber = (val) => typeof val === "number" && isFinite(val);
-const isRegExp = (val) => toTypeString(val) === "[object RegExp]";
-const isEmptyObject = (val) => isPlainObject(val) && Object.keys(val).length === 0;
-function warn$1(msg, err) {
-  if (typeof console !== "undefined") {
-    console.warn(`[intlify] ` + msg);
-    if (err) {
-      console.warn(err.stack);
+  const makeSymbol2 = (name, shareable = false) => !shareable ? Symbol(name) : Symbol.for(name);
+  const generateFormatCacheKey = (locale, key, source) => friendlyJSONstringify({ l: locale, k: key, s: source });
+  const friendlyJSONstringify = (json) => JSON.stringify(json).replace(/\u2028/g, "\\u2028").replace(/\u2029/g, "\\u2029").replace(/\u0027/g, "\\u0027");
+  const isNumber = (val) => typeof val === "number" && isFinite(val);
+  const isDate = (val) => toTypeString(val) === "[object Date]";
+  const isRegExp = (val) => toTypeString(val) === "[object RegExp]";
+  const isEmptyObject = (val) => isPlainObject(val) && Object.keys(val).length === 0;
+  function warn2(msg, err) {
+    if (typeof console !== "undefined") {
+      console.warn(`[intlify] ` + msg);
+      if (err) {
+        console.warn(err.stack);
+      }
     }
   }
-}
-const assign$1 = Object.assign;
-let _globalThis;
-const getGlobalThis = () => {
-  return _globalThis || (_globalThis = typeof globalThis !== "undefined" ? globalThis : typeof self !== "undefined" ? self : typeof global !== "undefined" ? global : {});
-};
-const hasOwnProperty = Object.prototype.hasOwnProperty;
-function hasOwn(obj, key) {
-  return hasOwnProperty.call(obj, key);
-}
-const isArray$1 = Array.isArray;
-const isFunction$1 = (val) => typeof val === "function";
-const isString$1 = (val) => typeof val === "string";
-const isBoolean$1 = (val) => typeof val === "boolean";
-const isObject$1 = (val) => val !== null && typeof val === "object";
-const objectToString = Object.prototype.toString;
-const toTypeString = (value) => objectToString.call(value);
-const isPlainObject = (val) => toTypeString(val) === "[object Object]";
-function createEmitter() {
-  const events = /* @__PURE__ */ new Map();
-  const emitter = {
-    events,
-    on(event, handler) {
-      const handlers = events.get(event);
-      const added = handlers && handlers.push(handler);
-      if (!added) {
-        events.set(event, [handler]);
-      }
-    },
-    off(event, handler) {
-      const handlers = events.get(event);
-      if (handlers) {
-        handlers.splice(handlers.indexOf(handler) >>> 0, 1);
-      }
-    },
-    emit(event, payload) {
-      (events.get(event) || []).slice().map((handler) => handler(payload));
-      (events.get("*") || []).slice().map((handler) => handler(event, payload));
-    }
+  const assign2 = Object.assign;
+  let _globalThis;
+  const getGlobalThis = () => {
+    return _globalThis || (_globalThis = typeof globalThis !== "undefined" ? globalThis : typeof self !== "undefined" ? self : typeof commonjsGlobal !== "undefined" ? commonjsGlobal : {});
   };
-  return emitter;
+  function escapeHtml(rawText) {
+    return rawText.replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&apos;");
+  }
+  const hasOwnProperty = Object.prototype.hasOwnProperty;
+  function hasOwn(obj, key) {
+    return hasOwnProperty.call(obj, key);
+  }
+  const isArray2 = Array.isArray;
+  const isFunction2 = (val) => typeof val === "function";
+  const isString2 = (val) => typeof val === "string";
+  const isBoolean = (val) => typeof val === "boolean";
+  const isSymbol2 = (val) => typeof val === "symbol";
+  const isObject2 = (val) => val !== null && typeof val === "object";
+  const isPromise = (val) => {
+    return isObject2(val) && isFunction2(val.then) && isFunction2(val.catch);
+  };
+  const objectToString = Object.prototype.toString;
+  const toTypeString = (value) => objectToString.call(value);
+  const isPlainObject = (val) => toTypeString(val) === "[object Object]";
+  const toDisplayString = (val) => {
+    return val == null ? "" : isArray2(val) || isPlainObject(val) && val.toString === objectToString ? JSON.stringify(val, null, 2) : String(val);
+  };
+  const RANGE = 2;
+  function generateCodeFrame(source, start = 0, end = source.length) {
+    const lines = source.split(/\r?\n/);
+    let count = 0;
+    const res = [];
+    for (let i = 0; i < lines.length; i++) {
+      count += lines[i].length + 1;
+      if (count >= start) {
+        for (let j = i - RANGE; j <= i + RANGE || end > count; j++) {
+          if (j < 0 || j >= lines.length)
+            continue;
+          const line = j + 1;
+          res.push(`${line}${" ".repeat(3 - String(line).length)}|  ${lines[j]}`);
+          const lineLength = lines[j].length;
+          if (j === i) {
+            const pad = start - (count - lineLength) + 1;
+            const length = Math.max(1, end > count ? lineLength - pad : end - start);
+            res.push(`   |  ` + " ".repeat(pad) + "^".repeat(length));
+          } else if (j > i) {
+            if (end > count) {
+              const length = Math.max(Math.min(end - count, lineLength), 1);
+              res.push(`   |  ` + "^".repeat(length));
+            }
+            count += lineLength + 1;
+          }
+        }
+        break;
+      }
+    }
+    return res.join("\n");
+  }
+  function createEmitter() {
+    const events = /* @__PURE__ */ new Map();
+    const emitter = {
+      events,
+      on(event, handler) {
+        const handlers = events.get(event);
+        const added = handlers && handlers.push(handler);
+        if (!added) {
+          events.set(event, [handler]);
+        }
+      },
+      off(event, handler) {
+        const handlers = events.get(event);
+        if (handlers) {
+          handlers.splice(handlers.indexOf(handler) >>> 0, 1);
+        }
+      },
+      emit(event, payload) {
+        (events.get(event) || []).slice().map((handler) => handler(payload));
+        (events.get("*") || []).slice().map((handler) => handler(event, payload));
+      }
+    };
+    return emitter;
+  }
+  shared_prod.assign = assign2;
+  shared_prod.createEmitter = createEmitter;
+  shared_prod.escapeHtml = escapeHtml;
+  shared_prod.format = format;
+  shared_prod.friendlyJSONstringify = friendlyJSONstringify;
+  shared_prod.generateCodeFrame = generateCodeFrame;
+  shared_prod.generateFormatCacheKey = generateFormatCacheKey;
+  shared_prod.getGlobalThis = getGlobalThis;
+  shared_prod.hasOwn = hasOwn;
+  shared_prod.inBrowser = inBrowser;
+  shared_prod.isArray = isArray2;
+  shared_prod.isBoolean = isBoolean;
+  shared_prod.isDate = isDate;
+  shared_prod.isEmptyObject = isEmptyObject;
+  shared_prod.isFunction = isFunction2;
+  shared_prod.isNumber = isNumber;
+  shared_prod.isObject = isObject2;
+  shared_prod.isPlainObject = isPlainObject;
+  shared_prod.isPromise = isPromise;
+  shared_prod.isRegExp = isRegExp;
+  shared_prod.isString = isString2;
+  shared_prod.isSymbol = isSymbol2;
+  shared_prod.makeSymbol = makeSymbol2;
+  shared_prod.mark = mark;
+  shared_prod.measure = measure;
+  shared_prod.objectToString = objectToString;
+  shared_prod.toDisplayString = toDisplayString;
+  shared_prod.toTypeString = toTypeString;
+  shared_prod.warn = warn2;
+  return shared_prod;
 }
+var shared = {};
+/*!
+  * shared v9.3.0-beta.16
+  * (c) 2023 kazuya kawaguchi
+  * Released under the MIT License.
+  */
+var hasRequiredShared;
+function requireShared() {
+  if (hasRequiredShared)
+    return shared;
+  hasRequiredShared = 1;
+  Object.defineProperty(shared, "__esModule", { value: true });
+  const inBrowser = false;
+  shared.mark = void 0;
+  shared.measure = void 0;
+  const RE_ARGS = /\{([0-9a-zA-Z]+)\}/g;
+  function format(message, ...args) {
+    if (args.length === 1 && isObject2(args[0])) {
+      args = args[0];
+    }
+    if (!args || !args.hasOwnProperty) {
+      args = {};
+    }
+    return message.replace(RE_ARGS, (match, identifier) => {
+      return args.hasOwnProperty(identifier) ? args[identifier] : "";
+    });
+  }
+  const makeSymbol2 = (name, shareable = false) => !shareable ? Symbol(name) : Symbol.for(name);
+  const generateFormatCacheKey = (locale, key, source) => friendlyJSONstringify({ l: locale, k: key, s: source });
+  const friendlyJSONstringify = (json) => JSON.stringify(json).replace(/\u2028/g, "\\u2028").replace(/\u2029/g, "\\u2029").replace(/\u0027/g, "\\u0027");
+  const isNumber = (val) => typeof val === "number" && isFinite(val);
+  const isDate = (val) => toTypeString(val) === "[object Date]";
+  const isRegExp = (val) => toTypeString(val) === "[object RegExp]";
+  const isEmptyObject = (val) => isPlainObject(val) && Object.keys(val).length === 0;
+  function warn2(msg, err) {
+    if (typeof console !== "undefined") {
+      console.warn(`[intlify] ` + msg);
+      if (err) {
+        console.warn(err.stack);
+      }
+    }
+  }
+  const assign2 = Object.assign;
+  let _globalThis;
+  const getGlobalThis = () => {
+    return _globalThis || (_globalThis = typeof globalThis !== "undefined" ? globalThis : typeof self !== "undefined" ? self : typeof commonjsGlobal !== "undefined" ? commonjsGlobal : {});
+  };
+  function escapeHtml(rawText) {
+    return rawText.replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&apos;");
+  }
+  const hasOwnProperty = Object.prototype.hasOwnProperty;
+  function hasOwn(obj, key) {
+    return hasOwnProperty.call(obj, key);
+  }
+  const isArray2 = Array.isArray;
+  const isFunction2 = (val) => typeof val === "function";
+  const isString2 = (val) => typeof val === "string";
+  const isBoolean = (val) => typeof val === "boolean";
+  const isSymbol2 = (val) => typeof val === "symbol";
+  const isObject2 = (val) => val !== null && typeof val === "object";
+  const isPromise = (val) => {
+    return isObject2(val) && isFunction2(val.then) && isFunction2(val.catch);
+  };
+  const objectToString = Object.prototype.toString;
+  const toTypeString = (value) => objectToString.call(value);
+  const isPlainObject = (val) => toTypeString(val) === "[object Object]";
+  const toDisplayString = (val) => {
+    return val == null ? "" : isArray2(val) || isPlainObject(val) && val.toString === objectToString ? JSON.stringify(val, null, 2) : String(val);
+  };
+  const RANGE = 2;
+  function generateCodeFrame(source, start = 0, end = source.length) {
+    const lines = source.split(/\r?\n/);
+    let count = 0;
+    const res = [];
+    for (let i = 0; i < lines.length; i++) {
+      count += lines[i].length + 1;
+      if (count >= start) {
+        for (let j = i - RANGE; j <= i + RANGE || end > count; j++) {
+          if (j < 0 || j >= lines.length)
+            continue;
+          const line = j + 1;
+          res.push(`${line}${" ".repeat(3 - String(line).length)}|  ${lines[j]}`);
+          const lineLength = lines[j].length;
+          if (j === i) {
+            const pad = start - (count - lineLength) + 1;
+            const length = Math.max(1, end > count ? lineLength - pad : end - start);
+            res.push(`   |  ` + " ".repeat(pad) + "^".repeat(length));
+          } else if (j > i) {
+            if (end > count) {
+              const length = Math.max(Math.min(end - count, lineLength), 1);
+              res.push(`   |  ` + "^".repeat(length));
+            }
+            count += lineLength + 1;
+          }
+        }
+        break;
+      }
+    }
+    return res.join("\n");
+  }
+  function createEmitter() {
+    const events = /* @__PURE__ */ new Map();
+    const emitter = {
+      events,
+      on(event, handler) {
+        const handlers = events.get(event);
+        const added = handlers && handlers.push(handler);
+        if (!added) {
+          events.set(event, [handler]);
+        }
+      },
+      off(event, handler) {
+        const handlers = events.get(event);
+        if (handlers) {
+          handlers.splice(handlers.indexOf(handler) >>> 0, 1);
+        }
+      },
+      emit(event, payload) {
+        (events.get(event) || []).slice().map((handler) => handler(payload));
+        (events.get("*") || []).slice().map((handler) => handler(event, payload));
+      }
+    };
+    return emitter;
+  }
+  shared.assign = assign2;
+  shared.createEmitter = createEmitter;
+  shared.escapeHtml = escapeHtml;
+  shared.format = format;
+  shared.friendlyJSONstringify = friendlyJSONstringify;
+  shared.generateCodeFrame = generateCodeFrame;
+  shared.generateFormatCacheKey = generateFormatCacheKey;
+  shared.getGlobalThis = getGlobalThis;
+  shared.hasOwn = hasOwn;
+  shared.inBrowser = inBrowser;
+  shared.isArray = isArray2;
+  shared.isBoolean = isBoolean;
+  shared.isDate = isDate;
+  shared.isEmptyObject = isEmptyObject;
+  shared.isFunction = isFunction2;
+  shared.isNumber = isNumber;
+  shared.isObject = isObject2;
+  shared.isPlainObject = isPlainObject;
+  shared.isPromise = isPromise;
+  shared.isRegExp = isRegExp;
+  shared.isString = isString2;
+  shared.isSymbol = isSymbol2;
+  shared.makeSymbol = makeSymbol2;
+  shared.objectToString = objectToString;
+  shared.toDisplayString = toDisplayString;
+  shared.toTypeString = toTypeString;
+  shared.warn = warn2;
+  return shared;
+}
+(function(module) {
+  if (process.env.NODE_ENV === "production") {
+    module.exports = requireShared_prod();
+  } else {
+    module.exports = requireShared();
+  }
+})(shared$1);
 /*!
   * vue-i18n v9.3.0-beta.16
   * (c) 2023 kazuya kawaguchi
@@ -916,7 +1031,7 @@ function createEmitter() {
 const VERSION = "9.3.0-beta.16";
 function initFeatureFlags() {
   if (typeof __INTLIFY_PROD_DEVTOOLS__ !== "boolean") {
-    getGlobalThis().__INTLIFY_PROD_DEVTOOLS__ = false;
+    sharedExports.getGlobalThis().__INTLIFY_PROD_DEVTOOLS__ = false;
   }
 }
 let code$1 = CoreWarnCodes.__EXTEND_POINT__;
@@ -941,7 +1056,7 @@ const warnMessages = {
   [I18nWarnCodes.NOT_FOUND_PARENT_SCOPE]: `Not found parent scope. use the global scope.`
 };
 function getWarnMessage(code2, ...args) {
-  return format(warnMessages[code2], ...args);
+  return sharedExports.format(warnMessages[code2], ...args);
 }
 let code = CompileErrorCodes.__EXTEND_POINT__;
 const inc = () => ++code;
@@ -993,23 +1108,24 @@ const errorMessages = {
   [I18nErrorCodes.MUST_DEFINE_I18N_OPTION_IN_ALLOW_COMPOSITION]: "Must define ‘i18n’ option or custom block in Composition API with using local scope in Legacy API mode",
   [I18nErrorCodes.NOT_AVAILABLE_COMPOSITION_IN_LEGACY]: "Not available Compostion API in Legacy API mode. Please make sure that the legacy API mode is working properly"
 };
-const TranslateVNodeSymbol = /* @__PURE__ */ makeSymbol$1("__translateVNode");
-const DatetimePartsSymbol = /* @__PURE__ */ makeSymbol$1("__datetimeParts");
-const NumberPartsSymbol = /* @__PURE__ */ makeSymbol$1("__numberParts");
-const EnableEmitter = /* @__PURE__ */ makeSymbol$1("__enableEmitter");
-const DisableEmitter = /* @__PURE__ */ makeSymbol$1("__disableEmitter");
-const SetPluralRulesSymbol = makeSymbol$1("__setPluralRules");
-const InejctWithOption = /* @__PURE__ */ makeSymbol$1("__injectWithOption");
+const TranslateVNodeSymbol = /* @__PURE__ */ sharedExports.makeSymbol("__translateVNode");
+const DatetimePartsSymbol = /* @__PURE__ */ sharedExports.makeSymbol("__datetimeParts");
+const NumberPartsSymbol = /* @__PURE__ */ sharedExports.makeSymbol("__numberParts");
+const EnableEmitter = /* @__PURE__ */ sharedExports.makeSymbol("__enableEmitter");
+const DisableEmitter = /* @__PURE__ */ sharedExports.makeSymbol("__disableEmitter");
+const SetPluralRulesSymbol = sharedExports.makeSymbol("__setPluralRules");
+sharedExports.makeSymbol("__intlifyMeta");
+const InejctWithOption = /* @__PURE__ */ sharedExports.makeSymbol("__injectWithOption");
 function handleFlatJson(obj) {
-  if (!isObject$1(obj)) {
+  if (!sharedExports.isObject(obj)) {
     return obj;
   }
   for (const key in obj) {
-    if (!hasOwn(obj, key)) {
+    if (!sharedExports.hasOwn(obj, key)) {
       continue;
     }
     if (!key.includes(".")) {
-      if (isObject$1(obj[key])) {
+      if (sharedExports.isObject(obj[key])) {
         handleFlatJson(obj[key]);
       }
     } else {
@@ -1024,7 +1140,7 @@ function handleFlatJson(obj) {
       }
       currentObj[subKeys[lastIndex]] = obj[key];
       delete obj[key];
-      if (isObject$1(currentObj[subKeys[lastIndex]])) {
+      if (sharedExports.isObject(currentObj[subKeys[lastIndex]])) {
         handleFlatJson(currentObj[subKeys[lastIndex]]);
       }
     }
@@ -1033,8 +1149,8 @@ function handleFlatJson(obj) {
 }
 function getLocaleMessages(locale, options) {
   const { messages, __i18n, messageResolver, flatJson } = options;
-  const ret = isPlainObject(messages) ? messages : isArray$1(__i18n) ? {} : { [locale]: {} };
-  if (isArray$1(__i18n)) {
+  const ret = sharedExports.isPlainObject(messages) ? messages : sharedExports.isArray(__i18n) ? {} : { [locale]: {} };
+  if (sharedExports.isArray(__i18n)) {
     __i18n.forEach((custom) => {
       if ("locale" in custom && "resource" in custom) {
         const { locale: locale2, resource } = custom;
@@ -1045,26 +1161,26 @@ function getLocaleMessages(locale, options) {
           deepCopy$1(resource, ret);
         }
       } else {
-        isString$1(custom) && deepCopy$1(JSON.parse(custom), ret);
+        sharedExports.isString(custom) && deepCopy$1(JSON.parse(custom), ret);
       }
     });
   }
   if (messageResolver == null && flatJson) {
     for (const key in ret) {
-      if (hasOwn(ret, key)) {
+      if (sharedExports.hasOwn(ret, key)) {
         handleFlatJson(ret[key]);
       }
     }
   }
   return ret;
 }
-const isNotObjectOrIsArray = (val) => !isObject$1(val) || isArray$1(val);
+const isNotObjectOrIsArray = (val) => !sharedExports.isObject(val) || sharedExports.isArray(val);
 function deepCopy$1(src, des) {
   if (isNotObjectOrIsArray(src) || isNotObjectOrIsArray(des)) {
     throw createI18nError(I18nErrorCodes.INVALID_VALUE);
   }
   for (const key in src) {
-    if (hasOwn(src, key)) {
+    if (sharedExports.hasOwn(src, key)) {
       if (isNotObjectOrIsArray(src[key]) || isNotObjectOrIsArray(des[key])) {
         des[key] = src[key];
       } else {
@@ -1077,7 +1193,7 @@ function getComponentOptions(instance) {
   return instance.type;
 }
 function adjustI18nResources(global2, options, componentOptions) {
-  let messages = isObject$1(options.messages) ? options.messages : {};
+  let messages = sharedExports.isObject(options.messages) ? options.messages : {};
   if ("__i18nGlobal" in componentOptions) {
     messages = getLocaleMessages(globalThis.locale.value, {
       messages,
@@ -1091,7 +1207,7 @@ function adjustI18nResources(global2, options, componentOptions) {
     });
   }
   {
-    if (isObject$1(options.datetimeFormats)) {
+    if (sharedExports.isObject(options.datetimeFormats)) {
       const locales2 = Object.keys(options.datetimeFormats);
       if (locales2.length) {
         locales2.forEach((locale) => {
@@ -1099,7 +1215,7 @@ function adjustI18nResources(global2, options, componentOptions) {
         });
       }
     }
-    if (isObject$1(options.numberFormats)) {
+    if (sharedExports.isObject(options.numberFormats)) {
       const locales2 = Object.keys(options.numberFormats);
       if (locales2.length) {
         locales2.forEach((locale) => {
@@ -1127,28 +1243,28 @@ const getMetaInfo = () => {
 function createComposer(options = {}, VueI18nLegacy) {
   const { __root } = options;
   const _isGlobal = __root === void 0;
-  let _inheritLocale = isBoolean$1(options.inheritLocale) ? options.inheritLocale : true;
+  let _inheritLocale = sharedExports.isBoolean(options.inheritLocale) ? options.inheritLocale : true;
   const _locale = ref(
     // prettier-ignore
-    __root && _inheritLocale ? __root.locale.value : isString$1(options.locale) ? options.locale : DEFAULT_LOCALE$1
+    __root && _inheritLocale ? __root.locale.value : sharedExports.isString(options.locale) ? options.locale : DEFAULT_LOCALE$1
   );
   const _fallbackLocale = ref(
     // prettier-ignore
-    __root && _inheritLocale ? __root.fallbackLocale.value : isString$1(options.fallbackLocale) || isArray$1(options.fallbackLocale) || isPlainObject(options.fallbackLocale) || options.fallbackLocale === false ? options.fallbackLocale : _locale.value
+    __root && _inheritLocale ? __root.fallbackLocale.value : sharedExports.isString(options.fallbackLocale) || sharedExports.isArray(options.fallbackLocale) || sharedExports.isPlainObject(options.fallbackLocale) || options.fallbackLocale === false ? options.fallbackLocale : _locale.value
   );
   const _messages = ref(getLocaleMessages(_locale.value, options));
-  const _datetimeFormats = ref(isPlainObject(options.datetimeFormats) ? options.datetimeFormats : { [_locale.value]: {} });
-  const _numberFormats = ref(isPlainObject(options.numberFormats) ? options.numberFormats : { [_locale.value]: {} });
-  let _missingWarn = __root ? __root.missingWarn : isBoolean$1(options.missingWarn) || isRegExp(options.missingWarn) ? options.missingWarn : true;
-  let _fallbackWarn = __root ? __root.fallbackWarn : isBoolean$1(options.fallbackWarn) || isRegExp(options.fallbackWarn) ? options.fallbackWarn : true;
-  let _fallbackRoot = __root ? __root.fallbackRoot : isBoolean$1(options.fallbackRoot) ? options.fallbackRoot : true;
+  const _datetimeFormats = ref(sharedExports.isPlainObject(options.datetimeFormats) ? options.datetimeFormats : { [_locale.value]: {} });
+  const _numberFormats = ref(sharedExports.isPlainObject(options.numberFormats) ? options.numberFormats : { [_locale.value]: {} });
+  let _missingWarn = __root ? __root.missingWarn : sharedExports.isBoolean(options.missingWarn) || sharedExports.isRegExp(options.missingWarn) ? options.missingWarn : true;
+  let _fallbackWarn = __root ? __root.fallbackWarn : sharedExports.isBoolean(options.fallbackWarn) || sharedExports.isRegExp(options.fallbackWarn) ? options.fallbackWarn : true;
+  let _fallbackRoot = __root ? __root.fallbackRoot : sharedExports.isBoolean(options.fallbackRoot) ? options.fallbackRoot : true;
   let _fallbackFormat = !!options.fallbackFormat;
-  let _missing = isFunction$1(options.missing) ? options.missing : null;
-  let _runtimeMissing = isFunction$1(options.missing) ? defineCoreMissingHandler(options.missing) : null;
-  let _postTranslation = isFunction$1(options.postTranslation) ? options.postTranslation : null;
-  let _warnHtmlMessage = __root ? __root.warnHtmlMessage : isBoolean$1(options.warnHtmlMessage) ? options.warnHtmlMessage : true;
+  let _missing = sharedExports.isFunction(options.missing) ? options.missing : null;
+  let _runtimeMissing = sharedExports.isFunction(options.missing) ? defineCoreMissingHandler(options.missing) : null;
+  let _postTranslation = sharedExports.isFunction(options.postTranslation) ? options.postTranslation : null;
+  let _warnHtmlMessage = __root ? __root.warnHtmlMessage : sharedExports.isBoolean(options.warnHtmlMessage) ? options.warnHtmlMessage : true;
   let _escapeParameter = !!options.escapeParameter;
-  const _modifiers = __root ? __root.modifiers : isPlainObject(options.modifiers) ? options.modifiers : {};
+  const _modifiers = __root ? __root.modifiers : sharedExports.isPlainObject(options.modifiers) ? options.modifiers : {};
   let _pluralRules = options.pluralRules || __root && __root.pluralRules;
   let _context;
   const getCoreContext = () => {
@@ -1174,11 +1290,11 @@ function createComposer(options = {}, VueI18nLegacy) {
     {
       ctxOptions.datetimeFormats = _datetimeFormats.value;
       ctxOptions.numberFormats = _numberFormats.value;
-      ctxOptions.__datetimeFormatters = isPlainObject(_context) ? _context.__datetimeFormatters : void 0;
-      ctxOptions.__numberFormatters = isPlainObject(_context) ? _context.__numberFormatters : void 0;
+      ctxOptions.__datetimeFormatters = sharedExports.isPlainObject(_context) ? _context.__datetimeFormatters : void 0;
+      ctxOptions.__numberFormatters = sharedExports.isPlainObject(_context) ? _context.__numberFormatters : void 0;
     }
     if (process.env.NODE_ENV !== "production") {
-      ctxOptions.__v_emitter = isPlainObject(_context) ? _context.__v_emitter : void 0;
+      ctxOptions.__v_emitter = sharedExports.isPlainObject(_context) ? _context.__v_emitter : void 0;
     }
     const ctx = createCoreContext(ctxOptions);
     _isGlobal && setFallbackContext(ctx);
@@ -1214,7 +1330,7 @@ function createComposer(options = {}, VueI18nLegacy) {
   const datetimeFormats = /* @__PURE__ */ computed(() => _datetimeFormats.value);
   const numberFormats = /* @__PURE__ */ computed(() => _numberFormats.value);
   function getPostTranslationHandler() {
-    return isFunction$1(_postTranslation) ? _postTranslation : null;
+    return sharedExports.isFunction(_postTranslation) ? _postTranslation : null;
   }
   function setPostTranslationHandler(handler) {
     _postTranslation = handler;
@@ -1252,11 +1368,11 @@ function createComposer(options = {}, VueI18nLegacy) {
     } else {
       ret = fn(_context);
     }
-    if (isNumber(ret) && ret === NOT_REOSLVED) {
+    if (sharedExports.isNumber(ret) && ret === NOT_REOSLVED) {
       const [key, arg2] = argumentParser();
-      if (process.env.NODE_ENV !== "production" && __root && isString$1(key) && isResolvedTranslateMessage(warnType, arg2)) {
+      if (process.env.NODE_ENV !== "production" && __root && sharedExports.isString(key) && isResolvedTranslateMessage(warnType, arg2)) {
         if (_fallbackRoot && (isTranslateFallbackWarn(_fallbackWarn, key) || isTranslateMissingWarn(_missingWarn, key))) {
-          warn$1(getWarnMessage(I18nWarnCodes.FALLBACK_TO_ROOT, {
+          sharedExports.warn(getWarnMessage(I18nWarnCodes.FALLBACK_TO_ROOT, {
             key,
             type: warnType
           }));
@@ -1281,23 +1397,23 @@ function createComposer(options = {}, VueI18nLegacy) {
     }
   };
   function t(...args) {
-    return wrapWithDeps((context) => Reflect.apply(translate, null, [context, ...args]), () => parseTranslateArgs(...args), "translate", (root) => Reflect.apply(root.t, root, [...args]), (key) => key, (val) => isString$1(val));
+    return wrapWithDeps((context) => Reflect.apply(translate, null, [context, ...args]), () => parseTranslateArgs(...args), "translate", (root) => Reflect.apply(root.t, root, [...args]), (key) => key, (val) => sharedExports.isString(val));
   }
   function rt(...args) {
     const [arg1, arg2, arg3] = args;
-    if (arg3 && !isObject$1(arg3)) {
+    if (arg3 && !sharedExports.isObject(arg3)) {
       throw createI18nError(I18nErrorCodes.INVALID_ARGUMENT);
     }
-    return t(...[arg1, arg2, assign$1({ resolvedMessage: true }, arg3 || {})]);
+    return t(...[arg1, arg2, sharedExports.assign({ resolvedMessage: true }, arg3 || {})]);
   }
   function d(...args) {
-    return wrapWithDeps((context) => Reflect.apply(datetime, null, [context, ...args]), () => parseDateTimeArgs(...args), "datetime format", (root) => Reflect.apply(root.d, root, [...args]), () => MISSING_RESOLVE_VALUE, (val) => isString$1(val));
+    return wrapWithDeps((context) => Reflect.apply(datetime, null, [context, ...args]), () => parseDateTimeArgs(...args), "datetime format", (root) => Reflect.apply(root.d, root, [...args]), () => MISSING_RESOLVE_VALUE, (val) => sharedExports.isString(val));
   }
   function n(...args) {
-    return wrapWithDeps((context) => Reflect.apply(number, null, [context, ...args]), () => parseNumberArgs(...args), "number format", (root) => Reflect.apply(root.n, root, [...args]), () => MISSING_RESOLVE_VALUE, (val) => isString$1(val));
+    return wrapWithDeps((context) => Reflect.apply(number, null, [context, ...args]), () => parseNumberArgs(...args), "number format", (root) => Reflect.apply(root.n, root, [...args]), () => MISSING_RESOLVE_VALUE, (val) => sharedExports.isString(val));
   }
   function normalize(values) {
-    return values.map((val) => isString$1(val) || isNumber(val) || isBoolean$1(val) ? createTextNode(String(val)) : val);
+    return values.map((val) => sharedExports.isString(val) || sharedExports.isNumber(val) || sharedExports.isBoolean(val) ? createTextNode(String(val)) : val);
   }
   const interpolate = (val) => val;
   const processor = {
@@ -1323,7 +1439,7 @@ function createComposer(options = {}, VueI18nLegacy) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (root) => root[TranslateVNodeSymbol](...args),
       (key) => [createTextNode(key)],
-      (val) => isArray$1(val)
+      (val) => sharedExports.isArray(val)
     );
   }
   function numberParts(...args) {
@@ -1334,7 +1450,7 @@ function createComposer(options = {}, VueI18nLegacy) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (root) => root[NumberPartsSymbol](...args),
       () => [],
-      (val) => isString$1(val) || isArray$1(val)
+      (val) => sharedExports.isString(val) || sharedExports.isArray(val)
     );
   }
   function datetimeParts(...args) {
@@ -1345,7 +1461,7 @@ function createComposer(options = {}, VueI18nLegacy) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (root) => root[DatetimePartsSymbol](...args),
       () => [],
-      (val) => isString$1(val) || isArray$1(val)
+      (val) => sharedExports.isString(val) || sharedExports.isArray(val)
     );
   }
   function setPluralRules(rules) {
@@ -1353,7 +1469,7 @@ function createComposer(options = {}, VueI18nLegacy) {
     _context.pluralRules = _pluralRules;
   }
   function te(key, locale2) {
-    const targetLocale = isString$1(locale2) ? locale2 : _locale.value;
+    const targetLocale = sharedExports.isString(locale2) ? locale2 : _locale.value;
     const message = getLocaleMessage(targetLocale);
     return _context.messageResolver(message, key) !== null;
   }
@@ -1389,31 +1505,31 @@ function createComposer(options = {}, VueI18nLegacy) {
   function getDateTimeFormat(locale2) {
     return _datetimeFormats.value[locale2] || {};
   }
-  function setDateTimeFormat(locale2, format2) {
-    _datetimeFormats.value[locale2] = format2;
+  function setDateTimeFormat(locale2, format) {
+    _datetimeFormats.value[locale2] = format;
     _context.datetimeFormats = _datetimeFormats.value;
-    clearDateTimeFormat(_context, locale2, format2);
+    clearDateTimeFormat(_context, locale2, format);
   }
-  function mergeDateTimeFormat(locale2, format2) {
-    _datetimeFormats.value[locale2] = assign$1(_datetimeFormats.value[locale2] || {}, format2);
+  function mergeDateTimeFormat(locale2, format) {
+    _datetimeFormats.value[locale2] = sharedExports.assign(_datetimeFormats.value[locale2] || {}, format);
     _context.datetimeFormats = _datetimeFormats.value;
-    clearDateTimeFormat(_context, locale2, format2);
+    clearDateTimeFormat(_context, locale2, format);
   }
   function getNumberFormat(locale2) {
     return _numberFormats.value[locale2] || {};
   }
-  function setNumberFormat(locale2, format2) {
-    _numberFormats.value[locale2] = format2;
+  function setNumberFormat(locale2, format) {
+    _numberFormats.value[locale2] = format;
     _context.numberFormats = _numberFormats.value;
-    clearNumberFormat(_context, locale2, format2);
+    clearNumberFormat(_context, locale2, format);
   }
-  function mergeNumberFormat(locale2, format2) {
-    _numberFormats.value[locale2] = assign$1(_numberFormats.value[locale2] || {}, format2);
+  function mergeNumberFormat(locale2, format) {
+    _numberFormats.value[locale2] = sharedExports.assign(_numberFormats.value[locale2] || {}, format);
     _context.numberFormats = _numberFormats.value;
-    clearNumberFormat(_context, locale2, format2);
+    clearNumberFormat(_context, locale2, format);
   }
   composerID++;
-  if (__root && inBrowser) {
+  if (__root && sharedExports.inBrowser) {
     watch(__root.locale, (val) => {
       if (_inheritLocale) {
         _locale.value = val;
@@ -1581,7 +1697,7 @@ function getFragmentableTag(tag) {
 const TranslationImpl = /* @__PURE__ */ defineComponent({
   /* eslint-disable */
   name: "i18n-t",
-  props: assign$1({
+  props: sharedExports.assign({
     keypath: {
       type: String,
       required: true
@@ -1589,7 +1705,7 @@ const TranslationImpl = /* @__PURE__ */ defineComponent({
     plural: {
       type: [Number, String],
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      validator: (val) => isNumber(val) || !isNaN(val)
+      validator: (val) => sharedExports.isNumber(val) || !isNaN(val)
     }
   }, baseFormatProps),
   /* eslint-enable */
@@ -1607,19 +1723,19 @@ const TranslationImpl = /* @__PURE__ */ defineComponent({
         options.locale = props.locale;
       }
       if (props.plural !== void 0) {
-        options.plural = isString$1(props.plural) ? +props.plural : props.plural;
+        options.plural = sharedExports.isString(props.plural) ? +props.plural : props.plural;
       }
       const arg = getInterpolateArg(context, keys);
       const children = i18n[TranslateVNodeSymbol](props.keypath, arg, options);
-      const assignedAttrs = assign$1({}, attrs);
-      const tag = isString$1(props.tag) || isObject$1(props.tag) ? props.tag : getFragmentableTag();
+      const assignedAttrs = sharedExports.assign({}, attrs);
+      const tag = sharedExports.isString(props.tag) || sharedExports.isObject(props.tag) ? props.tag : getFragmentableTag();
       return h(tag, assignedAttrs, children);
     };
   }
 });
 const Translation = TranslationImpl;
 function isVNode(target) {
-  return isArray$1(target) && !isString$1(target[0]);
+  return sharedExports.isArray(target) && !sharedExports.isString(target[0]);
 }
 function renderFormatter(props, context, slotKeys, partFormatter) {
   const { slots, attrs } = context;
@@ -1629,19 +1745,19 @@ function renderFormatter(props, context, slotKeys, partFormatter) {
     if (props.locale) {
       options.locale = props.locale;
     }
-    if (isString$1(props.format)) {
+    if (sharedExports.isString(props.format)) {
       options.key = props.format;
-    } else if (isObject$1(props.format)) {
-      if (isString$1(props.format.key)) {
+    } else if (sharedExports.isObject(props.format)) {
+      if (sharedExports.isString(props.format.key)) {
         options.key = props.format.key;
       }
       overrides = Object.keys(props.format).reduce((options2, prop) => {
-        return slotKeys.includes(prop) ? assign$1({}, options2, { [prop]: props.format[prop] }) : options2;
+        return slotKeys.includes(prop) ? sharedExports.assign({}, options2, { [prop]: props.format[prop] }) : options2;
       }, {});
     }
     const parts = partFormatter(...[props.value, options, overrides]);
     let children = [options.key];
-    if (isArray$1(parts)) {
+    if (sharedExports.isArray(parts)) {
       children = parts.map((part, index) => {
         const slot = slots[part.type];
         const node = slot ? slot({ [part.type]: part.value, index, parts }) : [part.value];
@@ -1650,18 +1766,18 @@ function renderFormatter(props, context, slotKeys, partFormatter) {
         }
         return node;
       });
-    } else if (isString$1(parts)) {
+    } else if (sharedExports.isString(parts)) {
       children = [parts];
     }
-    const assignedAttrs = assign$1({}, attrs);
-    const tag = isString$1(props.tag) || isObject$1(props.tag) ? props.tag : getFragmentableTag();
+    const assignedAttrs = sharedExports.assign({}, attrs);
+    const tag = sharedExports.isString(props.tag) || sharedExports.isObject(props.tag) ? props.tag : getFragmentableTag();
     return h(tag, assignedAttrs, children);
   };
 }
 const NumberFormatImpl = /* @__PURE__ */ defineComponent({
   /* eslint-disable */
   name: "i18n-n",
-  props: assign$1({
+  props: sharedExports.assign({
     value: {
       type: Number,
       required: true
@@ -1687,7 +1803,7 @@ const NumberFormat = NumberFormatImpl;
 const DatetimeFormatImpl = /* @__PURE__ */ defineComponent({
   /* eslint-disable */
   name: "i18n-d",
-  props: assign$1({
+  props: sharedExports.assign({
     value: {
       type: [Number, Date],
       required: true
@@ -1727,7 +1843,7 @@ function vTDirective(i18n) {
     }
     const composer = getComposer$2(i18n, instance.$);
     if (process.env.NODE_ENV !== "production" && modifiers.preserve) {
-      warn$1(getWarnMessage(I18nWarnCodes.NOT_SUPPORTED_PRESERVE));
+      sharedExports.warn(getWarnMessage(I18nWarnCodes.NOT_SUPPORTED_PRESERVE));
     }
     const parsedValue = parseValue(value);
     return [
@@ -1737,10 +1853,20 @@ function vTDirective(i18n) {
   };
   const register = (el, binding) => {
     const [textContent, composer] = _process(binding);
+    if (sharedExports.inBrowser && i18n.global === composer) {
+      el.__i18nWatcher = watch(composer.locale, () => {
+        binding.instance && binding.instance.$forceUpdate();
+      });
+    }
     el.__composer = composer;
     el.textContent = textContent;
   };
   const unregister = (el) => {
+    if (sharedExports.inBrowser && el.__i18nWatcher) {
+      el.__i18nWatcher();
+      el.__i18nWatcher = void 0;
+      delete el.__i18nWatcher;
+    }
     if (el.__composer) {
       el.__composer = void 0;
       delete el.__composer;
@@ -1767,9 +1893,9 @@ function vTDirective(i18n) {
   };
 }
 function parseValue(value) {
-  if (isString$1(value)) {
+  if (sharedExports.isString(value)) {
     return { path: value };
-  } else if (isPlainObject(value)) {
+  } else if (sharedExports.isPlainObject(value)) {
     if (!("path" in value)) {
       throw createI18nError(I18nErrorCodes.REQUIRED_VALUE, "path");
     }
@@ -1782,23 +1908,23 @@ function makeParams(value) {
   const { path, locale, args, choice, plural } = value;
   const options = {};
   const named = args || {};
-  if (isString$1(locale)) {
+  if (sharedExports.isString(locale)) {
     options.locale = locale;
   }
-  if (isNumber(choice)) {
+  if (sharedExports.isNumber(choice)) {
     options.plural = choice;
   }
-  if (isNumber(plural)) {
+  if (sharedExports.isNumber(plural)) {
     options.plural = plural;
   }
   return [path, named, options];
 }
 function apply(app, i18n, ...options) {
-  const pluginOptions = isPlainObject(options[0]) ? options[0] : {};
+  const pluginOptions = sharedExports.isPlainObject(options[0]) ? options[0] : {};
   const useI18nComponentName = !!pluginOptions.useI18nComponentName;
-  const globalInstall = isBoolean$1(pluginOptions.globalInstall) ? pluginOptions.globalInstall : true;
+  const globalInstall = sharedExports.isBoolean(pluginOptions.globalInstall) ? pluginOptions.globalInstall : true;
   if (process.env.NODE_ENV !== "production" && globalInstall && useI18nComponentName) {
-    warn$1(getWarnMessage(I18nWarnCodes.COMPONENT_NAME_LEGACY_COMPATIBLE, {
+    sharedExports.warn(getWarnMessage(I18nWarnCodes.COMPONENT_NAME_LEGACY_COMPATIBLE, {
       name: Translation.name
     }));
   }
@@ -1969,9 +2095,9 @@ function getLocaleMessageValue(messages) {
   const value = {};
   Object.keys(messages).forEach((key) => {
     const v = messages[key];
-    if (isFunction$1(v) && "source" in v) {
+    if (sharedExports.isFunction(v) && "source" in v) {
       value[key] = getMessageFunctionDetails(v);
-    } else if (isObject$1(v)) {
+    } else if (sharedExports.isObject(v)) {
       value[key] = getLocaleMessageValue(v);
     } else {
       value[key] = v;
@@ -2136,22 +2262,22 @@ function editScope(payload, i18n) {
   const composer = getComposer$1(payload.nodeId, i18n);
   if (composer) {
     const [field] = payload.path;
-    if (field === "locale" && isString$1(payload.state.value)) {
+    if (field === "locale" && sharedExports.isString(payload.state.value)) {
       composer.locale.value = payload.state.value;
-    } else if (field === "fallbackLocale" && (isString$1(payload.state.value) || isArray$1(payload.state.value) || isObject$1(payload.state.value))) {
+    } else if (field === "fallbackLocale" && (sharedExports.isString(payload.state.value) || sharedExports.isArray(payload.state.value) || sharedExports.isObject(payload.state.value))) {
       composer.fallbackLocale.value = payload.state.value;
-    } else if (field === "inheritLocale" && isBoolean$1(payload.state.value)) {
+    } else if (field === "inheritLocale" && sharedExports.isBoolean(payload.state.value)) {
       composer.inheritLocale = payload.state.value;
     }
   }
 }
-const I18nInjectionKey = /* @__PURE__ */ makeSymbol$1("global-vue-i18n");
+const I18nInjectionKey = /* @__PURE__ */ sharedExports.makeSymbol("global-vue-i18n");
 function createI18n(options = {}, VueI18nLegacy) {
-  const __globalInjection = isBoolean$1(options.globalInjection) ? options.globalInjection : true;
+  const __globalInjection = sharedExports.isBoolean(options.globalInjection) ? options.globalInjection : true;
   const __allowComposition = true;
   const __instances = /* @__PURE__ */ new Map();
   const [globalScope, __global] = createGlobal(options);
-  const symbol = /* @__PURE__ */ makeSymbol$1(process.env.NODE_ENV !== "production" ? "vue-i18n" : "");
+  const symbol = /* @__PURE__ */ sharedExports.makeSymbol(process.env.NODE_ENV !== "production" ? "vue-i18n" : "");
   function __getInstance(component) {
     return __instances.get(component) || null;
   }
@@ -2178,7 +2304,7 @@ function createI18n(options = {}, VueI18nLegacy) {
         }
         app.__VUE_I18N_SYMBOL__ = symbol;
         app.provide(app.__VUE_I18N_SYMBOL__, i18n);
-        if (isPlainObject(options2[0])) {
+        if (sharedExports.isPlainObject(options2[0])) {
           const opts = options2[0];
           i18n.__composerExtend = opts.__composerExtend;
           i18n.__vueI18nExtend = opts.__vueI18nExtend;
@@ -2199,7 +2325,7 @@ function createI18n(options = {}, VueI18nLegacy) {
           if (!ret) {
             throw createI18nError(I18nErrorCodes.CANNOT_SETUP_VUE_DEVTOOLS_PLUGIN);
           }
-          const emitter = createEmitter();
+          const emitter = sharedExports.createEmitter();
           {
             const _composer = __global;
             _composer[EnableEmitter] && _composer[EnableEmitter](emitter);
@@ -2246,7 +2372,7 @@ function useI18n(options = {}) {
     let composer2 = getComposer$3(i18n, instance, options.__useComponent);
     if (composer2 == null) {
       if (process.env.NODE_ENV !== "production") {
-        warn$1(getWarnMessage(I18nWarnCodes.NOT_FOUND_PARENT_SCOPE));
+        sharedExports.warn(getWarnMessage(I18nWarnCodes.NOT_FOUND_PARENT_SCOPE));
       }
       composer2 = global2;
     }
@@ -2255,7 +2381,7 @@ function useI18n(options = {}) {
   const i18nInternal = i18n;
   let composer = i18nInternal.__getInstance(instance);
   if (composer == null) {
-    const composerOptions = assign$1({}, options);
+    const composerOptions = sharedExports.assign({}, options);
     if ("__i18n" in componentOptions) {
       composerOptions.__i18n = componentOptions.__i18n;
     }
@@ -2291,7 +2417,7 @@ function getI18nInstance(instance) {
   }
 }
 function getScope(options, componentOptions) {
-  return isEmptyObject(options) ? "__i18n" in componentOptions ? "local" : "global" : !options.useScope ? "local" : options.useScope;
+  return sharedExports.isEmptyObject(options) ? "__i18n" in componentOptions ? "local" : "global" : !options.useScope ? "local" : options.useScope;
 }
 function getGlobalComposer(i18n) {
   return i18n.mode === "composition" ? i18n.global : i18n.global.__composer;
@@ -2370,7 +2496,7 @@ registerLocaleFallbacker(fallbackWithLocaleChain);
   initFeatureFlags();
 }
 if (process.env.NODE_ENV !== "production" || __INTLIFY_PROD_DEVTOOLS__) {
-  const target = getGlobalThis();
+  const target = sharedExports.getGlobalThis();
   target.__INTLIFY__ = true;
   setDevToolsHook(target.__INTLIFY_DEVTOOLS_GLOBAL_HOOK__);
 }
@@ -2392,17 +2518,15 @@ const DEFAULT_DETECTION_DIRECTION = "ltr";
 const DEFAULT_BASE_URL = "";
 const DEFAULT_DYNAMIC_PARAMS_KEY = "";
 /*!
-  * shared v9.3.0-beta.10
-  * (c) 2022 kazuya kawaguchi
+  * shared v9.3.0-beta.16
+  * (c) 2023 kazuya kawaguchi
   * Released under the MIT License.
   */
-const hasSymbol = typeof Symbol === "function" && typeof Symbol.toStringTag === "symbol";
-const makeSymbol = (name) => hasSymbol ? Symbol(name) : name;
+const makeSymbol = (name, shareable = false) => !shareable ? Symbol(name) : Symbol.for(name);
 const assign = Object.assign;
 const isArray = Array.isArray;
 const isFunction = (val) => typeof val === "function";
 const isString = (val) => typeof val === "string";
-const isBoolean = (val) => typeof val === "boolean";
 const isSymbol = (val) => typeof val === "symbol";
 const isObject = (val) => val !== null && typeof val === "object";
 const TRAILING_SLASH_RE = /\/$|\/\?/;
@@ -2714,7 +2838,7 @@ function extendVueI18n(vueI18n, hook) {
   }
 }
 function isPluginOptions(options) {
-  return isObject(options) && ("inject" in options || "__composerExtend" in options || "__vueI18nExtend" in options) && isBoolean(options.inject);
+  return isObject(options) && ("inject" in options || "__composerExtend" in options || "__vueI18nExtend" in options);
 }
 const GlobalOptionsRegistory = makeSymbol("vue-i18n-routing-gor");
 function registerGlobalOptions(router, options) {
@@ -3110,13 +3234,20 @@ function proxyForComposable(options, target) {
     );
   };
 }
-function useRouteBaseName(givenRoute = useRoute$1(), { router = useRouter$1(), routesNameSeparator = void 0 } = {}) {
-  const proxy = {
-    router,
-    route: givenRoute,
-    routesNameSeparator
-  };
-  return getRouteBaseName.call(proxy, givenRoute);
+function useRouteBaseName({
+  router = useRouter$1(),
+  route = useRoute$1(),
+  i18n = useI18n(),
+  defaultLocale = void 0,
+  defaultLocaleRouteNameSuffix = void 0,
+  routesNameSeparator = void 0,
+  strategy = void 0,
+  trailingSlash = void 0
+} = {}) {
+  return proxyForComposable(
+    { router, route, i18n, defaultLocale, defaultLocaleRouteNameSuffix, routesNameSeparator, strategy, trailingSlash },
+    getRouteBaseName
+  );
 }
 function useLocalePath({
   router = useRouter$1(),
@@ -3221,8 +3352,7 @@ function proxyNuxt(nuxt, target) {
         switchLocalePath: nuxt.$switchLocalePath,
         localeHead: nuxt.$localeHead,
         route: nuxt.$router.currentRoute.value,
-        router: nuxt.$router,
-        store: void 0
+        router: nuxt.$router
       },
       // eslint-disable-next-line prefer-rest-params
       arguments
@@ -3234,8 +3364,8 @@ function parseAcceptLanguage(input) {
 }
 function deepCopy(src, des) {
   for (const key in src) {
-    if (isObject$1(src[key])) {
-      if (!isObject$1(des[key]))
+    if (sharedExports.isObject(src[key])) {
+      if (!sharedExports.isObject(des[key]))
         des[key] = {};
       deepCopy(src[key], des[key]);
     } else {
@@ -3247,7 +3377,7 @@ async function loadMessage(context, loader) {
   let message = null;
   try {
     const getter = await loader().then((r) => r.default || r);
-    if (isFunction$1(getter)) {
+    if (sharedExports.isFunction(getter)) {
       console.error(formatMessage("Not support executable file (e.g. js, cjs, mjs)"));
     } else {
       message = getter;
@@ -3348,7 +3478,7 @@ function setLocaleCookie(locale, context, {
   if (!useCookie) {
     return;
   }
-  const date = new Date();
+  const date = /* @__PURE__ */ new Date();
   const cookieOptions = {
     expires: new Date(date.setDate(date.getDate() + 365)),
     path: "/",
@@ -3362,7 +3492,7 @@ function setLocaleCookie(locale, context, {
     if (context.res) {
       const { res } = context;
       let headers = res.getHeader("Set-Cookie") || [];
-      if (!isArray$1(headers)) {
+      if (!sharedExports.isArray(headers)) {
         headers = [String(headers)];
       }
       const redirectCookie = serialize(cookieKey, locale, cookieOptions);
@@ -3383,7 +3513,7 @@ function detectBrowserLanguage(route, context, nuxtI18nOptions, nuxtI18nInternal
     return { locale: "", stat: true, reason: "detect_ignore_on_ssg" };
   }
   const { redirectOn, alwaysRedirect, useCookie, fallbackLocale } = nuxtI18nOptions.detectBrowserLanguage;
-  const path = isString$1(route) ? route : route.path;
+  const path = sharedExports.isString(route) ? route : route.path;
   if (strategy !== "no_prefix") {
     if (redirectOn === "root") {
       if (path !== "/") {
@@ -3439,7 +3569,7 @@ function getHost() {
     } else if ("host" in header2) {
       detectedHost = header2["host"];
     }
-    host = isArray$1(detectedHost) ? detectedHost[0] : detectedHost;
+    host = sharedExports.isArray(detectedHost) ? detectedHost[0] : detectedHost;
   }
   return host;
 }
@@ -3489,16 +3619,16 @@ function onLanguageSwitched(i18n, oldLocale, newLocale) {
 }
 function makeFallbackLocaleCodes(fallback, locales) {
   let fallbackLocales = [];
-  if (isArray$1(fallback)) {
+  if (sharedExports.isArray(fallback)) {
     fallbackLocales = fallback;
-  } else if (isObject$1(fallback)) {
+  } else if (sharedExports.isObject(fallback)) {
     const targets = [...locales, "default"];
     for (const locale of targets) {
       if (fallback[locale]) {
         fallbackLocales = [...fallbackLocales, ...fallback[locale].filter(Boolean)];
       }
     }
-  } else if (isString$1(fallback) && locales.every((locale) => locale !== fallback)) {
+  } else if (sharedExports.isString(fallback) && locales.every((locale) => locale !== fallback)) {
     fallbackLocales.push(fallback);
   }
   return fallbackLocales;
@@ -3578,7 +3708,7 @@ async function loadAndSetLocale(newLocale, context, i18n, {
 }
 function detectLocale(route, context, routeLocaleGetter, nuxtI18nOptions, initialLocaleLoader, normalizedLocales, localeCodes2 = [], ssgStatus = "normal") {
   const { strategy, defaultLocale, differentDomains } = nuxtI18nOptions;
-  const initialLocale = isFunction$1(initialLocaleLoader) ? initialLocaleLoader() : initialLocaleLoader;
+  const initialLocale = sharedExports.isFunction(initialLocaleLoader) ? initialLocaleLoader() : initialLocaleLoader;
   const { locale: browserLocale, stat, reason, from } = nuxtI18nOptions.detectBrowserLanguage ? detectBrowserLanguage(route, context, nuxtI18nOptions, nuxtI18nInternalOptions, localeCodes2, initialLocale, ssgStatus) : DefaultDetectBrowserLanguageFromResult;
   if (reason === "detect_ignore_on_ssg") {
     return initialLocale;
@@ -3613,18 +3743,23 @@ function detectRedirect(route, context, targetLocale, routeLocaleGetter, nuxtI18
       router: context.$router
     });
     const routePath = switchLocalePath2(targetLocale);
-    if (isString$1(routePath)) {
+    if (sharedExports.isString(routePath)) {
       redirectPath = routePath;
     }
   }
   return redirectPath;
 }
 function isRootRedirectOptions(rootRedirect) {
-  return isObject$1(rootRedirect) && "path" in rootRedirect && "statusCode" in rootRedirect;
+  return sharedExports.isObject(rootRedirect) && "path" in rootRedirect && "statusCode" in rootRedirect;
 }
 const useRedirectState = () => useState(NUXT_I18N_MODULE_ID + ":redirect", () => "");
+function _navigate(redirectPath, status) {
+  {
+    return navigateTo(redirectPath, { redirectCode: status });
+  }
+}
 async function navigate(args, {
-  status = 302,
+  status = 301,
   rootRedirect = nuxtI18nOptionsDefault.rootRedirect,
   differentDomains = nuxtI18nOptionsDefault.differentDomains,
   skipSettingLocaleOnNavigate = nuxtI18nOptionsDefault.skipSettingLocaleOnNavigate
@@ -3632,17 +3767,17 @@ async function navigate(args, {
   const { i18n, locale, route } = args;
   let { redirectPath } = args;
   if (route.path === "/" && rootRedirect) {
-    if (isString$1(rootRedirect)) {
-      redirectPath = rootRedirect;
+    if (sharedExports.isString(rootRedirect)) {
+      redirectPath = "/" + rootRedirect;
     } else if (isRootRedirectOptions(rootRedirect)) {
       redirectPath = "/" + rootRedirect.path;
       status = rootRedirect.statusCode;
     }
-    return navigateTo(redirectPath, { redirectCode: status });
+    return _navigate(redirectPath, status);
   }
   if (!differentDomains) {
     if (redirectPath) {
-      return navigateTo(redirectPath, { redirectCode: status });
+      return _navigate(redirectPath, status);
     }
   } else {
     const state = useRedirectState();
@@ -3684,11 +3819,11 @@ function extendSwitchLocalePathIntercepter(differentDomains, normalizedLocales, 
 }
 function extendBaseUrl(baseUrl, options) {
   return (context) => {
-    if (isFunction$1(baseUrl)) {
+    if (sharedExports.isFunction(baseUrl)) {
       return baseUrl(context);
     }
     const { differentDomains, localeCodeLoader, normalizedLocales } = options;
-    const localeCode = isFunction$1(localeCodeLoader) ? localeCodeLoader() : localeCodeLoader;
+    const localeCode = sharedExports.isFunction(localeCodeLoader) ? localeCodeLoader() : localeCodeLoader;
     if (differentDomains && localeCode) {
       const domain = getDomainFromLocale(localeCode, normalizedLocales, options.nuxt);
       if (domain) {
@@ -3698,7 +3833,7 @@ function extendBaseUrl(baseUrl, options) {
     return baseUrl;
   };
 }
-const i18n_yfWm7jX06p = defineNuxtPlugin(async (nuxt) => {
+const i18n_yfWm7jX06p = /* @__PURE__ */ defineNuxtPlugin(async (nuxt) => {
   let __temp, __restore;
   const router = useRouter();
   const route = useRoute();
@@ -3807,7 +3942,7 @@ const i18n_yfWm7jX06p = defineNuxtPlugin(async (nuxt) => {
             notInitialSetup = false;
           }
           const redirectPath = detectRedirect(route, nuxtContext, locale, getLocaleFromRoute, nuxtI18nOptions);
-          navigate(
+          await navigate(
             {
               i18n,
               redirectPath,
@@ -3985,7 +4120,7 @@ const i18n_yfWm7jX06p = defineNuxtPlugin(async (nuxt) => {
   addRouteMiddleware(
     "locale-changing",
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    defineNuxtRouteMiddleware(async (to, from) => {
+    /* @__PURE__ */ defineNuxtRouteMiddleware(async (to, from) => {
       let __temp2, __restore2;
       const locale = detectLocale(
         to,
@@ -4012,7 +4147,7 @@ const i18n_yfWm7jX06p = defineNuxtPlugin(async (nuxt) => {
         notInitialSetup = false;
       }
       const redirectPath = detectRedirect(to, nuxtContext, locale, getLocaleFromRoute, nuxtI18nOptions);
-      navigate(
+      return navigate(
         {
           i18n,
           redirectPath,
@@ -4254,7 +4389,7 @@ const operationsGenerator = createOperationsGenerator({
   joinWith: "&",
   formatter: (key, val) => encodeParam(key) + "_" + encodeParam(val)
 });
-const getImage = (src, { modifiers = {}, baseURL: baseURL2 } = {}, _ctx) => {
+const getImage = (src, { modifiers = {}, baseURL: baseURL2 } = {}, ctx) => {
   if (modifiers.width && modifiers.height) {
     modifiers.resize = `${modifiers.width}x${modifiers.height}`;
     delete modifiers.width;
@@ -4262,7 +4397,7 @@ const getImage = (src, { modifiers = {}, baseURL: baseURL2 } = {}, _ctx) => {
   }
   const params = operationsGenerator(modifiers) || "_";
   if (!baseURL2) {
-    baseURL2 = joinURL("/", "/_ipx");
+    baseURL2 = joinURL(ctx.options.nuxt.baseURL, "/_ipx");
   }
   return {
     url: joinURL(baseURL2, params, encodePath(src))
@@ -4294,15 +4429,21 @@ const imageOptions = {
 imageOptions.providers = {
   ["ipx"]: { provider: ipxRuntime$DvQGZMr6fq, defaults: {} }
 };
-const plugin_OrkQhMqHci = defineNuxtPlugin(() => {
-  const img = createImage(imageOptions);
+const plugin_OrkQhMqHci = /* @__PURE__ */ defineNuxtPlugin(() => {
+  const config = /* @__PURE__ */ useRuntimeConfig();
+  const img = createImage({
+    ...imageOptions,
+    nuxt: {
+      baseURL: config.app.baseURL
+    }
+  });
   return {
     provide: {
       img
     }
   };
 });
-const plugin_BqLkNUef68 = defineNuxtPlugin(async (nuxtApp) => {
+const plugin_BqLkNUef68 = /* @__PURE__ */ defineNuxtPlugin(async (nuxtApp) => {
   let __temp, __restore;
   const { applicationId, apiKey, lite, recommend, cache } = useRuntimeConfig().algolia;
   const algoliasearch = lite ? ([__temp, __restore] = executeAsync(() => import("algoliasearch/dist/algoliasearch-lite.esm.browser.js").then((lib) => lib.default || lib)), __temp = await __temp, __restore(), __temp) : ([__temp, __restore] = executeAsync(() => import("algoliasearch/dist/algoliasearch.esm.browser.js").then((lib) => lib.default || lib)), __temp = await __temp, __restore(), __temp);
@@ -4313,8 +4454,7 @@ const plugin_BqLkNUef68 = defineNuxtPlugin(async (nuxtApp) => {
     nuxtApp.provide("algoliaRecommend", algoliaRecommend(applicationId, apiKey));
   }
 });
-const firestore_YiOudWkT8Q = defineNuxtPlugin((nuxtApp) => {
-  useRuntimeConfig();
+const firestore_YiOudWkT8Q = /* @__PURE__ */ defineNuxtPlugin((nuxtApp) => {
   const db = "";
   return {
     provide: {
@@ -4322,7 +4462,7 @@ const firestore_YiOudWkT8Q = defineNuxtPlugin((nuxtApp) => {
     }
   };
 });
-const format_date_C2QjBefQr2 = defineNuxtPlugin(() => {
+const format_date_C2QjBefQr2 = /* @__PURE__ */ defineNuxtPlugin(() => {
   return {
     provide: {
       formatDate: (date, lang) => {
@@ -4522,7 +4662,7 @@ const hello = "Salut {name}!";
 const fr = {
   hello
 };
-const i18n_VfGcjrvSkj = defineNuxtPlugin(({ vueApp }) => {
+const i18n_VfGcjrvSkj = /* @__PURE__ */ defineNuxtPlugin(({ vueApp }) => {
   const i18n = createI18n({
     legacy: false,
     globalInjection: true,
@@ -4534,10 +4674,10 @@ const i18n_VfGcjrvSkj = defineNuxtPlugin(({ vueApp }) => {
   });
   vueApp.use(i18n);
 });
-const social_share_Daw24WAz69 = defineNuxtPlugin((nuxtApp) => {
+const social_share_Daw24WAz69 = /* @__PURE__ */ defineNuxtPlugin((nuxtApp) => {
   nuxtApp.vueApp.use(VueSocialSharing);
 });
-const validate_email_t2pkAfA0l9 = defineNuxtPlugin(() => {
+const validate_email_t2pkAfA0l9 = /* @__PURE__ */ defineNuxtPlugin(() => {
   return {
     provide: {
       validateEmail: (email) => {
@@ -4550,8 +4690,9 @@ const validate_email_t2pkAfA0l9 = defineNuxtPlugin(() => {
 });
 const _plugins = [
   components_plugin_KR1HBZs4kY,
-  vueuse_head_plugin_D7WGfuP1A0,
-  router_Pg0DINazwm,
+  unhead_KgADcZ0jPj,
+  vueuse_head_polyfill_M7DKUOwKp5,
+  router_jmwsqit4Rs,
   composition_sLxaNGmlSL,
   i18n_yfWm7jX06p,
   plugin_OrkQhMqHci,
@@ -4562,7 +4703,7 @@ const _plugins = [
   social_share_Daw24WAz69,
   validate_email_t2pkAfA0l9
 ];
-const Fragment = defineComponent({
+const Fragment = /* @__PURE__ */ defineComponent({
   name: "FragmentWrapper",
   setup(_props, { slots }) {
     return () => {
@@ -4576,9 +4717,9 @@ const _wrapIf = (component, props, slots) => {
 };
 const layouts = {
   default: () => import("./_nuxt/default-fccee214.js").then((m) => m.default || m),
-  error: () => import("./_nuxt/error-8a9737c0.js").then((m) => m.default || m)
+  error: () => import("./_nuxt/error-722bfbf6.js").then((m) => m.default || m)
 };
-const LayoutLoader = defineComponent({
+const LayoutLoader = /* @__PURE__ */ defineComponent({
   name: "LayoutLoader",
   inheritAttrs: false,
   props: {
@@ -4592,7 +4733,7 @@ const LayoutLoader = defineComponent({
     };
   }
 });
-const __nuxt_component_0 = defineComponent({
+const __nuxt_component_0 = /* @__PURE__ */ defineComponent({
   name: "NuxtLayout",
   inheritAttrs: false,
   props: {
@@ -4636,7 +4777,7 @@ const generateRouteKey = (routeProps, override) => {
 const wrapInKeepAlive = (props, children) => {
   return { default: () => children };
 };
-const __nuxt_component_1 = defineComponent({
+const __nuxt_component_1 = /* @__PURE__ */ defineComponent({
   name: "NuxtPage",
   inheritAttrs: false,
   props: {
@@ -4706,7 +4847,7 @@ function _mergeTransitionProps(routeProps) {
   }));
   return defu(..._props);
 }
-const RouteProvider = defineComponent({
+const RouteProvider = /* @__PURE__ */ defineComponent({
   name: "RouteProvider",
   // TODO: Type props
   // eslint-disable-next-line vue/require-prop-types
@@ -4759,8 +4900,8 @@ const _sfc_main = {
   __name: "nuxt-root",
   __ssrInlineRender: true,
   setup(__props) {
-    const ErrorComponent = defineAsyncComponent(() => import("./_nuxt/error-component-96c9fc9d.js").then((r) => r.default || r));
-    const IslandRendererer = defineAsyncComponent(() => import("./_nuxt/island-renderer-49dc1d1e.js").then((r) => r.default || r));
+    const ErrorComponent = /* @__PURE__ */ defineAsyncComponent(() => import("./_nuxt/error-component-2cb9c2bf.js").then((r) => r.default || r));
+    const IslandRenderer = /* @__PURE__ */ defineAsyncComponent(() => import("./_nuxt/island-renderer-39a64256.js").then((r) => r.default || r));
     const nuxtApp = useNuxtApp();
     nuxtApp.deferHydration();
     provide("_route", useRoute());
@@ -4771,6 +4912,7 @@ const _sfc_main = {
       {
         const p = callWithNuxt(nuxtApp, showError, [err]);
         onServerPrefetch(() => p);
+        return false;
       }
     });
     const { islandContext } = nuxtApp.ssrContext;
@@ -4780,7 +4922,7 @@ const _sfc_main = {
           if (unref(error2)) {
             _push(ssrRenderComponent(unref(ErrorComponent), { error: unref(error2) }, null, _parent));
           } else if (unref(islandContext)) {
-            _push(ssrRenderComponent(unref(IslandRendererer), { context: unref(islandContext) }, null, _parent));
+            _push(ssrRenderComponent(unref(IslandRenderer), { context: unref(islandContext) }, null, _parent));
           } else {
             _push(ssrRenderComponent(unref(AppComponent), null, null, _parent));
           }
@@ -4796,6 +4938,7 @@ _sfc_main.setup = (props, ctx) => {
   (ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("node_modules/nuxt/dist/app/components/nuxt-root.vue");
   return _sfc_setup ? _sfc_setup(props, ctx) : void 0;
 };
+const RootComponent = _sfc_main;
 if (!globalThis.$fetch) {
   globalThis.$fetch = $fetch.create({
     baseURL: baseURL()
@@ -4805,13 +4948,13 @@ let entry;
 const plugins = normalizePlugins(_plugins);
 {
   entry = async function createNuxtAppServer(ssrContext) {
-    const vueApp = createApp(_sfc_main);
+    const vueApp = createApp(RootComponent);
     const nuxt = createNuxtApp({ vueApp, ssrContext });
     try {
       await applyPlugins(nuxt, plugins);
       await nuxt.hooks.callHook("app:created", vueApp);
     } catch (err) {
-      await nuxt.callHook("app:error", err);
+      await nuxt.hooks.callHook("app:error", err);
       nuxt.payload.error = nuxt.payload.error || err;
     }
     return vueApp;
@@ -4820,19 +4963,20 @@ const plugins = normalizePlugins(_plugins);
 const entry$1 = (ctx) => entry(ctx);
 export {
   _export_sfc as _,
-  __nuxt_component_2 as a,
-  useRuntimeConfig as b,
-  useRoute as c,
-  useRouter as d,
+  useRuntimeConfig as a,
+  useRoute as b,
+  useRouter as c,
+  useState as d,
   entry$1 as default,
-  useState as e,
-  useNuxtApp as f,
-  getComposer as g,
-  useLocalePath as h,
-  useRouteBaseName as i,
-  createError as j,
-  useRequestFetch as k,
-  useRequestEvent as l,
+  useNuxtApp as e,
+  createError as f,
+  useHead as g,
+  useRequestEvent as h,
+  useRequestFetch as i,
+  useLocalePath as j,
+  getComposer as k,
+  useRouteBaseName as l,
+  navigateTo as n,
   parseSize as p,
   useI18n as u
 };

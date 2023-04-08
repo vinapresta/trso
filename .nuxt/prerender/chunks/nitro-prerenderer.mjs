@@ -1,15 +1,15 @@
 globalThis._importMeta_=globalThis._importMeta_||{url:"file:///_entry.js",env:process.env};import 'file://D:/dev/trso/app/node_modules/node-fetch-native/dist/polyfill.mjs';
-import { defineEventHandler, handleCacheHeaders, createEvent, eventHandler, setHeaders, sendRedirect, proxyRequest, getRequestHeader, getRequestHeaders, setResponseHeader, lazyEventHandler, createApp, createRouter as createRouter$1, toNodeListener, fetchWithEvent } from 'file://D:/dev/trso/app/node_modules/h3/dist/index.mjs';
+import { defineEventHandler, handleCacheHeaders, createEvent, eventHandler, setHeaders, sendRedirect, proxyRequest, getRequestHeader, setResponseStatus, setResponseHeader, getRequestHeaders, lazyEventHandler, createApp, createRouter as createRouter$1, toNodeListener, fetchWithEvent } from 'file://D:/dev/trso/app/node_modules/h3/dist/index.mjs';
 import { createFetch as createFetch$1, Headers } from 'file://D:/dev/trso/app/node_modules/ofetch/dist/node.mjs';
 import destr from 'file://D:/dev/trso/app/node_modules/destr/dist/index.mjs';
 import { createCall, createFetch } from 'file://D:/dev/trso/app/node_modules/unenv/runtime/fetch/index.mjs';
 import { createHooks } from 'file://D:/dev/trso/app/node_modules/hookable/dist/index.mjs';
-import { u as useRuntimeConfig } from './config.mjs';
+import { snakeCase } from 'file://D:/dev/trso/app/node_modules/scule/dist/index.mjs';
+import defu, { defuFn } from 'file://D:/dev/trso/app/node_modules/defu/dist/defu.mjs';
 import { hash } from 'file://D:/dev/trso/app/node_modules/ohash/dist/index.mjs';
 import { parseURL, withoutBase, joinURL, withQuery, withLeadingSlash } from 'file://D:/dev/trso/app/node_modules/ufo/dist/index.mjs';
-import { createStorage } from 'file://D:/dev/trso/app/node_modules/unstorage/dist/index.mjs';
+import { createStorage, prefixStorage } from 'file://D:/dev/trso/app/node_modules/unstorage/dist/index.mjs';
 import unstorage_47drivers_47fs from 'file://D:/dev/trso/app/node_modules/unstorage/drivers/fs.mjs';
-import defu from 'file://D:/dev/trso/app/node_modules/defu/dist/defu.mjs';
 import { toRouteMatcher, createRouter } from 'file://D:/dev/trso/app/node_modules/radix3/dist/index.mjs';
 import { fileURLToPath } from 'node:url';
 import { createIPX, createIPXMiddleware } from 'file://D:/dev/trso/app/node_modules/ipx/dist/index.mjs';
@@ -27,6 +27,53 @@ import * as sm from 'file://D:/dev/trso/app/node_modules/sitemap/dist/index.js';
 import consola from 'file://D:/dev/trso/app/node_modules/unenv/runtime/npm/consola.mjs';
 import Minimatch from 'file://D:/dev/trso/app/node_modules/minimatch/minimatch.js';
 
+const inlineAppConfig = {};
+
+
+
+const appConfig = defuFn(inlineAppConfig);
+
+const _runtimeConfig = {"app":{"baseURL":"/","buildAssetsDir":"/_nuxt/","cdnURL":""},"nitro":{"envPrefix":"NUXT_","routeRules":{"/__nuxt_error":{"cache":false},"/":{"static":true,"cache":{"static":true}},"/_nuxt/**":{"headers":{"cache-control":"public, max-age=31536000, immutable"}}}},"public":{"websiteName":"Tarseroo","BASE_URL":"https://tarseroo.com","API_BASE_URL":"http://127.0.0.1:1337/api/","limitByPage":24,"featuredItemsCount":12,"google_analytics_id":"G-2VVTWY9547","algolia":{"apiKey":"c3f0378c8bb37aebc40b0affeb477cd6","applicationId":"3HUPT4Q25O","lite":true,"cache":false,"instantSearch":false,"docSearch":{},"recommend":"","globalIndex":""}},"FB_API_KEY":"AIzaSyCrpi511yIUCPKM07Bsk092sezOWMXcwjc","FB_AUTH_DOMAIN":"movies-books.firebaseapp.com","FB_DATABASE_URL":"https://movies-books.firebaseio.com","FB_PROJECT_ID":"movies-books","FB_STORAGE_BUCKET":"movies-books.appspot.com","FB_MESSAGING_SENDER_ID":"469402336814","FB_APP_ID":"1:469402336814:web:c80511a26fa194d056e9bf","FB_MEASUREMENT_ID":"G-LCCVY585SQ","ipx":{"dir":"D:/dev/trso/app/public","maxAge":"","domains":[],"sharp":{},"alias":{}}};
+const ENV_PREFIX = "NITRO_";
+const ENV_PREFIX_ALT = _runtimeConfig.nitro.envPrefix ?? process.env.NITRO_ENV_PREFIX ?? "_";
+overrideConfig(_runtimeConfig);
+const runtimeConfig = deepFreeze(_runtimeConfig);
+const useRuntimeConfig = () => runtimeConfig;
+deepFreeze(appConfig);
+function getEnv(key) {
+  const envKey = snakeCase(key).toUpperCase();
+  return destr(
+    process.env[ENV_PREFIX + envKey] ?? process.env[ENV_PREFIX_ALT + envKey]
+  );
+}
+function isObject(input) {
+  return typeof input === "object" && !Array.isArray(input);
+}
+function overrideConfig(obj, parentKey = "") {
+  for (const key in obj) {
+    const subKey = parentKey ? `${parentKey}_${key}` : key;
+    const envValue = getEnv(subKey);
+    if (isObject(obj[key])) {
+      if (isObject(envValue)) {
+        obj[key] = { ...obj[key], ...envValue };
+      }
+      overrideConfig(obj[key], subKey);
+    } else {
+      obj[key] = envValue ?? obj[key];
+    }
+  }
+}
+function deepFreeze(object) {
+  const propNames = Object.getOwnPropertyNames(object);
+  for (const name of propNames) {
+    const value = object[name];
+    if (value && typeof value === "object") {
+      deepFreeze(value);
+    }
+  }
+  return Object.freeze(object);
+}
+
 const serverAssets = [{"baseName":"server","dir":"D:/dev/trso/app/server/assets"}];
 
 const assets = createStorage();
@@ -37,8 +84,6 @@ for (const asset of serverAssets) {
 
 const storage = createStorage({});
 
-const useStorage = () => storage;
-
 storage.mount('/assets', assets);
 
 storage.mount('root', unstorage_47drivers_47fs({"driver":"fs","readOnly":true,"base":"D:\\dev\\trso\\app","ignore":["**/node_modules/**","**/.git/**"]}));
@@ -46,16 +91,20 @@ storage.mount('src', unstorage_47drivers_47fs({"driver":"fs","readOnly":true,"ba
 storage.mount('build', unstorage_47drivers_47fs({"driver":"fs","readOnly":false,"base":"D:\\dev\\trso\\app\\.nuxt","ignore":["**/node_modules/**","**/.git/**"]}));
 storage.mount('cache', unstorage_47drivers_47fs({"driver":"fs","readOnly":false,"base":"D:\\dev\\trso\\app\\.nuxt\\cache","ignore":["**/node_modules/**","**/.git/**"]}));
 
+function useStorage(base = "") {
+  return base ? prefixStorage(storage, base) : storage;
+}
+
 const defaultCacheOptions = {
   name: "_",
   base: "/cache",
   swr: true,
   maxAge: 1
 };
-function defineCachedFunction(fn, opts) {
+function defineCachedFunction(fn, opts = {}) {
   opts = { ...defaultCacheOptions, ...opts };
   const pending = {};
-  const group = opts.group || "nitro";
+  const group = opts.group || "nitro/functions";
   const name = opts.name || fn.name || "_";
   const integrity = hash([opts.integrity, fn, opts]);
   const validate = opts.validate || (() => true);
@@ -70,7 +119,7 @@ function defineCachedFunction(fn, opts) {
     const _resolve = async () => {
       const isPending = pending[key];
       if (!isPending) {
-        if (entry.value !== void 0 && (opts.staleMaxAge || 0) >= 0) {
+        if (entry.value !== void 0 && (opts.staleMaxAge || 0) >= 0 && opts.swr === false) {
           entry.value = void 0;
           entry.integrity = void 0;
           entry.mtime = void 0;
@@ -78,7 +127,14 @@ function defineCachedFunction(fn, opts) {
         }
         pending[key] = Promise.resolve(resolver());
       }
-      entry.value = await pending[key];
+      try {
+        entry.value = await pending[key];
+      } catch (error) {
+        if (!isPending) {
+          delete pending[key];
+        }
+        throw error;
+      }
       if (!isPending) {
         entry.mtime = Date.now();
         entry.integrity = integrity;
@@ -337,7 +393,7 @@ function hasReqHeader(event, name, includes) {
   return value && typeof value === "string" && value.toLowerCase().includes(includes);
 }
 function isJsonRequest(event) {
-  return hasReqHeader(event, "accept", "application/json") || hasReqHeader(event, "user-agent", "curl/") || hasReqHeader(event, "user-agent", "httpie/") || event.node.req.url?.endsWith(".json") || event.node.req.url?.includes("/api/");
+  return hasReqHeader(event, "accept", "application/json") || hasReqHeader(event, "user-agent", "curl/") || hasReqHeader(event, "user-agent", "httpie/") || hasReqHeader(event, "sec-fetch-mode", "cors") || event.path.startsWith("/api/") || event.path.endsWith(".json");
 }
 function normalizeError(error) {
   const cwd = typeof process.cwd === "function" ? process.cwd() : "/";
@@ -369,10 +425,7 @@ const errorHandler = (async function errorhandler(error, event) {
     stack: "",
     data: error.data
   };
-  event.node.res.statusCode = errorObject.statusCode !== 200 && errorObject.statusCode || 500;
-  if (errorObject.statusMessage) {
-    event.node.res.statusMessage = errorObject.statusMessage;
-  }
+  setResponseStatus(event, errorObject.statusCode !== 200 && errorObject.statusCode || 500, errorObject.statusMessage);
   if (error.unhandled || error.fatal) {
     const tags = [
       "[nuxt]",
@@ -384,7 +437,7 @@ const errorHandler = (async function errorhandler(error, event) {
     console.error(tags, errorObject.message + "\n" + stack.map((l) => "  " + l.text).join("  \n"));
   }
   if (isJsonRequest(event)) {
-    event.node.res.setHeader("Content-Type", "application/json");
+    setResponseHeader(event, "Content-Type", "application/json");
     event.node.res.end(JSON.stringify(errorObject));
     return;
   }
@@ -395,32 +448,28 @@ const errorHandler = (async function errorhandler(error, event) {
   }).catch(() => null) : null;
   if (!res) {
     const { template } = await import('./error-500.mjs');
-    event.node.res.setHeader("Content-Type", "text/html;charset=UTF-8");
+    setResponseHeader(event, "Content-Type", "text/html;charset=UTF-8");
     event.node.res.end(template(errorObject));
     return;
   }
   for (const [header, value] of res.headers.entries()) {
     setResponseHeader(event, header, value);
   }
-  if (res.status && res.status !== 200) {
-    event.node.res.statusCode = res.status;
-  }
-  if (res.statusText) {
-    event.node.res.statusMessage = res.statusText;
-  }
+  setResponseStatus(event, res.status && res.status !== 200 ? res.status : void 0, res.statusText);
   event.node.res.end(await res.text());
 });
 
 const _rxtNgg = lazyEventHandler(() => {
+  const opts = useRuntimeConfig().ipx;
   const ipxOptions = {
-    ...useRuntimeConfig().ipx || {},
-    dir: fileURLToPath(new URL("../../.output/public" , globalThis._importMeta_.url))
+    ...opts || {},
+    dir: fileURLToPath(new URL(opts.dir, globalThis._importMeta_.url))
   };
   const ipx = createIPX(ipxOptions);
   const middleware = createIPXMiddleware(ipx);
   return eventHandler(async (event) => {
-    event.req.url = withLeadingSlash(event.context.params._);
-    await middleware(event.req, event.res);
+    event.node.req.url = withLeadingSlash(event.context.params._);
+    await middleware(event.node.req, event.node.res);
   });
 });
 
@@ -632,11 +681,12 @@ const _Xrc8gN = eventHandler(async (event) => {
   }
 });
 
-const _lazy_ZPgSMJ = () => import('./renderer.mjs');
+const _lazy_ZPgSMJ = () => import('./renderer.mjs').then(function (n) { return n.r; });
 
 const handlers = [
   { route: '/_ipx/**', handler: _rxtNgg, lazy: false, middleware: false, method: undefined },
   { route: '/sitemap.xml', handler: _Xrc8gN, lazy: false, middleware: false, method: undefined },
+  { route: '/', handler: _lazy_ZPgSMJ, lazy: true, middleware: false, method: undefined },
   { route: '/**', handler: _lazy_ZPgSMJ, lazy: true, middleware: false, method: undefined }
 ];
 
@@ -716,5 +766,5 @@ const localFetch = nitroApp.localFetch;
   );
 }
 
-export { getRouteRules as g, localFetch as l, useNitroApp as u };
+export { useRuntimeConfig as a, getRouteRules as g, localFetch as l, useNitroApp as u };
 //# sourceMappingURL=nitro-prerenderer.mjs.map

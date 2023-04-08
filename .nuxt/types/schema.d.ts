@@ -1,13 +1,12 @@
-import { NuxtModule } from '@nuxt/schema'
-declare module '@nuxt/schema' {
+import { NuxtModule } from 'nuxt/schema'
+declare module 'nuxt/schema' {
   interface NuxtConfig {
     ["algolia"]?: typeof import("@nuxtjs/algolia").default extends NuxtModule<infer O> ? Partial<O> : Record<string, any>
     ["image"]?: typeof import("@nuxt/image-edge").default extends NuxtModule<infer O> ? Partial<O> : Record<string, any>
     ["i18n"]?: typeof import("@nuxtjs/i18n").default extends NuxtModule<infer O> ? Partial<O> : Record<string, any>
     ["tailwindcss"]?: typeof import("@nuxtjs/tailwindcss").default extends NuxtModule<infer O> ? Partial<O> : Record<string, any>
-    ["nuxt-config-schema"]?: typeof import("nuxt-config-schema").default extends NuxtModule<infer O> ? Partial<O> : Record<string, any>
     ["telemetry"]?: typeof import("@nuxt/telemetry").default extends NuxtModule<infer O> ? Partial<O> : Record<string, any>
-    modules?: (NuxtModule | string | [NuxtModule | string, Record<string, any>] | ["@nuxtjs/algolia", NuxtConfig["algolia"]] | ["@nuxt/image-edge", NuxtConfig["image"]] | ["@nuxtjs/i18n", NuxtConfig["i18n"]] | ["@nuxtjs/tailwindcss", NuxtConfig["tailwindcss"]] | ["nuxt-config-schema", NuxtConfig["nuxt-config-schema"]] | ["@nuxt/telemetry", NuxtConfig["telemetry"]])[],
+    modules?: (undefined | null | false | NuxtModule | string | [NuxtModule | string, Record<string, any>] | ["@nuxtjs/algolia", Exclude<NuxtConfig["algolia"], boolean>] | ["@nuxt/image-edge", Exclude<NuxtConfig["image"], boolean>] | ["@nuxtjs/i18n", Exclude<NuxtConfig["i18n"], boolean>] | ["@nuxtjs/tailwindcss", Exclude<NuxtConfig["tailwindcss"], boolean>] | ["@nuxt/telemetry", Exclude<NuxtConfig["telemetry"], boolean>])[],
   }
   interface RuntimeConfig {
    app: {
@@ -33,18 +32,6 @@ declare module '@nuxt/schema' {
    FB_APP_ID: string,
 
    FB_MEASUREMENT_ID: string,
-
-   ipx: {
-      dir: string,
-
-      maxAge: any,
-
-      domains: Array<any>,
-
-      sharp: any,
-
-      alias: any,
-   },
   }
   interface PublicRuntimeConfig {
    websiteName: string,
