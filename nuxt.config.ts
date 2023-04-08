@@ -84,4 +84,7 @@ export default defineNuxtConfig({
             google_analytics_id: process.env.GOOGLE_ANALYTICS_ID,
         }
     },
+    experimental: {
+        payloadExtraction: true
+    }
 })
