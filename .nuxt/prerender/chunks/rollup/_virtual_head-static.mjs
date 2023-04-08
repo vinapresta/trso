@@ -1,0 +1,4 @@
+const _virtual__headStatic = {"headTags":"<meta charset=\"utf-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n<meta name=\"robots\" content=\"noindex, nofollow\">\n<meta name=\"robots\" content=\"noimageindex\">\n<link rel=\"icon\" type=\"image/x-icon\" href=\"/favicon.ico\">\n<link rel=\"preconnect\" href=\"https://fonts.googleapis.com\">\n<link rel=\"preconnect\" href=\"https://fonts.gstatic.com\">\n<link rel=\"stylesheet\" href=\"https://fonts.googleapis.com/css?family=Playfair+Display|Source+Sans+Pro:400,600&display=swap\">\n<link rel=\"stylesheet\" href=\"https://fonts.googleapis.com/css?family=Fredoka+One&display=swap\">","bodyTags":"","bodyTagsOpen":"","htmlAttrs":" lang=\"en\"","bodyAttrs":" class=\"bg-white text-grey-700 main leading-normal text-base tracking-normal\""};
+
+export { _virtual__headStatic as default };
+//# sourceMappingURL=_virtual_head-static.mjs.map
