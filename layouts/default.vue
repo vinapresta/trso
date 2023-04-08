@@ -1,5 +1,6 @@
 <template>
     <div>
+        TEST
         <slot />
         <!--<header class="mb-16" 
                 :class="miniHeader || !isLargeScreen ? 'fixed z-50 w-full transform transition duration-500 ease-in-out delay-200' : ''"
@@ -29,7 +30,7 @@
 </template>
 
 <script setup>
-    import { useMediaQuery } from '@vueuse/core'
+    /*import { useMediaQuery } from '@vueuse/core'
     import { useElementSize } from '@vueuse/core'
 
     const isLargeScreen = useMediaQuery('(min-width: 1024px)')
@@ -49,8 +50,6 @@
     const searchButtonVisible = ref(false)
 
     onMounted( () => {
-
-        /* Inersection Observer on menu */
 
         const menuObserver = document.getElementById('menuObserver')
 
@@ -102,7 +101,7 @@
 
         searchButtonState.value = !searchButtonState.value
 
-    }
+    }*/
 
 </script>
 

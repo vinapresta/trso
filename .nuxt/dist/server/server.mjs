@@ -4575,7 +4575,7 @@ const _wrapIf = (component, props, slots) => {
   return { default: () => props ? h(component, props === true ? {} : props, slots) : h(Fragment, {}, slots) };
 };
 const layouts = {
-  default: () => import("./_nuxt/default-5008f653.js").then((m) => m.default || m),
+  default: () => import("./_nuxt/default-fccee214.js").then((m) => m.default || m),
   error: () => import("./_nuxt/error-8a9737c0.js").then((m) => m.default || m)
 };
 const LayoutLoader = defineComponent({

@@ -4569,7 +4569,7 @@ const _wrapIf = (component, props, slots) => {
   return { default: () => props ? h(component, props === true ? {} : props, slots) : h(Fragment, {}, slots) };
 };
 const layouts = {
-  default: () => import('./default-5008f653.mjs').then((m) => m.default || m),
+  default: () => import('./default-fccee214.mjs').then((m) => m.default || m),
   error: () => import('./error-8a9737c0.mjs').then((m) => m.default || m)
 };
 const LayoutLoader = defineComponent({
