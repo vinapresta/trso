@@ -1,6 +1,6 @@
 <template>
     <div>
-        TEST
+        TEST Data
         <slot />
         <!--<header class="mb-16" 
                 :class="miniHeader || !isLargeScreen ? 'fixed z-50 w-full transform transition duration-500 ease-in-out delay-200' : ''"
