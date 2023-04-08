@@ -18,7 +18,7 @@
              :style="miniHeader || !isLargeScreen ? `padding-top: calc(${height}px + 2rem)` : ''">
             <slot />
         </div>
-        <!--<LayoutFooter />
+        <LayoutFooter /><!--
         <transition name="totop" mode="out-in">
             <LayoutToTop v-show="toTopState" />
         </transition>
