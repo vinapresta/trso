@@ -1,6 +1,6 @@
 <template>
     <div>
-        <header class="mb-16" 
+        <!--<header class="mb-16" 
                 :class="miniHeader || !isLargeScreen ? 'fixed z-50 w-full transform transition duration-500 ease-in-out delay-200' : ''"
                 ref="header">
             <LayoutHeaderNav :class="miniHeader || !isLargeScreen ? 'py-1' : 'py-1 lg:py-4'"
@@ -11,19 +11,19 @@
             <transition name="search" mode="out-in">
                 <LayoutSearch ref="search" v-show="searchVisible" />
             </transition>
-        </header>
+        </header>-->
         <div class="h-[0px] w-full"
              id="menuObserver"></div>
         <div class="container px-2 md:px-4  min-h-[90vh] max-w-7xl mb-16"
              :style="miniHeader || !isLargeScreen ? `padding-top: calc(${height}px + 2rem)` : ''">
             <slot />
         </div>
-        <LayoutFooter />
+        <!--<LayoutFooter />
         <transition name="totop" mode="out-in">
             <LayoutToTop v-show="toTopState" />
         </transition>
         <LayoutContactModal />
-        <!--<div class="fixed z-90 top-0 left-0 bg-red-500">DEBUG {{ width }} {{ miniHeader || width < 1024 }}</div>-->
+    -->
     </div>
 </template>
 
@@ -48,9 +48,6 @@
     const searchButtonVisible = ref(false)
 
     onMounted( () => {
-
-       /* if (!isLargeScreen.value)
-            searchButtonState.value = false*/
 
         /* Inersection Observer on menu */
 
