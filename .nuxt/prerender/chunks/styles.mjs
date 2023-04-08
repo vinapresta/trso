@@ -5,6 +5,7 @@ const styles = {
   "components/layout/HeaderNav.vue": () => import('./HeaderNav-styles.18ad7cab.mjs').then(interopDefault),
   "components/layout/Search.vue": () => import('./Search-styles.3f8daeac.mjs').then(interopDefault),
   "components/layout/ContactModal.vue": () => import('./ContactModal-styles.c1373188.mjs').then(interopDefault),
+  "components/pages/Item.vue": () => import('./Item-styles.97d94e53.mjs').then(interopDefault),
   "layouts/default.vue": () => import('./default-styles.a61eae52.mjs').then(interopDefault)
 };
 

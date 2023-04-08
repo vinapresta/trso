@@ -407,7 +407,7 @@ const _routes = [
     meta: __nuxt_page_meta$3,
     alias: (__nuxt_page_meta$3 == null ? void 0 : __nuxt_page_meta$3.alias) || [],
     redirect: (__nuxt_page_meta$3 == null ? void 0 : __nuxt_page_meta$3.redirect) || void 0,
-    component: () => import('./_page_-03e21a3b.mjs').then((m) => m.default || m)
+    component: () => import('./_page_-93c2018c.mjs').then((m) => m.default || m)
   },
   {
     name: (__nuxt_page_meta$2 == null ? void 0 : __nuxt_page_meta$2.name) ?? "index___en",
@@ -417,7 +417,7 @@ const _routes = [
     meta: __nuxt_page_meta$2,
     alias: (__nuxt_page_meta$2 == null ? void 0 : __nuxt_page_meta$2.alias) || [],
     redirect: (__nuxt_page_meta$2 == null ? void 0 : __nuxt_page_meta$2.redirect) || void 0,
-    component: () => import('./index-f5950f37.mjs').then((m) => m.default || m)
+    component: () => import('./index-89cb6769.mjs').then((m) => m.default || m)
   },
   {
     name: (__nuxt_page_meta$1 == null ? void 0 : __nuxt_page_meta$1.name) ?? "privacy-policy___en",
@@ -4569,7 +4569,7 @@ const _wrapIf = (component, props, slots) => {
   return { default: () => props ? h(component, props === true ? {} : props, slots) : h(Fragment, {}, slots) };
 };
 const layouts = {
-  default: () => import('./default-cdfe2549.mjs').then((m) => m.default || m),
+  default: () => import('./default-f697133f.mjs').then((m) => m.default || m),
   error: () => import('./error-8a9737c0.mjs').then((m) => m.default || m)
 };
 const LayoutLoader = defineComponent({
@@ -4753,7 +4753,7 @@ const _sfc_main = {
   __name: "nuxt-root",
   __ssrInlineRender: true,
   setup(__props) {
-    const ErrorComponent = defineAsyncComponent(() => import('./error-component-8e0514eb.mjs').then((r) => r.default || r));
+    const ErrorComponent = defineAsyncComponent(() => import('./error-component-d5341cd7.mjs').then((r) => r.default || r));
     const IslandRendererer = defineAsyncComponent(() => import('./island-renderer-49dc1d1e.mjs').then((r) => r.default || r));
     const nuxtApp = useNuxtApp();
     nuxtApp.deferHydration();

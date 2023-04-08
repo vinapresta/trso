@@ -407,7 +407,7 @@ const _routes = [
     meta: __nuxt_page_meta$3,
     alias: (__nuxt_page_meta$3 == null ? void 0 : __nuxt_page_meta$3.alias) || [],
     redirect: (__nuxt_page_meta$3 == null ? void 0 : __nuxt_page_meta$3.redirect) || void 0,
-    component: () => import("./_nuxt/_page_-03e21a3b.js").then((m) => m.default || m)
+    component: () => import("./_nuxt/_page_-93c2018c.js").then((m) => m.default || m)
   },
   {
     name: (__nuxt_page_meta$2 == null ? void 0 : __nuxt_page_meta$2.name) ?? "index___en",
@@ -417,7 +417,7 @@ const _routes = [
     meta: __nuxt_page_meta$2,
     alias: (__nuxt_page_meta$2 == null ? void 0 : __nuxt_page_meta$2.alias) || [],
     redirect: (__nuxt_page_meta$2 == null ? void 0 : __nuxt_page_meta$2.redirect) || void 0,
-    component: () => import("./_nuxt/index-f5950f37.js").then((m) => m.default || m)
+    component: () => import("./_nuxt/index-89cb6769.js").then((m) => m.default || m)
   },
   {
     name: (__nuxt_page_meta$1 == null ? void 0 : __nuxt_page_meta$1.name) ?? "privacy-policy___en",
@@ -4575,7 +4575,7 @@ const _wrapIf = (component, props, slots) => {
   return { default: () => props ? h(component, props === true ? {} : props, slots) : h(Fragment, {}, slots) };
 };
 const layouts = {
-  default: () => import("./_nuxt/default-cdfe2549.js").then((m) => m.default || m),
+  default: () => import("./_nuxt/default-f697133f.js").then((m) => m.default || m),
   error: () => import("./_nuxt/error-8a9737c0.js").then((m) => m.default || m)
 };
 const LayoutLoader = defineComponent({
@@ -4759,7 +4759,7 @@ const _sfc_main = {
   __name: "nuxt-root",
   __ssrInlineRender: true,
   setup(__props) {
-    const ErrorComponent = defineAsyncComponent(() => import("./_nuxt/error-component-8e0514eb.js").then((r) => r.default || r));
+    const ErrorComponent = defineAsyncComponent(() => import("./_nuxt/error-component-d5341cd7.js").then((r) => r.default || r));
     const IslandRendererer = defineAsyncComponent(() => import("./_nuxt/island-renderer-49dc1d1e.js").then((r) => r.default || r));
     const nuxtApp = useNuxtApp();
     nuxtApp.deferHydration();
