@@ -456,7 +456,7 @@ const _routes = [
     meta: {},
     alias: [],
     redirect: void 0,
-    component: () => import("./_nuxt/_id_-_slug_-3bd6dc5e.js").then((m) => m.default || m)
+    component: () => import("./_nuxt/_id_-_slug_-3fd0daab.js").then((m) => m.default || m)
   },
   {
     name: "type-pages-page___en",
@@ -464,7 +464,7 @@ const _routes = [
     meta: {},
     alias: [],
     redirect: void 0,
-    component: () => import("./_nuxt/_page_-5c136515.js").then((m) => m.default || m)
+    component: () => import("./_nuxt/_page_-88dbcf99.js").then((m) => m.default || m)
   },
   {
     name: "index___en",
@@ -473,7 +473,7 @@ const _routes = [
     meta: {},
     alias: [],
     redirect: void 0,
-    component: () => import("./_nuxt/index-1030a88f.js").then((m) => m.default || m)
+    component: () => import("./_nuxt/index-f335721f.js").then((m) => m.default || m)
   },
   {
     name: "privacy-policy___en",
@@ -482,7 +482,7 @@ const _routes = [
     meta: {},
     alias: [],
     redirect: void 0,
-    component: () => import("./_nuxt/privacy-policy-cbd5c925.js").then((m) => m.default || m)
+    component: () => import("./_nuxt/privacy-policy-e377c730.js").then((m) => m.default || m)
   },
   {
     name: "search-search___en",
@@ -490,7 +490,7 @@ const _routes = [
     meta: {},
     alias: [],
     redirect: void 0,
-    component: () => import("./_nuxt/_search_-dd4dce9a.js").then((m) => m.default || m)
+    component: () => import("./_nuxt/_search_-6031d006.js").then((m) => m.default || m)
   }
 ];
 const routerOptions0 = {
@@ -4716,7 +4716,7 @@ const _wrapIf = (component, props, slots) => {
   return { default: () => props ? h(component, props === true ? {} : props, slots) : h(Fragment, {}, slots) };
 };
 const layouts = {
-  default: () => import("./_nuxt/default-03a18c9b.js").then((m) => m.default || m),
+  default: () => import("./_nuxt/default-70044761.js").then((m) => m.default || m),
   error: () => import("./_nuxt/error-722bfbf6.js").then((m) => m.default || m)
 };
 const LayoutLoader = /* @__PURE__ */ defineComponent({
@@ -4900,8 +4900,8 @@ const _sfc_main = {
   __name: "nuxt-root",
   __ssrInlineRender: true,
   setup(__props) {
-    const ErrorComponent = /* @__PURE__ */ defineAsyncComponent(() => import("./_nuxt/error-component-2cb9c2bf.js").then((r) => r.default || r));
-    const IslandRenderer = /* @__PURE__ */ defineAsyncComponent(() => import("./_nuxt/island-renderer-39a64256.js").then((r) => r.default || r));
+    const ErrorComponent = /* @__PURE__ */ defineAsyncComponent(() => import("./_nuxt/error-component-f116388d.js").then((r) => r.default || r));
+    const IslandRenderer = /* @__PURE__ */ defineAsyncComponent(() => import("./_nuxt/island-renderer-6e061adc.js").then((r) => r.default || r));
     const nuxtApp = useNuxtApp();
     nuxtApp.deferHydration();
     provide("_route", useRoute());
@@ -4964,20 +4964,20 @@ const entry$1 = (ctx) => entry(ctx);
 export {
   _export_sfc as _,
   useRuntimeConfig as a,
-  useRoute as b,
-  useRouter as c,
-  useState as d,
+  useI18n as b,
+  createError as c,
+  useNuxtApp as d,
   entry$1 as default,
-  useNuxtApp as e,
-  createError as f,
-  useHead as g,
-  useRequestEvent as h,
+  useHead as e,
+  useRequestEvent as f,
+  useState as g,
+  useRouter as h,
   useRequestFetch as i,
   useLocalePath as j,
   getComposer as k,
   useRouteBaseName as l,
   navigateTo as n,
   parseSize as p,
-  useI18n as u
+  useRoute as u
 };
 //# sourceMappingURL=server.mjs.map

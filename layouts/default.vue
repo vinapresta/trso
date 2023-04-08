@@ -1,8 +1,6 @@
 <template>
     <div>
-        TEST DATA
-        <slot />
-        <!--<header class="mb-16" 
+        <header class="mb-16" 
                 :class="miniHeader || !isLargeScreen ? 'fixed z-50 w-full transform transition duration-500 ease-in-out delay-200' : ''"
                 ref="header">
             <LayoutHeaderNav :class="miniHeader || !isLargeScreen ? 'py-1' : 'py-1 lg:py-4'"
@@ -25,12 +23,11 @@
             <LayoutToTop v-show="toTopState" />
         </transition>
         <LayoutContactModal />
-    -->
     </div>
 </template>
 
 <script setup>
-    /*import { useMediaQuery } from '@vueuse/core'
+    import { useMediaQuery } from '@vueuse/core'
     import { useElementSize } from '@vueuse/core'
 
     const isLargeScreen = useMediaQuery('(min-width: 1024px)')
@@ -101,7 +98,7 @@
 
         searchButtonState.value = !searchButtonState.value
 
-    }*/
+    }
 
 </script>
 

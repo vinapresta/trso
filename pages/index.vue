@@ -1,19 +1,14 @@
 <template>
-    <div>
-        <ul>
-            <li  v-for="item in items.data" :key="item.id">
-                {{ item.id }} {{ item.attributes.item_lang.data.attributes.title }}
-            </li>
-        </ul>
-        <!--<PagesIndexDisclaimer />
+    <div>     
+        <PagesIndexDisclaimer />
         <PagesIndexFeatured type="tv-series"/>
-        <PagesIndexFeatured type="movies"/>-->
+        <PagesIndexFeatured type="movies"/>
     </div>
 </template>
 
 <script setup>
 
-const runtimeConfig = useRuntimeConfig()
+/*const runtimeConfig = useRuntimeConfig()
 
 const { locale } = useI18n()
 
@@ -28,9 +23,9 @@ const params = `${sort}&${fields}&${filters}&${populate}&${pagination}`
 
 const url = `${runtimeConfig.public.API_BASE_URL}items?${params}`
 
-const { data: items } = await useFetch(url)
+const { data: items } = await useFetch(url)*/
 
-    /*const { t } = useI18n()
+    const { t } = useI18n()
 
     const runtimeConfig = useRuntimeConfig()
 
@@ -44,6 +39,6 @@ const { data: items } = await useFetch(url)
             { hid: 'twitter:title', property: 'twitter:title', content: `${runtimeConfig.public.websiteName} - ${t('pages.home.hidTwitterTitle')}` },
             { hid: 'twitter:description', property: 'twitter:description', content: t('pages.home.hidTwitterDescription') },
         ]
-    })*/
+    })
 
 </script>
