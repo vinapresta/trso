@@ -4569,7 +4569,7 @@ const _wrapIf = (component, props, slots) => {
   return { default: () => props ? h(component, props === true ? {} : props, slots) : h(Fragment, {}, slots) };
 };
 const layouts = {
-  default: () => import('./default-f697133f.mjs').then((m) => m.default || m),
+  default: () => import('./default-5008f653.mjs').then((m) => m.default || m),
   error: () => import('./error-8a9737c0.mjs').then((m) => m.default || m)
 };
 const LayoutLoader = defineComponent({
@@ -4753,7 +4753,7 @@ const _sfc_main = {
   __name: "nuxt-root",
   __ssrInlineRender: true,
   setup(__props) {
-    const ErrorComponent = defineAsyncComponent(() => import('./error-component-d5341cd7.mjs').then((r) => r.default || r));
+    const ErrorComponent = defineAsyncComponent(() => import('./error-component-96c9fc9d.mjs').then((r) => r.default || r));
     const IslandRendererer = defineAsyncComponent(() => import('./island-renderer-49dc1d1e.mjs').then((r) => r.default || r));
     const nuxtApp = useNuxtApp();
     nuxtApp.deferHydration();

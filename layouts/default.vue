@@ -1,5 +1,6 @@
 <template>
     <div>
+        <slot />
         <!--<header class="mb-16" 
                 :class="miniHeader || !isLargeScreen ? 'fixed z-50 w-full transform transition duration-500 ease-in-out delay-200' : ''"
                 ref="header">
@@ -11,14 +12,14 @@
             <transition name="search" mode="out-in">
                 <LayoutSearch ref="search" v-show="searchVisible" />
             </transition>
-        </header>-->
+        </header>
         <div class="h-[0px] w-full"
              id="menuObserver"></div>
         <div class="container px-2 md:px-4  min-h-[90vh] max-w-7xl mb-16"
              :style="miniHeader || !isLargeScreen ? `padding-top: calc(${height}px + 2rem)` : ''">
             <slot />
         </div>
-        <LayoutFooter /><!--
+        <LayoutFooter />
         <transition name="totop" mode="out-in">
             <LayoutToTop v-show="toTopState" />
         </transition>
