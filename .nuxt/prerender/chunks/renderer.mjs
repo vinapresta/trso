@@ -1,8 +1,8 @@
 import { createRenderer } from 'file://D:/dev/trso/app/node_modules/vue-bundle-renderer/dist/runtime.mjs';
-import { eventHandler, setResponseStatus, getQuery, createError, appendHeader } from 'file://D:/dev/trso/app/node_modules/h3/dist/index.mjs';
-import { joinURL, withoutTrailingSlash } from 'file://D:/dev/trso/app/node_modules/ufo/dist/index.mjs';
+import { eventHandler, setResponseStatus, getQuery, createError } from 'file://D:/dev/trso/app/node_modules/h3/dist/index.mjs';
 import { renderToString } from 'file://D:/dev/trso/app/node_modules/vue/server-renderer/index.mjs';
 import { u as useNitroApp, a as useRuntimeConfig, g as getRouteRules } from './nitro-prerenderer.mjs';
+import { joinURL } from 'file://D:/dev/trso/app/node_modules/ufo/dist/index.mjs';
 
 function defineRenderHandler(handler) {
   return eventHandler(async (event) => {
@@ -336,7 +336,7 @@ const getSPARenderer = lazyCachedFunction(async () => {
     renderToString
   };
 });
-const PAYLOAD_CACHE = /* @__PURE__ */ new Map() ;
+const PAYLOAD_CACHE = null;
 const PAYLOAD_URL_RE = /\/_payload(\.[a-zA-Z0-9]+)?.js(\?.*)?$/;
 const PRERENDER_NO_SSR_ROUTES = /* @__PURE__ */ new Set(["/index.html", "/200.html", "/404.html"]);
 const renderer = defineRenderHandler(async (event) => {
@@ -370,8 +370,6 @@ const renderer = defineRenderHandler(async (event) => {
     payload: ssrError ? { error: ssrError } : {},
     islandContext
   };
-  const _PAYLOAD_EXTRACTION = !ssrContext.noSSR;
-  const payloadURL = _PAYLOAD_EXTRACTION ? joinURL(useRuntimeConfig().app.baseURL, url, "_payload.js") : void 0;
   {
     ssrContext.payload.prerenderedAt = Date.now();
   }
@@ -390,10 +388,6 @@ const renderer = defineRenderHandler(async (event) => {
     }
     return response2;
   }
-  if (_PAYLOAD_EXTRACTION) {
-    appendHeader(event, "x-nitro-prerender", joinURL(url, "_payload.js"));
-    PAYLOAD_CACHE.set(withoutTrailingSlash(url), renderPayloadResponse(ssrContext));
-  }
   const renderedMeta = await ssrContext.renderMeta?.() ?? {};
   const inlinedStyles = await renderInlineStyles(ssrContext.modules ?? ssrContext._registeredComponents ?? []) ;
   const htmlContext = {
@@ -401,7 +395,7 @@ const renderer = defineRenderHandler(async (event) => {
     htmlAttrs: normalizeChunks([renderedMeta.htmlAttrs]),
     head: normalizeChunks([
       renderedMeta.headTags,
-      _PAYLOAD_EXTRACTION ? `<link rel="modulepreload" href="${payloadURL}">` : null,
+      null,
       _rendered.renderResourceHints(),
       _rendered.renderStyles(),
       inlinedStyles,
@@ -414,7 +408,7 @@ const renderer = defineRenderHandler(async (event) => {
     ]),
     body: [_rendered.html],
     bodyAppend: normalizeChunks([
-      _PAYLOAD_EXTRACTION ? `<script type="module">import p from "${payloadURL}";window.__NUXT__={...p,...(${devalue(splitPayload(ssrContext).initial)})}<\/script>` : `<script>window.__NUXT__=${devalue(ssrContext.payload)}<\/script>`,
+      `<script>window.__NUXT__=${devalue(ssrContext.payload)}<\/script>`,
       _rendered.renderScripts(),
       // Note: bodyScripts may contain tags other than <script>
       renderedMeta.bodyScripts
