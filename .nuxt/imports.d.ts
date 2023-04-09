@@ -13,6 +13,6 @@ export { useAlgoliaRef } from '../node_modules/@nuxtjs/algolia/dist/runtime/comp
 export { useAlgoliaSearch } from '../node_modules/@nuxtjs/algolia/dist/runtime/composables/useAlgoliaSearch';
 export { useAsyncAlgoliaSearch } from '../node_modules/@nuxtjs/algolia/dist/runtime/composables/useAsyncAlgoliaSearch';
 export { useImage } from '../node_modules/@nuxt/image-edge/dist/runtime/composables';
-export { useI18n } from '../node_modules/vue-i18n/dist/vue-i18n.runtime';
+export { useI18n } from '../node_modules/vue-i18n/dist/vue-i18n';
 export { useRouteBaseName, useLocalePath, useLocaleRoute, useSwitchLocalePath, useLocaleHead, useBrowserLocale, useCookieLocale, defineI18nRoute } from '../node_modules/@nuxtjs/i18n/dist/runtime/composables';
 export { definePageMeta } from '../node_modules/nuxt/dist/pages/runtime/composables';

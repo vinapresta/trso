@@ -3180,6 +3180,7 @@ const resolveNuxtI18nOptions = async (context) => {
 const nuxtI18nOptionsDefault = Object({ vueI18n: void 0, locales: [], defaultLocale: "", defaultDirection: "ltr", routesNameSeparator: "___", trailingSlash: false, defaultLocaleRouteNameSuffix: "default", strategy: "prefix_except_default", lazy: false, langDir: null, rootRedirect: null, detectBrowserLanguage: Object({ "alwaysRedirect": false, "cookieCrossOrigin": false, "cookieDomain": null, "cookieKey": "i18n_redirected", "cookieSecure": false, "fallbackLocale": "", "redirectOn": "root", "useCookie": true }), differentDomains: false, baseUrl: "", dynamicRouteParams: false, customRoutes: "page", pages: Object({}), skipSettingLocaleOnNavigate: false, onBeforeLanguageSwitch: () => "", onLanguageSwitched: () => null, types: void 0, debug: false });
 const nuxtI18nInternalOptions = Object({ __normalizedLocales: [Object({ "code": "en", "iso": "en-US", "file": "en.js" })] });
 const NUXT_I18N_MODULE_ID = "@nuxtjs/i18n";
+const isSSG = false;
 function formatMessage(message) {
   return NUXT_I18N_MODULE_ID + " " + message;
 }
@@ -3368,9 +3369,6 @@ const DefaultDetectBrowserLanguageFromResult = {
 };
 function detectBrowserLanguage(route, context, nuxtI18nOptions, nuxtI18nInternalOptions2, localeCodes2 = [], locale = "", mode) {
   const { strategy } = nuxtI18nOptions;
-  if (strategy === "no_prefix" && true) {
-    return { locale: "", stat: true, reason: "detect_ignore_on_ssg" };
-  }
   const { redirectOn, alwaysRedirect, useCookie, fallbackLocale } = nuxtI18nOptions.detectBrowserLanguage;
   const path = sharedExports.isString(route) ? route : route.path;
   if (strategy !== "no_prefix") {
@@ -3460,9 +3458,6 @@ function getDomainFromLocale(localeCode, locales, nuxt) {
     return protocol + "://" + lang.domain;
   }
   console.warn(formatMessage("Could not find domain name for locale " + localeCode));
-}
-function _setLocale(i18n, locale) {
-  return callVueI18nInterfaces(i18n, "setLocale", locale);
 }
 function setCookieLocale(i18n, locale) {
   return callVueI18nInterfaces(i18n, "setLocaleCookie", locale);
@@ -3595,7 +3590,17 @@ function detectLocale(route, context, routeLocaleGetter, nuxtI18nOptions, initia
 function detectRedirect(route, context, targetLocale, routeLocaleGetter, nuxtI18nOptions) {
   const { strategy, defaultLocale, differentDomains } = nuxtI18nOptions;
   let redirectPath = "";
-  if (differentDomains || false) {
+  if (!differentDomains && strategy !== "no_prefix" && // skip if already on the new locale unless the strategy is "prefix_and_default" and this is the default
+  // locale, in which case we might still redirect as we prefer unprefixed route in this case.
+  (routeLocaleGetter(route) !== targetLocale || strategy === "prefix_and_default" && targetLocale === defaultLocale)) {
+    const { fullPath } = route;
+    const decodedRoute = decodeURI(fullPath);
+    const routePath = context.$switchLocalePath(targetLocale) || context.$localePath(fullPath, targetLocale);
+    if (sharedExports.isString(routePath) && routePath && routePath !== fullPath && routePath !== decodedRoute && !routePath.startsWith("//")) {
+      redirectPath = routePath;
+    }
+  }
+  if (differentDomains || isSSG) {
     const switchLocalePath2 = useSwitchLocalePath({
       i18n: getComposer(context.$i18n),
       route,
@@ -3737,7 +3742,7 @@ const i18n_yfWm7jX06p = /* @__PURE__ */ defineNuxtPlugin(async (nuxt) => {
     getDefaultLocale(defaultLocale),
     normalizedLocales,
     localeCodes,
-    strategy === "no_prefix" ? "ssg_ignore" : "normal"
+    "normal"
   );
   vueI18nOptions.messages = ([__temp, __restore] = executeAsync(() => loadInitialMessages(nuxtContext, vueI18nOptions.messages, {
     ...nuxtI18nOptions,
@@ -3752,28 +3757,6 @@ const i18n_yfWm7jX06p = /* @__PURE__ */ defineNuxtPlugin(async (nuxt) => {
   });
   let notInitialSetup = true;
   const isInitialLocaleSetup = (locale) => initialLocale !== locale && notInitialSetup;
-  let ssgModeInitialSetup = true;
-  const isSSGModeInitialSetup = () => ssgModeInitialSetup;
-  if (isSSGModeInitialSetup() && strategy === "no_prefix" && false) {
-    nuxt.hook("app:mounted", async () => {
-      const {
-        locale: browserLocale,
-        stat,
-        reason,
-        from
-      } = nuxtI18nOptions.detectBrowserLanguage ? detectBrowserLanguage(
-        route,
-        nuxtContext,
-        nuxtI18nOptions,
-        nuxtI18nInternalOptions,
-        localeCodes,
-        initialLocale,
-        "ssg_setup"
-      ) : DefaultDetectBrowserLanguageFromResult;
-      _setLocale(i18n, browserLocale);
-      ssgModeInitialSetup = false;
-    });
-  }
   extendI18n(i18n, {
     locales: nuxtI18nOptions.locales,
     localeCodes,
@@ -3991,7 +3974,7 @@ const i18n_yfWm7jX06p = /* @__PURE__ */ defineNuxtPlugin(async (nuxt) => {
         },
         normalizedLocales,
         localeCodes,
-        isSSGModeInitialSetup() && strategy === "no_prefix" ? "ssg_ignore" : "normal"
+        "normal"
       );
       const localeSetup = isInitialLocaleSetup(locale);
       const [modified] = ([__temp2, __restore2] = executeAsync(() => loadAndSetLocale(locale, nuxtContext, i18n, {

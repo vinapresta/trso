@@ -84,10 +84,11 @@ export default defineNuxtConfig({
             google_analytics_id: process.env.GOOGLE_ANALYTICS_ID,
         }
     },
-    routeRules: {
+    ssr: true
+    /*routeRules: {
         '/': { static: true }
     },
     experimental: {
         payloadExtraction: false
-    }
+    }*/
 })
