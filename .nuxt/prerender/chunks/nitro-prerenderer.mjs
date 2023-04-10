@@ -33,7 +33,7 @@ const inlineAppConfig = {};
 
 const appConfig = defuFn(inlineAppConfig);
 
-const _runtimeConfig = {"app":{"baseURL":"/","buildAssetsDir":"/_nuxt/","cdnURL":""},"nitro":{"envPrefix":"NUXT_","routeRules":{"/__nuxt_error":{"cache":false},"/_nuxt/**":{"headers":{"cache-control":"public, max-age=31536000, immutable"}}}},"public":{"websiteName":"Tarseroo","BASE_URL":"https://tarseroo.com","API_BASE_URL":"http://127.0.0.1:1337/api/","limitByPage":24,"featuredItemsCount":12,"google_analytics_id":"G-2VVTWY9547","algolia":{"apiKey":"c3f0378c8bb37aebc40b0affeb477cd6","applicationId":"3HUPT4Q25O","lite":true,"cache":false,"instantSearch":false,"docSearch":{},"recommend":"","globalIndex":""}},"FB_API_KEY":"AIzaSyCrpi511yIUCPKM07Bsk092sezOWMXcwjc","FB_AUTH_DOMAIN":"movies-books.firebaseapp.com","FB_DATABASE_URL":"https://movies-books.firebaseio.com","FB_PROJECT_ID":"movies-books","FB_STORAGE_BUCKET":"movies-books.appspot.com","FB_MESSAGING_SENDER_ID":"469402336814","FB_APP_ID":"1:469402336814:web:c80511a26fa194d056e9bf","FB_MEASUREMENT_ID":"G-LCCVY585SQ","ipx":{"dir":"D:/dev/trso/app/public","maxAge":"","domains":[],"sharp":{},"alias":{}}};
+const _runtimeConfig = {"app":{"baseURL":"/","buildAssetsDir":"/_nuxt/","cdnURL":""},"nitro":{"envPrefix":"NUXT_","routeRules":{"/__nuxt_error":{"cache":false},"/":{"static":true,"cache":{"static":true}},"/**":{"static":true,"cache":{"static":true}},"/privacy-policy":{"static":true,"cache":{"static":true}},"/pages/**":{"static":true,"cache":{"static":true}},"/_nuxt/**":{"headers":{"cache-control":"public, max-age=31536000, immutable"}}}},"public":{"websiteName":"Tarseroo","BASE_URL":"https://tarseroo.com","API_BASE_URL":"http://127.0.0.1:1337/api/","limitByPage":24,"featuredItemsCount":12,"google_analytics_id":"G-2VVTWY9547","algolia":{"apiKey":"c3f0378c8bb37aebc40b0affeb477cd6","applicationId":"3HUPT4Q25O","lite":true,"cache":false,"instantSearch":false,"docSearch":{},"recommend":"","globalIndex":""}},"FB_API_KEY":"AIzaSyCrpi511yIUCPKM07Bsk092sezOWMXcwjc","FB_AUTH_DOMAIN":"movies-books.firebaseapp.com","FB_DATABASE_URL":"https://movies-books.firebaseio.com","FB_PROJECT_ID":"movies-books","FB_STORAGE_BUCKET":"movies-books.appspot.com","FB_MESSAGING_SENDER_ID":"469402336814","FB_APP_ID":"1:469402336814:web:c80511a26fa194d056e9bf","FB_MEASUREMENT_ID":"G-LCCVY585SQ","ipx":{"dir":"D:/dev/trso/app/public","maxAge":"","domains":[],"sharp":{},"alias":{}}};
 const ENV_PREFIX = "NITRO_";
 const ENV_PREFIX_ALT = _runtimeConfig.nitro.envPrefix ?? process.env.NITRO_ENV_PREFIX ?? "_";
 overrideConfig(_runtimeConfig);
@@ -686,6 +686,11 @@ const _lazy_ZPgSMJ = () => import('./renderer.mjs').then(function (n) { return n
 const handlers = [
   { route: '/_ipx/**', handler: _rxtNgg, lazy: false, middleware: false, method: undefined },
   { route: '/sitemap.xml', handler: _Xrc8gN, lazy: false, middleware: false, method: undefined },
+  { route: '/__nuxt_error', handler: _lazy_ZPgSMJ, lazy: true, middleware: false, method: undefined },
+  { route: '/', handler: _lazy_ZPgSMJ, lazy: true, middleware: false, method: undefined },
+  { route: '/privacy-policy', handler: _lazy_ZPgSMJ, lazy: true, middleware: false, method: undefined },
+  { route: '/pages/**', handler: _lazy_ZPgSMJ, lazy: true, middleware: false, method: undefined },
+  { route: '/_nuxt/**', handler: _lazy_ZPgSMJ, lazy: true, middleware: false, method: undefined },
   { route: '/**', handler: _lazy_ZPgSMJ, lazy: true, middleware: false, method: undefined }
 ];
 
