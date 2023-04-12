@@ -48,7 +48,7 @@ onMounted(() => {
                 entry.target.style.opacity = '1'
                 entry.target.style.transform = 'scale(1)'
                 
-                observer.unobserve(entry.target);
+                observer.unobserve(entry.target)
             }
 
         })

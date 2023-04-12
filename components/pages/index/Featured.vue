@@ -95,6 +95,7 @@
         itemElements.forEach(item => {
 
             observer.observe(item)
+            
         })
 
     })
