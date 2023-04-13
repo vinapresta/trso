@@ -290,7 +290,7 @@ function useHead(input, options = {}) {
     return isBrowser ? clientUseHead(input, options) : serverUseHead(input, options);
   }
 }
-const appHead = { "meta": [{ "charset": "utf-8" }, { "name": "viewport", "content": "width=device-width, initial-scale=1" }, { "name": "robots", "content": "noindex, nofollow" }, { "name": "robots", "content": "noimageindex" }], "link": [{ "rel": "icon", "type": "image/x-icon", "href": "/favicon.ico" }, { "rel": "preconnect", "href": "https://fonts.googleapis.com" }, { "rel": "preconnect", "href": "https://fonts.gstatic.com" }, { "rel": "stylesheet", "href": "https://fonts.googleapis.com/css?family=Playfair+Display|Source+Sans+Pro:400,600&display=swap" }, { "rel": "stylesheet", "href": "https://fonts.googleapis.com/css?family=Fredoka+One&display=swap" }], "style": [], "script": [], "noscript": [], "htmlAttrs": { "lang": "en" }, "bodyAttrs": { "class": "bg-white text-grey-700 main leading-normal text-base tracking-normal" } };
+const appHead = { "meta": [{ "charset": "utf-8" }, { "name": "viewport", "content": "width=device-width, initial-scale=1" }], "link": [{ "rel": "icon", "type": "image/x-icon", "href": "/favicon.ico" }, { "rel": "preconnect", "href": "https://fonts.googleapis.com" }, { "rel": "preconnect", "href": "https://fonts.gstatic.com" }, { "rel": "stylesheet", "href": "https://fonts.googleapis.com/css?family=Playfair+Display|Source+Sans+Pro:400,600&display=swap" }, { "rel": "stylesheet", "href": "https://fonts.googleapis.com/css?family=Fredoka+One&display=swap" }], "style": [], "script": [], "noscript": [], "htmlAttrs": { "lang": "en" }, "bodyAttrs": { "class": "bg-white text-grey-700 main leading-normal text-base tracking-normal" } };
 const appLayoutTransition = false;
 const appPageTransition = false;
 const appKeepalive = false;
@@ -3180,6 +3180,7 @@ const resolveNuxtI18nOptions = async (context) => {
 const nuxtI18nOptionsDefault = Object({ vueI18n: void 0, locales: [], defaultLocale: "", defaultDirection: "ltr", routesNameSeparator: "___", trailingSlash: false, defaultLocaleRouteNameSuffix: "default", strategy: "prefix_except_default", lazy: false, langDir: null, rootRedirect: null, detectBrowserLanguage: Object({ "alwaysRedirect": false, "cookieCrossOrigin": false, "cookieDomain": null, "cookieKey": "i18n_redirected", "cookieSecure": false, "fallbackLocale": "", "redirectOn": "root", "useCookie": true }), differentDomains: false, baseUrl: "", dynamicRouteParams: false, customRoutes: "page", pages: Object({}), skipSettingLocaleOnNavigate: false, onBeforeLanguageSwitch: () => "", onLanguageSwitched: () => null, types: void 0, debug: false });
 const nuxtI18nInternalOptions = Object({ __normalizedLocales: [Object({ "code": "en", "iso": "en-US", "file": "en.js" })] });
 const NUXT_I18N_MODULE_ID = "@nuxtjs/i18n";
+const isSSG = false;
 function formatMessage(message) {
   return NUXT_I18N_MODULE_ID + " " + message;
 }
@@ -3368,9 +3369,6 @@ const DefaultDetectBrowserLanguageFromResult = {
 };
 function detectBrowserLanguage(route, context, nuxtI18nOptions, nuxtI18nInternalOptions2, localeCodes2 = [], locale = "", mode) {
   const { strategy } = nuxtI18nOptions;
-  if (strategy === "no_prefix" && true) {
-    return { locale: "", stat: true, reason: "detect_ignore_on_ssg" };
-  }
   const { redirectOn, alwaysRedirect, useCookie, fallbackLocale } = nuxtI18nOptions.detectBrowserLanguage;
   const path = sharedExports.isString(route) ? route : route.path;
   if (strategy !== "no_prefix") {
@@ -3460,9 +3458,6 @@ function getDomainFromLocale(localeCode, locales, nuxt) {
     return protocol + "://" + lang.domain;
   }
   console.warn(formatMessage("Could not find domain name for locale " + localeCode));
-}
-function _setLocale(i18n, locale) {
-  return callVueI18nInterfaces(i18n, "setLocale", locale);
 }
 function setCookieLocale(i18n, locale) {
   return callVueI18nInterfaces(i18n, "setLocaleCookie", locale);
@@ -3595,7 +3590,17 @@ function detectLocale(route, context, routeLocaleGetter, nuxtI18nOptions, initia
 function detectRedirect(route, context, targetLocale, routeLocaleGetter, nuxtI18nOptions) {
   const { strategy, defaultLocale, differentDomains } = nuxtI18nOptions;
   let redirectPath = "";
-  if (differentDomains || false) {
+  if (!differentDomains && strategy !== "no_prefix" && // skip if already on the new locale unless the strategy is "prefix_and_default" and this is the default
+  // locale, in which case we might still redirect as we prefer unprefixed route in this case.
+  (routeLocaleGetter(route) !== targetLocale || strategy === "prefix_and_default" && targetLocale === defaultLocale)) {
+    const { fullPath } = route;
+    const decodedRoute = decodeURI(fullPath);
+    const routePath = context.$switchLocalePath(targetLocale) || context.$localePath(fullPath, targetLocale);
+    if (sharedExports.isString(routePath) && routePath && routePath !== fullPath && routePath !== decodedRoute && !routePath.startsWith("//")) {
+      redirectPath = routePath;
+    }
+  }
+  if (differentDomains || isSSG) {
     const switchLocalePath2 = useSwitchLocalePath({
       i18n: getComposer(context.$i18n),
       route,
@@ -3737,7 +3742,7 @@ const i18n_yfWm7jX06p = /* @__PURE__ */ defineNuxtPlugin(async (nuxt) => {
     getDefaultLocale(defaultLocale),
     normalizedLocales,
     localeCodes,
-    strategy === "no_prefix" ? "ssg_ignore" : "normal"
+    "normal"
   );
   vueI18nOptions.messages = ([__temp, __restore] = executeAsync(() => loadInitialMessages(nuxtContext, vueI18nOptions.messages, {
     ...nuxtI18nOptions,
@@ -3752,28 +3757,6 @@ const i18n_yfWm7jX06p = /* @__PURE__ */ defineNuxtPlugin(async (nuxt) => {
   });
   let notInitialSetup = true;
   const isInitialLocaleSetup = (locale) => initialLocale !== locale && notInitialSetup;
-  let ssgModeInitialSetup = true;
-  const isSSGModeInitialSetup = () => ssgModeInitialSetup;
-  if (isSSGModeInitialSetup() && strategy === "no_prefix" && false) {
-    nuxt.hook("app:mounted", async () => {
-      const {
-        locale: browserLocale,
-        stat,
-        reason,
-        from
-      } = nuxtI18nOptions.detectBrowserLanguage ? detectBrowserLanguage(
-        route,
-        nuxtContext,
-        nuxtI18nOptions,
-        nuxtI18nInternalOptions,
-        localeCodes,
-        initialLocale,
-        "ssg_setup"
-      ) : DefaultDetectBrowserLanguageFromResult;
-      _setLocale(i18n, browserLocale);
-      ssgModeInitialSetup = false;
-    });
-  }
   extendI18n(i18n, {
     locales: nuxtI18nOptions.locales,
     localeCodes,
@@ -3991,7 +3974,7 @@ const i18n_yfWm7jX06p = /* @__PURE__ */ defineNuxtPlugin(async (nuxt) => {
         },
         normalizedLocales,
         localeCodes,
-        isSSGModeInitialSetup() && strategy === "no_prefix" ? "ssg_ignore" : "normal"
+        "normal"
       );
       const localeSetup = isInitialLocaleSetup(locale);
       const [modified] = ([__temp2, __restore2] = executeAsync(() => loadAndSetLocale(locale, nuxtContext, i18n, {
@@ -4575,7 +4558,7 @@ const _wrapIf = (component, props, slots) => {
   return { default: () => props ? h(component, props === true ? {} : props, slots) : h(Fragment, {}, slots) };
 };
 const layouts = {
-  default: () => import('./default-70044761.mjs').then((m) => m.default || m),
+  default: () => import('./default-6020fe67.mjs').then((m) => m.default || m),
   error: () => import('./error-722bfbf6.mjs').then((m) => m.default || m)
 };
 const LayoutLoader = /* @__PURE__ */ defineComponent({
@@ -4759,7 +4742,7 @@ const _sfc_main = {
   __name: "nuxt-root",
   __ssrInlineRender: true,
   setup(__props) {
-    const ErrorComponent = /* @__PURE__ */ defineAsyncComponent(() => import('./error-component-f116388d.mjs').then((r) => r.default || r));
+    const ErrorComponent = /* @__PURE__ */ defineAsyncComponent(() => import('./error-component-93ead033.mjs').then((r) => r.default || r));
     const IslandRenderer = /* @__PURE__ */ defineAsyncComponent(() => import('./island-renderer-6e061adc.mjs').then((r) => r.default || r));
     const nuxtApp = useNuxtApp();
     nuxtApp.deferHydration();

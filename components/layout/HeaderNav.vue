@@ -1,6 +1,7 @@
 <template>
-    <div class="relative w-full bg-trso-blue">
-        <IconsHamburger @click="menuMobileState = !menuMobileState"/>
+    <div class="relative w-full bg-trso-blue transition-all duration-500 px-2 md:px-4">
+        <IconsHamburger @click="menuMobileState = !menuMobileState"
+                        class="visible lg:hidden group absolute top-6 right-4 text-white h-8 w-8" />
         <nav class="lg:flex items-center 
                     max-w-7xl mx-auto
                     transition-[padding] ease-in-out delay-200" 
@@ -21,20 +22,10 @@
                         <LayoutMenuButton :to="menuItem.to" 
                                           :name="menuItem.name" />
                     </li>
-                    <!--<LayoutMenuButton>
-                        <NuxtLink :to="localePath({ name: 'type-pages-page', params: { type: 'movies', page: 1 } })">
-                            {{ $t('header.movies') }}
-                        </NuxtLink>
-                    </LayoutMenuButton>
-                    <LayoutMenuButton>
-                        <NuxtLink :to="localePath({ name: 'type-pages-page', params: { type: 'tv-series', page: 1 } })">
-                            {{ $t('header.series') }}
-                        </NuxtLink>
-                    </LayoutMenuButton>-->
                 </ul>
             </transition>
             <button v-if="searchButtonVisible"
-                    class="absolute lg:relative top-1/2 lg:top-0 -translate-y-1/2 lg:translate-y-0 left-4 lg:left-0 lg:flex items-center gap-x-2 lg:ml-auto" 
+                    class="absolute lg:relative top-1/2 top-5 lg:top-0 left-4 lg:left-0 lg:flex items-center gap-x-2 lg:ml-auto" 
                     @click="$emit('changeSearchState')">
                 <IconsSearch class="text-white h-5 w-5 mx-auto lg:mx-0"/>
                 <span v-if="!searchButtonState" class="text-white">
@@ -81,11 +72,11 @@
 
 <style scoped>
 .toggle-fade-enter-active {
-    transition: all 0.3s ease-out;
+    transition: all 0.3s ease-in;
 }
 
 .toggle-fade-leave-active {
-    transition: all 0.8s cubic-bezier(1, 0.5, 0.8, 1);
+    transition: all 0.5s ease-out;
 }
 
 .toggle-fade-enter-from,

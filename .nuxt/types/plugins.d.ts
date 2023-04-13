@@ -16,7 +16,6 @@ type NuxtAppInjections =
   InjectionType<typeof import("../../node_modules/@nuxt/image-edge/dist/runtime/plugin").default> &
   InjectionType<typeof import("../../node_modules/@nuxtjs/algolia/dist/runtime/plugin").default> &
   InjectionType<typeof import("../../node_modules/nuxt/dist/app/plugins/chunk-reload.client").default> &
-  InjectionType<typeof import("../../node_modules/nuxt/dist/app/plugins/payload.client").default> &
   InjectionType<typeof import("../../plugins/firestore").default> &
   InjectionType<typeof import("../../plugins/format-date").default> &
   InjectionType<typeof import("../../plugins/i18n").default> &

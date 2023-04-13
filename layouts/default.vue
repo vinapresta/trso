@@ -1,21 +1,21 @@
 <template>
     <div>
-        <header class="mb-16" 
-                :class="miniHeader || !isLargeScreen ? 'fixed z-50 w-full transform transition duration-500 ease-in-out delay-200' : ''"
-                ref="header">
-            <LayoutHeaderNav :class="miniHeader || !isLargeScreen ? 'py-1' : 'py-1 lg:py-4'"
+        <header class="mb-16"
+                :class="miniHeader || !isLargeScreen ? 'fixed z-50 w-full' : 'relative'">
+            <LayoutHeaderNav ref="headerNav"
+                             :class="miniHeader || !isLargeScreen ? 'py-1' : 'py-1 lg:py-4'"
                              :searchButtonState="searchButtonState"
-                             :searchButtonVisible="isLargeScreen ? searchButtonVisible : true"
+                             :searchButtonVisible="miniHeader || !isLargeScreen"
                              :isLargeScreen="isLargeScreen"
                              @change-search-state="changeSearchSate()" />
-            <transition name="search" mode="out-in">
+            <Transition name="search" mode="out-in">
                 <LayoutSearch ref="search" v-show="searchVisible" />
-            </transition>
+            </Transition>
         </header>
         <div class="h-[0px] w-full"
              id="menuObserver"></div>
-        <div class="container px-2 md:px-4  min-h-[90vh] max-w-7xl mb-16"
-             :style="miniHeader || !isLargeScreen ? `padding-top: calc(${height}px + 2rem)` : ''">
+        <div class="container px-2 md:px-4 min-h-[90vh] max-w-7xl mb-16"
+             :style="miniHeader || !isLargeScreen ? `padding-top: calc(${height}px + 4rem)` : ''">
             <slot />
         </div>
         <LayoutFooter />
@@ -23,6 +23,7 @@
             <LayoutToTop v-show="toTopState" />
         </transition>
         <LayoutContactModal />
+        <!--<div class="fixed top-0 left-0 w-full z-90 text-red-500">{{ miniHeader }}</div>-->
     </div>
 </template>
 
@@ -32,9 +33,9 @@
 
     const isLargeScreen = useMediaQuery('(min-width: 1024px)')
 
-    const header = ref(null)
+    const headerNav = ref(null)
 
-    const { height } = useElementSize(header)
+    const { height } = useElementSize(headerNav)
 
     const search = ref(null)
 
@@ -43,8 +44,6 @@
     const miniHeader = ref(false)
 
     const searchButtonState = ref(false)
-
-    const searchButtonVisible = ref(false)
 
     onMounted( () => {
 
@@ -61,20 +60,16 @@
                 miniHeader.value = false
 
                 searchButtonState.value = false
-
-                searchButtonVisible.value = false
  
             } else {
 
                 miniHeader.value = true
 
-                searchButtonVisible.value = true
-
             }
 
         })
-        }, 
-        { threshold: 0.5 })
+        }/*, 
+        { threshold: 0.5 }*/)
 
         observer.observe(menuObserver)
 
@@ -128,8 +123,8 @@ html {
 
 .search-enter-from,
 .search-leave-to {
-    transform: translateY(30px);
-    opacity: 0;
+    transform: translateY(-500px);
+    /*opacity: 0;*/
 }
 </style>
 
