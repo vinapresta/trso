@@ -476,7 +476,7 @@ const _routes = [
     meta: {},
     alias: [],
     redirect: void 0,
-    component: () => import('./_id_-_slug_-3fd0daab.mjs').then((m) => m.default || m)
+    component: () => import('./_id_-_slug_-4fbf5a27.mjs').then((m) => m.default || m)
   },
   {
     name: "type-pages-page___en",
@@ -484,7 +484,7 @@ const _routes = [
     meta: {},
     alias: [],
     redirect: void 0,
-    component: () => import('./_page_-88dbcf99.mjs').then((m) => m.default || m)
+    component: () => import('./_page_-12498df7.mjs').then((m) => m.default || m)
   },
   {
     name: "index___en",
@@ -493,7 +493,7 @@ const _routes = [
     meta: {},
     alias: [],
     redirect: void 0,
-    component: () => import('./index-f335721f.mjs').then((m) => m.default || m)
+    component: () => import('./index-38c2f8dd.mjs').then((m) => m.default || m)
   },
   {
     name: "privacy-policy___en",
@@ -502,7 +502,7 @@ const _routes = [
     meta: {},
     alias: [],
     redirect: void 0,
-    component: () => import('./privacy-policy-e377c730.mjs').then((m) => m.default || m)
+    component: () => import('./privacy-policy-562a38f6.mjs').then((m) => m.default || m)
   },
   {
     name: "search-search___en",
@@ -510,7 +510,7 @@ const _routes = [
     meta: {},
     alias: [],
     redirect: void 0,
-    component: () => import('./_search_-6031d006.mjs').then((m) => m.default || m)
+    component: () => import('./_search_-c67ef0aa.mjs').then((m) => m.default || m)
   }
 ];
 const routerOptions0 = {
@@ -3093,21 +3093,6 @@ function proxyForComposable(options, target) {
     );
   };
 }
-function useRouteBaseName({
-  router = useRouter$1(),
-  route = useRoute$1(),
-  i18n = useI18n(),
-  defaultLocale = void 0,
-  defaultLocaleRouteNameSuffix = void 0,
-  routesNameSeparator = void 0,
-  strategy = void 0,
-  trailingSlash = void 0
-} = {}) {
-  return proxyForComposable(
-    { router, route, i18n, defaultLocale, defaultLocaleRouteNameSuffix, routesNameSeparator, strategy, trailingSlash },
-    getRouteBaseName
-  );
-}
 function useLocalePath({
   router = useRouter$1(),
   route = useRoute$1(),
@@ -4558,7 +4543,7 @@ const _wrapIf = (component, props, slots) => {
   return { default: () => props ? h(component, props === true ? {} : props, slots) : h(Fragment, {}, slots) };
 };
 const layouts = {
-  default: () => import('./default-6020fe67.mjs').then((m) => m.default || m),
+  default: () => import('./default-200b94e7.mjs').then((m) => m.default || m),
   error: () => import('./error-722bfbf6.mjs').then((m) => m.default || m)
 };
 const LayoutLoader = /* @__PURE__ */ defineComponent({
@@ -4742,7 +4727,7 @@ const _sfc_main = {
   __name: "nuxt-root",
   __ssrInlineRender: true,
   setup(__props) {
-    const ErrorComponent = /* @__PURE__ */ defineAsyncComponent(() => import('./error-component-93ead033.mjs').then((r) => r.default || r));
+    const ErrorComponent = /* @__PURE__ */ defineAsyncComponent(() => import('./error-component-5d8f11b1.mjs').then((r) => r.default || r));
     const IslandRenderer = /* @__PURE__ */ defineAsyncComponent(() => import('./island-renderer-6e061adc.mjs').then((r) => r.default || r));
     const nuxtApp = useNuxtApp();
     nuxtApp.deferHydration();
@@ -4804,5 +4789,5 @@ const plugins = normalizePlugins(_plugins);
 }
 const entry$1 = (ctx) => entry(ctx);
 
-export { _export_sfc as _, useRuntimeConfig as a, useI18n as b, createError as c, useNuxtApp as d, entry$1 as default, useHead as e, useRequestEvent as f, useState as g, useRouter as h, useRequestFetch as i, useLocalePath as j, getComposer as k, useRouteBaseName as l, navigateTo as n, parseSize as p, useRoute as u };
+export { _export_sfc as _, useRuntimeConfig as a, useI18n as b, createError as c, useNuxtApp as d, entry$1 as default, useHead as e, useRequestEvent as f, useState as g, useRouter as h, useRequestFetch as i, useLocalePath as j, getComposer as k, navigateTo as n, parseSize as p, useRoute as u };
 //# sourceMappingURL=server.mjs.map

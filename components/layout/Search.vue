@@ -1,7 +1,7 @@
 <template>
     <div id="search" 
-         class="bg-trso-blue border-b-2 border-trso-blue -z-10
-                px-4 lg:px-0 relative py-8 shadow-sub">
+         class="bg-trso-blue border-b-2 border-trso-blue z-10
+                max-h-[700px] px-4 lg:px-0 relative py-8 shadow-sub">
         <div class="container">
             <div class="flex flex-row items-center relative max-w-lg mx-auto gap-x-2 mb-4">
                 <span class="absolute inset-y-0 left-0 pl-3 flex items-center">

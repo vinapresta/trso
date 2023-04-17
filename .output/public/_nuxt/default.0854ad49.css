@@ -1,0 +1,1 @@
+html{scroll-behavior:smooth}.totop-enter-active,.totop-leave-active{transition:opacity .5s ease}.totop-enter-from,.totop-leave-to{opacity:0}.search-enter-active{transition:all .3s ease-out}.search-leave-active{transition:all .5s ease-in-out}.search-enter-from,.search-leave-to{transform:translateY(-500px)}

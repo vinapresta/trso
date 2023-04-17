@@ -1,29 +1,50 @@
 <template>
-    <div>
-        <header class="mb-16"
-                :class="miniHeader || !isLargeScreen ? 'fixed z-50 w-full' : 'relative'">
+    <div class="relative">
+        <header class="fixed z-10 w-full"
+                ref="header">
+            <div class="relative">
+                <LayoutHeaderNav class="py-1 lg:py-4 z-20"
+                                :searchButtonState="searchButtonState"
+                                :searchButtonVisible="searchButtonVisible"
+                                :isLargeScreen="isLargeScreen"
+                                @change-search-state="changeSearchSate()" />  
+                
+                <!--<div class="overflow-hidden">-->
+                    <Transition name="search" mode="out-in">
+                    <LayoutSearch v-if="searchButtonState"
+                                ref="search" />
+                    </Transition>
+                <!--</div>-->
+            </div>
+        </header>
+        <!--<header :class="miniHeader || !isLargeScreen ? 'fixed z-50 w-full' : 'relative'">
             <LayoutHeaderNav ref="headerNav"
                              :class="miniHeader || !isLargeScreen ? 'py-1' : 'py-1 lg:py-4'"
                              :searchButtonState="searchButtonState"
-                             :searchButtonVisible="miniHeader || !isLargeScreen"
+                             :searchButtonVisible="searchButtonVisible"
                              :isLargeScreen="isLargeScreen"
                              @change-search-state="changeSearchSate()" />
             <Transition name="search" mode="out-in">
                 <LayoutSearch ref="search" v-show="searchVisible" />
             </Transition>
         </header>
-        <div class="h-[0px] w-full"
+        <div class="w-full h-16 bg-red-400"
              id="menuObserver"></div>
-        <div class="container px-2 md:px-4 min-h-[90vh] max-w-7xl mb-16"
+        <div id="main"
+             class="container px-2 md:px-4 min-h-[90vh] max-w-7xl mb-16"
              :style="miniHeader || !isLargeScreen ? `padding-top: calc(${height}px + 4rem)` : ''">
-            <slot />
+            <slot></slot>
+        </div>-->
+        <div id="main"
+             class="container px-2 md:px-4 min-h-[90vh] max-w-7xl mb-16 transition-all duration-500"
+             :style="`padding-top: ${height/16 + 4}rem`">
+            <slot></slot>
         </div>
         <LayoutFooter />
         <transition name="totop" mode="out-in">
             <LayoutToTop v-show="toTopState" />
         </transition>
         <LayoutContactModal />
-        <!--<div class="fixed top-0 left-0 w-full z-90 text-red-500">{{ miniHeader }}</div>-->
     </div>
 </template>
 
@@ -33,9 +54,13 @@
 
     const isLargeScreen = useMediaQuery('(min-width: 1024px)')
 
-    const headerNav = ref(null)
+    /*const headerNav = ref(null)*/
 
-    const { height } = useElementSize(headerNav)
+    /*const { height } = useElementSize(headerNav)*/
+
+    const header = ref()
+
+    const { height } = useElementSize(header)
 
     const search = ref(null)
 
@@ -43,39 +68,38 @@
 
     const miniHeader = ref(false)
 
-    const searchButtonState = ref(false)
+    const searchButtonState = ref(true)
 
-    onMounted( () => {
+    onMounted(() => {
 
-        const menuObserver = document.getElementById('menuObserver')
+        /*const menuObserver = document.getElementById('menuObserver')
 
         const observer = new IntersectionObserver(entries => {
 
-        entries.forEach(entry => {
+            entries.forEach(entry => {
 
-            const intersecting = entry.isIntersecting
+                const intersecting = entry.isIntersecting
 
-            if (intersecting) {
+                if (intersecting) {
 
-                miniHeader.value = false
+                    miniHeader.value = false
 
-                searchButtonState.value = false
- 
-            } else {
+                    searchButtonState.value = false
+    
+                } else {
 
-                miniHeader.value = true
+                    miniHeader.value = true
 
-            }
+                }
 
+            })
         })
-        }/*, 
-        { threshold: 0.5 }*/)
 
-        observer.observe(menuObserver)
+        observer.observe(menuObserver)*/
 
     })
 
-    const searchVisible = computed(() => {
+    /*const searchVisible = computed(() => {
 
         if (isLargeScreen.value) { 
 
@@ -87,13 +111,19 @@
 
         }
 
-    })
+    })*/
 
     function changeSearchSate() {
 
         searchButtonState.value = !searchButtonState.value
-
+        
     }
+
+    const searchButtonVisible = computed(() => {
+
+        return !isLargeScreen.value || ( isLargeScreen.value && miniHeader.value )
+
+    })
 
 </script>
 
@@ -118,13 +148,13 @@ html {
 }
 
 .search-leave-active {
-    transition: all 0.8s cubic-bezier(1, 0.5, 0.8, 1);
+    transition: all 0.5s ease-in-out;
 }
 
 .search-enter-from,
 .search-leave-to {
-    transform: translateY(-500px);
     /*opacity: 0;*/
+    transform: translateY(-500px);
 }
 </style>
 
