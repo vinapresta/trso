@@ -1,6 +1,6 @@
 <template>
     <div>
-        <span class="block px-6 mb-4 text-center text-trso-blue font-serif text-2xl uppercase">{{  $t('components.formsContact.title') }}</span>  
+        <span class="block px-6 mb-4 text-center text-trso-blue font-title font-semibold text-2xl uppercase">{{  $t('components.formsContact.title') }}</span>  
         <span class="text-green-400" :class="states.success ? 'block px-6' : 'hidden'">{{ $t('components.formsContact.success') }}</span>
         <span class="text-red-400" :class="states.error ? 'block px-6' : 'hidden'">{{ $t('components.formsContact.error') }}</span>
         <form name="contact" method="POST" data-netlify="true" ref="contactForm">

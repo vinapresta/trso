@@ -54,10 +54,6 @@
 
     const isLargeScreen = useMediaQuery('(min-width: 1024px)')
 
-    /*const headerNav = ref(null)*/
-
-    /*const { height } = useElementSize(headerNav)*/
-
     const header = ref()
 
     const { height } = useElementSize(header)
@@ -69,49 +65,6 @@
     const miniHeader = ref(false)
 
     const searchButtonState = ref(true)
-
-    onMounted(() => {
-
-        /*const menuObserver = document.getElementById('menuObserver')
-
-        const observer = new IntersectionObserver(entries => {
-
-            entries.forEach(entry => {
-
-                const intersecting = entry.isIntersecting
-
-                if (intersecting) {
-
-                    miniHeader.value = false
-
-                    searchButtonState.value = false
-    
-                } else {
-
-                    miniHeader.value = true
-
-                }
-
-            })
-        })
-
-        observer.observe(menuObserver)*/
-
-    })
-
-    /*const searchVisible = computed(() => {
-
-        if (isLargeScreen.value) { 
-
-            return miniHeader.value ? searchButtonState.value : true
-
-        } else {
-
-            return searchButtonState.value
-
-        }
-
-    })*/
 
     function changeSearchSate() {
 

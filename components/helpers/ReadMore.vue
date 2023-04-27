@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div class="text-justify pb-2 text-sm lg:text-base relative transition-all duration-500 ease before:transition-all before:duration-500 before:ease"
+        <div class="text-justify pb-2 text-sm lg:text-base relative transition-all duration-700 ease-in-out before:transition-all before:duration-700 before:ease-in-out"
              :class="style"
              :ref="(e) => { contentRef = e }">
             <slot></slot>

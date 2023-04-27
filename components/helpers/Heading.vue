@@ -20,7 +20,7 @@
     const classes = computed(() => {
 
         const styleClasses = {
-            h1: `uppercase pb-4 md:pb-8 text-center lg:text-left text-2xl font-medium font-[title] text-trso-${props.color} tracking-tighter leading-none`,
+            h1: `uppercase pb-4 md:pb-8 text-center lg:text-left text-2xl font-semibold font-title text-trso-${props.color} tracking-tighter leading-none`,
             h2: `mb-2 md:mb-4 text-xl lg:text-2xl text-center lg:text-left text-trso-${props.color} font-medium tracking-tighter leading-none`,
             h3: `text-xl leading-none text-trso-${props.color} font-normal`,
             h4: 'pb-2 text-3xl font-bold tracking-tighter leading-none',

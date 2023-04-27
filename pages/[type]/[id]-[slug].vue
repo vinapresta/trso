@@ -50,11 +50,28 @@
                     :class="`bg-trso-${item.color}`">
                     {{ $t('pages.slug.relatedBooks') }}
                 </h2>
-                <div class="flex flex-wrap">
+                <div class="flex flex-wrap">{{ bookContent }}
                     <div v-for="book in item.books" :key="book.id" class="my-2 w-full" :id="`bookThumb${book.id}`">
-                        <PagesSlugBooksAccordion v-if="book" :book="book.attributes" :color="item.color" />
+                        <PagesSlugBooksAccordion v-if="book" 
+                                                 :book="book.attributes" 
+                                                 :color="item.color"
+                                                 @open-book-desc="changeBookContent(book.id)" />
                     </div>
                 </div>
+                <Transition name="fade">
+                <helpersModal v-show="bookDescModalState"
+                              @close-modal="bookDescModalState = false">
+                    <div class="px-2 sm:px-4">
+                        <pagesSlugBookIntro :book="selectedBookData" 
+                                            :popup="true" 
+                                            :color="item.color" />
+                        <p v-if="selectedBookData.description?.length"
+                        class="text-justify text-sm lg:text-base">
+                            {{ selectedBookData.description }}
+                        </p>
+                    </div>
+                </helpersModal>
+                </Transition>
             </section>
             <PagesSlugDetail :itemAttr="item.attr" :itemLangAttr="item.langAttr" :bookAttr="item.firstBook.attributes"/>
             <PagesSlugComments :bookTitle="item.firstBook.attributes.title" />
@@ -71,6 +88,12 @@
     const route = useRoute()
     
     const id = route.params.id
+
+    /****** books description when click 'read more' button *******/
+
+    const bookDescModalState = ref(false)
+
+    /***************/
    
     const fields = `fields[0]=imdbId&fields[1]=poster&fields[2]=type&fields[3]=ratings`
     const filters = `filters[item_lang][locale][$eq]=${locale.value}`
@@ -103,6 +126,33 @@
         
     })
 
+    const selectedBookData = reactive({
+        thumbnail: '',
+        title: '',
+        authors: '',
+        publisher: '',
+        description: ''
+
+    })
+
+    function changeBookContent(id) {
+
+        bookDescModalState.value = true
+
+        const book = item.value.books.find((book) => book.id === id)
+
+        const bookAttr = book.attributes
+
+        selectedBookData.thumbnail = bookAttr.thumbnail,
+        selectedBookData.title = bookAttr.title,
+        selectedBookData.authors = bookAttr.authors,
+        selectedBookData.publisher = bookAttr.publisher
+        selectedBookData.description = bookAttr.description
+
+    }
+
+    
+
     useHead({
         title: `${runtimeConfig.public.websiteName} - ${t('pages.slug.what')} ${t('pages.slug.the')} ${item.value.attr.type} ${item.value.langAttr.title} ${t('pages.slug.on')}`,
         meta: [
@@ -118,3 +168,15 @@
     })
     
 </script>
+
+<style scoped>
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+</style>

@@ -1,7 +1,8 @@
 <template>
     <div>
     <Transition name="fade">
-        <HelpersModal v-show="contactModalState">
+        <HelpersModal v-show="contactModalState"
+                      @close-modal="contactModalState = false">
             <FormsContactForm />
         </HelpersModal>
         </Transition>

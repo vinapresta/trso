@@ -476,7 +476,7 @@ const _routes = [
     meta: {},
     alias: [],
     redirect: void 0,
-    component: () => import('./_id_-_slug_-4fbf5a27.mjs').then((m) => m.default || m)
+    component: () => import('./_id_-_slug_-82181dff.mjs').then((m) => m.default || m)
   },
   {
     name: "type-pages-page___en",
@@ -484,7 +484,7 @@ const _routes = [
     meta: {},
     alias: [],
     redirect: void 0,
-    component: () => import('./_page_-12498df7.mjs').then((m) => m.default || m)
+    component: () => import('./_page_-bdb89d74.mjs').then((m) => m.default || m)
   },
   {
     name: "index___en",
@@ -493,7 +493,7 @@ const _routes = [
     meta: {},
     alias: [],
     redirect: void 0,
-    component: () => import('./index-38c2f8dd.mjs').then((m) => m.default || m)
+    component: () => import('./index-53b6c0fc.mjs').then((m) => m.default || m)
   },
   {
     name: "privacy-policy___en",
@@ -502,7 +502,7 @@ const _routes = [
     meta: {},
     alias: [],
     redirect: void 0,
-    component: () => import('./privacy-policy-562a38f6.mjs').then((m) => m.default || m)
+    component: () => import('./privacy-policy-97e81f6b.mjs').then((m) => m.default || m)
   },
   {
     name: "search-search___en",
@@ -510,7 +510,7 @@ const _routes = [
     meta: {},
     alias: [],
     redirect: void 0,
-    component: () => import('./_search_-c67ef0aa.mjs').then((m) => m.default || m)
+    component: () => import('./_search_-40e6be5d.mjs').then((m) => m.default || m)
   }
 ];
 const routerOptions0 = {
@@ -4401,7 +4401,7 @@ const pages = {
     more: "Read more",
     less: "Show less",
     find: "find",
-    written: "written by",
+    written: "Written by",
     findBooks: "Find all the books written by",
     onAmazon: "on Amazon.",
     onAmazonPrime: "on Amazon Prime.",
@@ -4543,7 +4543,7 @@ const _wrapIf = (component, props, slots) => {
   return { default: () => props ? h(component, props === true ? {} : props, slots) : h(Fragment, {}, slots) };
 };
 const layouts = {
-  default: () => import('./default-200b94e7.mjs').then((m) => m.default || m),
+  default: () => import('./default-7c39f848.mjs').then((m) => m.default || m),
   error: () => import('./error-722bfbf6.mjs').then((m) => m.default || m)
 };
 const LayoutLoader = /* @__PURE__ */ defineComponent({
@@ -4727,7 +4727,7 @@ const _sfc_main = {
   __name: "nuxt-root",
   __ssrInlineRender: true,
   setup(__props) {
-    const ErrorComponent = /* @__PURE__ */ defineAsyncComponent(() => import('./error-component-5d8f11b1.mjs').then((r) => r.default || r));
+    const ErrorComponent = /* @__PURE__ */ defineAsyncComponent(() => import('./error-component-464fad79.mjs').then((r) => r.default || r));
     const IslandRenderer = /* @__PURE__ */ defineAsyncComponent(() => import('./island-renderer-6e061adc.mjs').then((r) => r.default || r));
     const nuxtApp = useNuxtApp();
     nuxtApp.deferHydration();
