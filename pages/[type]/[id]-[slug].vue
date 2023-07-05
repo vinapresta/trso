@@ -50,7 +50,7 @@
                     :class="`bg-trso-${item.color}`">
                     {{ $t('pages.slug.relatedBooks') }}
                 </h2>
-                <div class="flex flex-wrap">{{ bookContent }}
+                <div class="flex flex-wrap">
                     <div v-for="book in item.books" :key="book.id" class="my-2 w-full" :id="`bookThumb${book.id}`">
                         <PagesSlugBooksAccordion v-if="book" 
                                                  :book="book.attributes" 
