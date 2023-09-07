@@ -1,8 +1,12 @@
 import VueGtag from 'vue-gtag-next'
+
 export default defineNuxtPlugin((nuxtApp) => {
-  /*nuxtApp.vueApp.use(VueGtag, {
+
+  const runtimeConfig = useRuntimeConfig()
+
+  nuxtApp.vueApp.use(VueGtag, {
     property: {
-        id: config.public.GOOGLE_ANALYTICS_ID
+        id: runtimeConfig.public.GOOGLE_ANALYTICS_ID
     }
-  })*/
+  })
 })

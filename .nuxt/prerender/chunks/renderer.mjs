@@ -1,8 +1,36 @@
 import { createRenderer } from 'file://D:/dev/trso/app/node_modules/vue-bundle-renderer/dist/runtime.mjs';
-import { eventHandler, setResponseStatus, getQuery, createError, appendHeader } from 'file://D:/dev/trso/app/node_modules/h3/dist/index.mjs';
-import { joinURL, withoutTrailingSlash } from 'file://D:/dev/trso/app/node_modules/ufo/dist/index.mjs';
+import { eventHandler, getQuery, createError, appendHeader } from 'file://D:/dev/trso/app/node_modules/h3/dist/index.mjs';
+import { joinURL } from 'file://D:/dev/trso/app/node_modules/ufo/dist/index.mjs';
 import { renderToString } from 'file://D:/dev/trso/app/node_modules/vue/server-renderer/index.mjs';
-import { u as useNitroApp, a as useRuntimeConfig, g as getRouteRules } from './nitro-prerenderer.mjs';
+import { b as buildAssetsURL, p as publicAssetsURL } from './paths.mjs';
+import { u as useNitroApp, g as getRouteRules } from './nitro-prerenderer.mjs';
+import { u as useRuntimeConfig } from './config.mjs';
+import 'file://D:/dev/trso/app/node_modules/node-fetch-native/dist/polyfill.mjs';
+import 'file://D:/dev/trso/app/node_modules/ofetch/dist/node.mjs';
+import 'file://D:/dev/trso/app/node_modules/destr/dist/index.mjs';
+import 'file://D:/dev/trso/app/node_modules/unenv/runtime/fetch/index.mjs';
+import 'file://D:/dev/trso/app/node_modules/hookable/dist/index.mjs';
+import 'file://D:/dev/trso/app/node_modules/ohash/dist/index.mjs';
+import 'file://D:/dev/trso/app/node_modules/unstorage/dist/index.mjs';
+import 'file://D:/dev/trso/app/node_modules/unstorage/drivers/fs.mjs';
+import 'file://D:/dev/trso/app/node_modules/defu/dist/defu.mjs';
+import 'file://D:/dev/trso/app/node_modules/radix3/dist/index.mjs';
+import 'node:url';
+import 'file://D:/dev/trso/app/node_modules/ipx/dist/index.mjs';
+import 'module';
+import 'util';
+import 'file://D:/dev/trso/app/node_modules/async-cache/ac.js';
+import 'file://D:/dev/trso/app/node_modules/lodash.unionby/index.js';
+import 'file://D:/dev/trso/app/node_modules/etag/index.js';
+import 'file://D:/dev/trso/app/node_modules/fresh/index.js';
+import 'os';
+import 'path';
+import 'url';
+import 'file://D:/dev/trso/app/node_modules/is-https/dist/index.js';
+import 'file://D:/dev/trso/app/node_modules/sitemap/dist/index.js';
+import 'file://D:/dev/trso/app/node_modules/unenv/runtime/npm/consola.mjs';
+import 'file://D:/dev/trso/app/node_modules/minimatch/minimatch.js';
+import 'file://D:/dev/trso/app/node_modules/scule/dist/index.mjs';
 
 function defineRenderHandler(handler) {
   return eventHandler(async (event) => {
@@ -29,18 +57,15 @@ function defineRenderHandler(handler) {
       for (const header in response.headers) {
         event.node.res.setHeader(header, response.headers[header]);
       }
-      setResponseStatus(event, response.statusCode, response.statusMessage);
+      if (response.statusCode) {
+        event.node.res.statusCode = response.statusCode;
+      }
+      if (response.statusMessage) {
+        event.node.res.statusMessage = response.statusMessage;
+      }
     }
     return typeof response.body === "string" ? response.body : JSON.stringify(response.body);
   });
-}
-
-function buildAssetsURL(...path) {
-  return joinURL(publicAssetsURL(), useRuntimeConfig().app.buildAssetsDir, ...path);
-}
-function publicAssetsURL(...path) {
-  const publicBase = useRuntimeConfig().app.cdnURL || useRuntimeConfig().app.baseURL;
-  return path.length ? joinURL(publicBase, ...path) : publicBase;
 }
 
 const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_$";
@@ -342,9 +367,6 @@ const PRERENDER_NO_SSR_ROUTES = /* @__PURE__ */ new Set(["/index.html", "/200.ht
 const renderer = defineRenderHandler(async (event) => {
   const nitroApp = useNitroApp();
   const ssrError = event.node.req.url?.startsWith("/__nuxt_error") ? getQuery(event) : null;
-  if (ssrError && ssrError.statusCode) {
-    ssrError.statusCode = parseInt(ssrError.statusCode);
-  }
   if (ssrError && event.node.req.socket.readyState !== "readOnly") {
     throw createError("Cannot directly render error page!");
   }
@@ -392,7 +414,7 @@ const renderer = defineRenderHandler(async (event) => {
   }
   if (_PAYLOAD_EXTRACTION) {
     appendHeader(event, "x-nitro-prerender", joinURL(url, "_payload.js"));
-    PAYLOAD_CACHE.set(withoutTrailingSlash(url), renderPayloadResponse(ssrContext));
+    PAYLOAD_CACHE.set(url, renderPayloadResponse(ssrContext));
   }
   const renderedMeta = await ssrContext.renderMeta?.() ?? {};
   const inlinedStyles = await renderInlineStyles(ssrContext.modules ?? ssrContext._registeredComponents ?? []) ;
@@ -491,10 +513,5 @@ function splitPayload(ssrContext) {
   };
 }
 
-const renderer$1 = /*#__PURE__*/Object.freeze({
-  __proto__: null,
-  default: renderer
-});
-
-export { buildAssetsURL as b, publicAssetsURL as p, renderer$1 as r };
+export { renderer as default };
 //# sourceMappingURL=renderer.mjs.map
